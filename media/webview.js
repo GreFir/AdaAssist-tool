@@ -308,7 +308,9 @@
   const modelSummary = document.getElementById('modelSummary');
   const testsSummary = document.getElementById('testsSummary');
   const executionModeSelect = document.getElementById('executionModeSelect');
-  const composerModeSelect = document.getElementById('composerModeSelect');
+  const composerModeButton = document.getElementById('composerModeButton');
+  const composerModeValue = document.getElementById('composerModeValue');
+  const composerModeMenu = document.getElementById('composerModeMenu');
   const workflowModeHint = document.getElementById('workflowModeHint');
   const contextEnabledInput = document.getElementById('contextEnabledInput');
   const profileNotice = document.getElementById('profileNotice');
@@ -3211,13 +3213,79 @@
     button.setAttribute('aria-busy', String(busy));
   }
 
+  function composerModeText(mode) {
+    return uiLanguage === 'zh-CN'
+      ? (mode === 'auto' ? '自动' : '交互')
+      : (mode === 'auto' ? 'Auto' : 'Interactive');
+  }
+
+  function closeComposerModeMenu(restoreFocus) {
+    composerModeMenu.hidden = true;
+    composerModeButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) composerModeButton.focus();
+  }
+
+  function chooseComposerMode(mode) {
+    if (state.running || state.session) return;
+    closeComposerModeMenu(false);
+    executionModeSelect.value = mode;
+    // Keep Settings, saved mode preferences, and the outgoing request aligned.
+    executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    composerModeButton.focus();
+  }
+
+  function openComposerModeMenu(last) {
+    if (composerModeButton.disabled) return;
+    composerModeMenu.replaceChildren();
+    const mode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
+    ['continue', 'auto'].forEach(function (value) {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'composer-mode-choice';
+      item.setAttribute('role', 'menuitemradio');
+      item.setAttribute('aria-checked', String(value === mode));
+      item.tabIndex = -1;
+
+      const name = document.createElement('span');
+      name.textContent = composerModeText(value);
+      const check = document.createElement('span');
+      check.className = 'composer-mode-choice-check';
+      check.setAttribute('aria-hidden', 'true');
+      check.textContent = value === mode ? '✓' : '';
+      item.append(name, check);
+      item.addEventListener('click', function () { chooseComposerMode(value); });
+      composerModeMenu.appendChild(item);
+    });
+    composerModeMenu.hidden = false;
+    composerModeButton.setAttribute('aria-expanded', 'true');
+
+    // Position above the input controls; the menu is mounted outside the
+    // clipped textarea container and remains inside the Webview viewport.
+    const anchor = composerModeButton.getBoundingClientRect();
+    const menuWidth = composerModeMenu.getBoundingClientRect().width;
+    const menuHeight = composerModeMenu.getBoundingClientRect().height;
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    const left = Math.max(8, Math.min(anchor.right - menuWidth, vw - menuWidth - 8));
+    const above = anchor.top - menuHeight - 7;
+    const below = anchor.bottom + 7;
+    const top = above >= 8 ? above : (below + menuHeight <= vh - 8 ? below : Math.max(8, above));
+    composerModeMenu.style.left = left + 'px';
+    composerModeMenu.style.top = top + 'px';
+
+    const items = Array.from(composerModeMenu.children);
+    const selected = items.find(item => item.getAttribute('aria-checked') === 'true');
+    const focused = last ? items[items.length - 1] : selected || items[0];
+    if (focused) focused.focus();
+  }
+
   function syncComposerMode() {
-    if (!composerModeSelect) return;
     const locked = state.running || Boolean(state.session);
     const mode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
-    composerModeSelect.value = mode;
-    composerModeSelect.disabled = locked;
-    composerModeSelect.title = locked ? t('composerModeLocked') : t(mode === 'auto' ? 'autoHint' : 'interactiveHint');
+    composerModeValue.textContent = composerModeText(mode);
+    composerModeButton.disabled = locked;
+    composerModeButton.title = locked ? t('composerModeLocked') : t(mode === 'auto' ? 'autoHint' : 'interactiveHint');
+    if (locked && !composerModeMenu.hidden) closeComposerModeMenu(false);
   }
 
   function syncActionButtons() {
@@ -3587,16 +3655,47 @@
     });
   });
 
-  composerModeSelect.addEventListener('change', function () {
-    if (state.running || state.session) {
-      syncComposerMode();
-      return;
-    }
-    // Settings remains the single source of truth; the existing change
-    // handler persists the preference and updates the actual request.
-    executionModeSelect.value = composerModeSelect.value === 'auto' ? 'auto' : 'continue';
-    executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  composerModeButton.addEventListener('click', function () {
+    if (composerModeMenu.hidden) openComposerModeMenu(false);
+    else closeComposerModeMenu(false);
   });
+  composerModeButton.addEventListener('keydown', function (event) {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      openComposerModeMenu(event.key === 'ArrowUp');
+    }
+  });
+  composerModeMenu.addEventListener('keydown', function (event) {
+    const items = Array.from(composerModeMenu.children);
+    const current = items.indexOf(document.activeElement);
+    let next;
+    if (event.key === 'ArrowDown') next = (current + 1) % items.length;
+    if (event.key === 'ArrowUp') next = (current - 1 + items.length) % items.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = items.length - 1;
+    if (next !== undefined) {
+      event.preventDefault();
+      items[next]?.focus();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      closeComposerModeMenu(true);
+    } else if (event.key === 'Tab') {
+      event.preventDefault();
+      closeComposerModeMenu(false);
+      (event.shiftKey ? composerModeButton : submitWorkflowBtn).focus();
+    }
+  });
+  document.addEventListener('pointerdown', function (event) {
+    if (!composerModeMenu.contains(event.target) && !composerModeButton.contains(event.target)) {
+      closeComposerModeMenu(false);
+    }
+  });
+  composerModeMenu.addEventListener('focusout', function (event) {
+    if (!composerModeMenu.contains(event.relatedTarget)) closeComposerModeMenu(false);
+  });
+  window.addEventListener('resize', function () { closeComposerModeMenu(false); });
+  window.addEventListener('scroll', function () { closeComposerModeMenu(false); }, true);
 
   executionModeSelect.addEventListener('change', function () {
     if (!state.session) {
