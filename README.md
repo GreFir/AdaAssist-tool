@@ -78,12 +78,12 @@ assert unique_sorted([3, 1, 3, 2]) == [1, 2, 3]
 assert unique_sorted([-1, -1, 0]) == [-1, 0]
 ```
 
-Tests are **ordinary Python assertions**, not `pytest` or `unittest` test files. Generated tests are reviewable and should be checked before relying on their results.
+Tests can use top-level Python `assert` statements or `unittest.TestCase` suites (including an explicit `TextTestRunner`); AdaAssist reports per-test results for both. Generated tests use top-level assertions and should be reviewed before relying on them. `pytest` is not a supported test runner.
 
 
 ### Task composer controls
 
-The composer uses a single input frame, with icon-only **Use Selection** and **New Task** controls. The compact **Interactive / Auto** menu beside **Send** stays synchronized with **Settings → Workflow**. The selected mode is locked during an active task; choose **New Task** to change it without altering prior session history.
+The composer uses a single input frame, with icon-only **Use Selection** and **New Task** controls. The compact **Interactive / Auto** menu beside **Send** stays synchronized with **Settings → Workflow**. Mode switching is disabled while a model stage is running. After Auto is paused, select **Interactive** to review and edit the current code, tests, feedback, or plan. While Interactive is at a review checkpoint, select **Auto** and press **Continue** to resume autonomous repair from the same session. Save draft edits before switching modes; saved artifacts and repair counts are retained. Use **New Task** only to start a separate requirement.
 
 ## ✨ Features
 
