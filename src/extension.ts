@@ -4916,163 +4916,240 @@ async function insertGeneratedCode(code: string): Promise<void> {
 		</main>
 
 			<main class="page" id="settingsPage">
-				<section class="panel settings-panel">
-					<div class="panel-header">
-						<div>
-							<div class="panel-title" data-i18n="settings">Settings</div>
-							<div class="panel-copy" data-i18n="settingsHint">Configure workflow behavior, model access, and the local runtime.</div>
-						</div>
-						<button class="btn subtle" id="backToWorkflowBtn" type="button" data-i18n="back">Back</button>
-					</div>
-					<div class="settings-tabs" role="tablist" aria-label="Settings">
-						<button class="settings-tab active" id="workflowSettingsTabBtn" type="button" role="tab" data-settings-tab="workflow" data-i18n="workflow">Workflow</button>
-						<button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" data-i18n="profiles">Profiles</button>
-						<button class="settings-tab" id="runtimeSettingsTabBtn" type="button" role="tab" data-settings-tab="runtime" data-i18n="runtime">Runtime</button>
-					</div>
-					<section class="settings-tab-panel" id="workflowSettingsTab" data-settings-panel="workflow">
-						<div class="field mode-field">
-							<label for="executionModeSelect" data-i18n="mode">Mode</label>
-							<select id="executionModeSelect" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
-								<option value="continue" data-i18n="interactiveContinue">Interactive Continue</option>
-								<option value="auto" data-i18n="autoFullWorkflow">Auto Full Workflow</option>
-							</select>
-							<div class="field-hint" id="workflowModeHint" data-i18n="interactiveHint">Interactive mode pauses at review points and accepts edits or additional directions.</div>
-						</div>
-						<div class="field">
-							<span data-i18n="llmProfile">LLM Profile</span>
-							<div class="profile-picker-row">
-								<button class="btn secondary setup-inline-btn" id="editProfileFromSetupBtn" type="button" data-i18n="configure">Configure</button>
-							</div>
-						</div>
-						<label class="checkbox-chip" for="contextEnabledInput">
-							<input id="contextEnabledInput" type="checkbox" />
-							<span data-i18n="startupContext">Startup Context</span>
-						</label>
-						<div class="setup-alert hidden" id="profileNotice">
-							<div>
-								<div class="mini-heading" data-i18n="llmSetupRequired">LLM Setup Required</div>
-								<div class="hint" id="profileNoticeText" data-i18n="configureProfileBeforeStart">Configure an LLM profile before starting the workflow.</div>
-							</div>
-							<button class="btn secondary" id="profileNoticeBtn" type="button" data-i18n="configure">Configure</button>
-						</div>
-					</section>
-					<section class="settings-tab-panel hidden" id="profilesSettingsTab" data-settings-panel="profiles">
+  <section class="panel settings-panel">
+    <div class="panel-header settings-page-header">
+      <div>
+        <div class="panel-title" data-i18n="settings">Settings</div>
+        <div class="panel-copy" data-i18n="settingsHint">Manage task behavior, models, completion, and Python runtime.</div>
+      </div>
+      <button class="btn subtle" id="backToWorkflowBtn" type="button" data-i18n="back">Back</button>
+    </div>
+    <div class="settings-tabs" role="tablist" aria-label="Settings">
+      <button class="settings-tab active" id="workflowSettingsTabBtn" type="button" role="tab" data-settings-tab="workflow" aria-controls="workflowSettingsTab" data-i18n="workflow">Workflow</button>
+      <button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" aria-controls="profilesSettingsTab" data-i18n="profiles">Models</button>
+      <button class="settings-tab" id="completionSettingsTabBtn" type="button" role="tab" data-settings-tab="completion" aria-controls="completionSettingsTab" data-i18n="inlineCompletion">Completion</button>
+      <button class="settings-tab" id="environmentSettingsTabBtn" type="button" role="tab" data-settings-tab="environment" aria-controls="environmentSettingsTab" data-i18n="environmentTab">Environment</button>
+    </div>
 
-					<div class="form-grid">
-					<div class="field span-2">
-						<label for="settingsProfileSelect" data-i18n="profile">Profile</label>
-						<select id="settingsProfileSelect"></select>
-					</div>
-					<div class="field">
-						<label for="profileNameInput" data-i18n="profileName">Profile Name</label>
-						<input id="profileNameInput" type="text" placeholder="Local GPT-5.4" />
-					</div>
-					<div class="field">
-						<label for="profileProviderSelect" data-i18n="provider">Provider</label>
-						<select id="profileProviderSelect">
-							<option value="other">OpenAI-Compatible</option>
-							<option value="openai">OpenAI</option>
-							<option value="claude">Claude</option>
-							<option value="ollama">Ollama</option>
-							<option value="vllm">vLLM</option>
-						</select>
-					</div>
-					<div class="field">
-						<label for="profileBaseUrlInput" data-i18n="baseUrl">Base URL</label>
-						<input id="profileBaseUrlInput" type="text" placeholder="https://api.openai.com/v1" />
-					</div>
-					<div class="field">
-						<label for="profileModelInput" data-i18n="model">Model</label>
-						<input id="profileModelInput" type="text" placeholder="gpt-5.4" />
-					</div>
-					<div class="field span-2">
-						<label for="profileMaxTokensInput" data-i18n="workflowMaxTokens">Max Output Tokens</label>
-						<input id="profileMaxTokensInput" type="number" min="128" max="32768" step="1" value="1024" />
-						<div class="field-hint" data-i18n="workflowMaxTokensHint">Maximum output tokens for all workflow model stages (code, tests, and repair plans). Saving also updates an idle session using the same model.</div>
-					</div>
-					<div class="field span-2">
-						<label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
-						<input id="profileApiKeyInput" type="password" placeholder="sk-..." />
-						<div class="field-hint" data-i18n="apiKeyHint">Optional for Ollama and vLLM. Required for hosted providers.</div>
-					</div>
-				</div>
+    <section class="settings-tab-panel" id="workflowSettingsTab" data-settings-panel="workflow" role="tabpanel" aria-labelledby="workflowSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="workflowSettingsTitle">Task execution</div>
+        <div class="settings-intro-detail" data-i18n="workflowSettingsDescription">Set the behavior of your next coding task. A running task keeps its current mode.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="workflowMode">Workflow Mode</div>
+          <div class="settings-group-desc" data-i18n="workflowModeDescription">Choose whether to pause for human review.</div>
+        </div>
+        <div class="field">
+          <label for="executionModeSelect" data-i18n="mode">Mode</label>
+          <select id="executionModeSelect" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
+            <option value="continue" data-i18n="interactiveContinue">Interactive Continue</option>
+            <option value="auto" data-i18n="autoFullWorkflow">Auto Full Workflow</option>
+          </select>
+          <div class="field-hint" id="workflowModeHint" data-i18n="interactiveHint">Interactive mode pauses at review points so you can edit tests, code, and plans.</div>
+        </div>
+        <label class="checkbox-chip settings-switch-row" for="contextEnabledInput">
+          <input id="contextEnabledInput" type="checkbox" />
+          <span>
+            <span class="settings-switch-title" data-i18n="startupContext">Startup Context</span>
+            <span class="settings-switch-desc" data-i18n="contextSettingDescription">Reuse previous stage feedback within this task, not across unrelated tasks.</span>
+          </span>
+        </label>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="workflowModelGroup">Model used for tasks</div>
+          <div class="settings-group-desc" data-i18n="workflowModelDescription">Model connection and output limit are managed in Models.</div>
+        </div>
+        <div class="settings-model-summary" id="workflowModelSummary">—</div>
+        <button class="btn secondary settings-inline-action" id="editProfileFromSetupBtn" type="button" data-i18n="configureModel">Configure model</button>
+        <div class="setup-alert hidden" id="profileNotice">
+          <div>
+            <div class="mini-heading" data-i18n="llmSetupRequired">LLM Setup Required</div>
+            <div class="hint" id="profileNoticeText" data-i18n="configureProfileBeforeStart">Configure an LLM profile before starting the workflow.</div>
+          </div>
+          <button class="btn secondary" id="profileNoticeBtn" type="button" data-i18n="configure">Configure</button>
+        </div>
+      </div>
+    </section>
 
-				<div class="hint" id="profileHint" data-i18n="profileEditorHint">Create a new profile draft or edit an existing profile.</div>
+    <section class="settings-tab-panel hidden" id="profilesSettingsTab" data-settings-panel="profiles" role="tabpanel" aria-labelledby="profilesSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="modelSettingsTitle">Model profiles</div>
+        <div class="settings-intro-detail" data-i18n="modelSettingsDescription">Save a reusable connection and output budget for code generation, tests, and repair planning.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="chooseProfile">Choose a profile</div>
+        </div>
+        <div class="settings-profile-pick">
+          <div class="field">
+            <label for="settingsProfileSelect" data-i18n="profile">Profile</label>
+            <select id="settingsProfileSelect"></select>
+          </div>
+          <button class="btn secondary" id="newProfileBtn" type="button" data-i18n="newProfile">New Profile</button>
+        </div>
+        <div class="settings-profile-status" id="profileEditStatus" role="status" aria-live="polite"></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="connectionSection">Connection</div>
+          <div class="settings-group-desc" data-i18n="connectionSectionHint">Enter the service and model information. Secrets are stored securely.</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="profileNameInput" data-i18n="profileName">Profile Name</label>
+            <input id="profileNameInput" type="text" placeholder="Local coding model" />
+          </div>
+          <div class="field">
+            <label for="profileProviderSelect" data-i18n="provider">Provider</label>
+            <select id="profileProviderSelect">
+              <option value="other">OpenAI-Compatible</option>
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+              <option value="ollama">Ollama</option>
+              <option value="vllm">vLLM</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="profileBaseUrlInput" data-i18n="baseUrl">Base URL</label>
+            <input id="profileBaseUrlInput" type="text" placeholder="https://api.openai.com/v1" />
+            <div class="field-hint" id="profileEndpointHint" data-i18n="endpointOptionalHint">Optional for hosted providers using their official endpoint.</div>
+          </div>
+          <div class="field span-2">
+            <label for="profileModelInput" data-i18n="model">Model</label>
+            <input id="profileModelInput" type="text" placeholder="Model ID" />
+          </div>
+          <div class="field span-2">
+            <label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
+            <input id="profileApiKeyInput" type="password" autocomplete="off" placeholder="sk-..." />
+            <div class="field-hint" id="profileKeyHint" data-i18n="apiKeyHint">Optional for Ollama and vLLM. Required for hosted providers.</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="generationSection">Generation budget</div>
+          <div class="settings-group-desc" data-i18n="workflowMaxTokensHint">Maximum output tokens for code generation, tests, and repair planning. Applies to an idle session using the same model.</div>
+        </div>
+        <div class="field">
+          <label for="profileMaxTokensInput" data-i18n="workflowMaxTokens">Max Output Tokens</label>
+          <input id="profileMaxTokensInput" type="number" min="128" max="32768" step="1" value="1024" />
+          <div class="settings-range-caption">128 – 32,768 tokens</div>
+        </div>
+      </div>
+      <div class="settings-save-bar">
+        <button class="btn" id="saveProfileBtn" type="button" data-i18n="saveProfile">Save Profile</button>
+        <button class="btn secondary hidden" id="discardProfileChangesBtn" type="button" data-i18n="discardChanges">Discard changes</button>
+      </div>
+      <div class="hint settings-save-note" id="profileHint" data-i18n="profileEditorHint">Create or edit a model profile. Changes are not applied until you save.</div>
+      <details class="settings-advanced">
+        <summary data-i18n="advancedProfileActions">Advanced profile actions</summary>
+        <div class="settings-secondary-actions">
+          <button class="btn secondary" id="openProfileConfigBtn" type="button" data-i18n="openConfig">Open Config</button>
+          <button class="btn secondary" id="reloadProfilesBtn" type="button" data-i18n="reloadProfiles">Reload Profiles</button>
+          <button class="btn secondary settings-danger-action" id="deleteProfileBtn" type="button" data-i18n="deleteProfile">Delete Profile</button>
+        </div>
+      </details>
+    </section>
 
-				<div class="button-grid">
-					<button class="btn secondary" id="newProfileBtn" type="button" data-i18n="newProfile">New Profile</button>
-					<button class="btn secondary" id="openProfileConfigBtn" type="button" data-i18n="openConfig">Open Config</button>
-					<button class="btn secondary" id="reloadProfilesBtn" type="button" data-i18n="reloadProfiles">Reload Profiles</button>
-					<button class="btn secondary" id="deleteProfileBtn" type="button" data-i18n="deleteProfile">Delete Profile</button>
-						<button class="btn" id="saveProfileBtn" type="button" data-i18n="saveProfile">Save Profile</button>
-					</div>
-					</section>
-					<section class="settings-tab-panel hidden" id="runtimeSettingsTab" data-settings-panel="runtime">
-						<div class="settings-subsection">
-							<div class="mini-heading" data-i18n="inlineCompletion">Inline Completion</div>
-							<div class="field-hint" data-i18n="inlineCompletionHint">These settings control the gray Python suggestions shown while typing and are separate from the workflow profile.</div>
-							<label class="checkbox-chip" for="inlineCompletionEnabledInput">
-								<input id="inlineCompletionEnabledInput" type="checkbox" />
-								<span data-i18n="inlineCompletionEnabled">Enable inline completion</span>
-							</label>
-							<div class="form-grid">
-								<div class="field">
-									<label for="inlineCompletionProviderSelect" data-i18n="provider">Provider</label>
-									<select id="inlineCompletionProviderSelect">
-										<option value="vllm">vLLM</option>
-										<option value="other">OpenAI-Compatible</option>
-										<option value="openai">OpenAI</option>
-										<option value="ollama">Ollama</option>
-									</select>
-								</div>
-								<div class="field">
-									<label for="inlineCompletionTriggerModeSelect" data-i18n="triggerMode">Trigger</label>
-									<select id="inlineCompletionTriggerModeSelect">
-										<option value="automatic" data-i18n="automaticTrigger">Automatic</option>
-										<option value="manual" data-i18n="manualTrigger">Manual</option>
-									</select>
-								</div>
-								<div class="field span-2">
-									<label for="inlineCompletionBaseUrlInput" data-i18n="baseUrl">Base URL</label>
-									<input id="inlineCompletionBaseUrlInput" type="text" placeholder="http://127.0.0.1:8004/v1" />
-								</div>
-								<div class="field span-2">
-									<label for="inlineCompletionModelInput" data-i18n="model">Model</label>
-									<input id="inlineCompletionModelInput" type="text" placeholder="deepseek-coder-6.7b-instruct" />
-								</div>
-								<div class="field">
-									<label for="inlineCompletionDebounceInput" data-i18n="debounceMs">Debounce (ms)</label>
-									<input id="inlineCompletionDebounceInput" type="number" min="250" max="5000" step="50" />
-								</div>
-								<div class="field">
-									<label for="inlineCompletionMaxTokensInput" data-i18n="maxTokens">Max tokens</label>
-									<input id="inlineCompletionMaxTokensInput" type="number" min="32" max="512" step="1" />
-								</div>
-							</div>
-							<div class="action-row">
-								<button class="btn" id="saveInlineCompletionBtn" type="button" data-i18n="saveInlineCompletion">Save inline settings</button>
-								<span class="hint" id="inlineCompletionStatus"></span>
-							</div>
-						</div>
-						<div class="field">
-							<div class="mini-heading" data-i18n="pythonInterpreter">Python Interpreter</div>
-							<div class="runtime-value" id="pythonInterpreterValue">Auto-detect Python</div>
-							<div class="field-hint" data-i18n="pythonInterpreterHint">Choose the Python environment used to start AdaAssist's local backend.</div>
-							<button class="btn secondary" id="selectPythonInterpreterBtn" type="button" data-i18n="selectPythonInterpreter">Select Python Interpreter</button>
-						</div>
-						<div class="environment-status checking" id="environmentStatus" aria-live="polite">
-							<div class="environment-status-head">
-								<div>
-									<div class="mini-heading" data-i18n="environmentStatus">Environment Status</div>
-									<div class="hint" id="environmentStatusSummary" data-i18n="checkingEnvironment">Checking environment...</div>
-								</div>
-								<button class="btn subtle setup-inline-btn" id="checkEnvironmentBtn" type="button" data-i18n="checkEnvironment">Check Environment</button>
-							</div>
-							<ul class="environment-check-list" id="environmentCheckList"></ul>
-						</div>
-					</section>
-				</section>
-		</main>
+    <section class="settings-tab-panel hidden" id="completionSettingsTab" data-settings-panel="completion" role="tabpanel" aria-labelledby="completionSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="completionSettingsTitle">Inline completion</div>
+        <div class="settings-intro-detail" data-i18n="inlineCompletionHint">Configure the inline Python suggestions separately from the main workflow model.</div>
+      </div>
+      <div class="settings-group">
+        <label class="checkbox-chip settings-switch-row" for="inlineCompletionEnabledInput">
+          <input id="inlineCompletionEnabledInput" type="checkbox" />
+          <span>
+            <span class="settings-switch-title" data-i18n="inlineCompletionEnabled">Enable inline completion</span>
+            <span class="settings-switch-desc" data-i18n="completionEnableHint">Suggest code as you type in Python files.</span>
+          </span>
+        </label>
+      </div>
+      <div class="settings-group" id="completionServiceGroup">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="completionModelSection">Completion model</div>
+          <div class="settings-group-desc" data-i18n="completionModelHint">This endpoint may differ from your main workflow model.</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="inlineCompletionProviderSelect" data-i18n="provider">Provider</label>
+            <select id="inlineCompletionProviderSelect">
+              <option value="vllm">vLLM</option>
+              <option value="other">OpenAI-Compatible</option>
+              <option value="openai">OpenAI</option>
+              <option value="ollama">Ollama</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="inlineCompletionBaseUrlInput" data-i18n="baseUrl">Base URL</label>
+            <input id="inlineCompletionBaseUrlInput" type="text" placeholder="http://127.0.0.1:8004/v1" />
+          </div>
+          <div class="field span-2">
+            <label for="inlineCompletionModelInput" data-i18n="model">Model</label>
+            <input id="inlineCompletionModelInput" type="text" placeholder="deepseek-coder-6.7b-instruct" />
+          </div>
+        </div>
+      </div>
+      <div class="settings-group" id="completionBehaviorGroup">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="completionBehaviorSection">Trigger and limits</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="inlineCompletionTriggerModeSelect" data-i18n="triggerMode">Trigger</label>
+            <select id="inlineCompletionTriggerModeSelect">
+              <option value="automatic" data-i18n="automaticTrigger">Automatic</option>
+              <option value="manual" data-i18n="manualTrigger">Manual</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="inlineCompletionDebounceInput" data-i18n="debounceMs">Debounce (ms)</label>
+            <input id="inlineCompletionDebounceInput" type="number" min="250" max="5000" step="50" />
+          </div>
+          <div class="field">
+            <label for="inlineCompletionMaxTokensInput" data-i18n="maxTokens">Max tokens</label>
+            <input id="inlineCompletionMaxTokensInput" type="number" min="32" max="512" step="1" />
+          </div>
+        </div>
+        <div class="settings-range-caption" data-i18n="completionLimitHint">Debounce applies only in automatic mode. Token limit affects suggestions only.</div>
+      </div>
+      <div class="settings-save-bar">
+        <button class="btn" id="saveInlineCompletionBtn" type="button" data-i18n="saveInlineCompletion">Save inline settings</button>
+        <span class="hint" id="inlineCompletionStatus"></span>
+      </div>
+    </section>
+
+    <section class="settings-tab-panel hidden" id="environmentSettingsTab" data-settings-panel="environment" role="tabpanel" aria-labelledby="environmentSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="environmentSettingsTitle">Python runtime</div>
+        <div class="settings-intro-detail" data-i18n="environmentSettingsDescription">Select the Python interpreter used to start the AdaAssist backend and inspect its dependencies.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="pythonInterpreter">Python Interpreter</div>
+          <div class="settings-group-desc" data-i18n="pythonInterpreterHint">Select the environment used to start the local backend.</div>
+        </div>
+        <div class="runtime-value" id="pythonInterpreterValue">Auto-detect Python</div>
+        <button class="btn secondary settings-inline-action" id="selectPythonInterpreterBtn" type="button" data-i18n="selectPythonInterpreter">Select Python Interpreter</button>
+      </div>
+      <div class="settings-group">
+        <div class="environment-status checking" id="environmentStatus" aria-live="polite">
+          <div class="environment-status-head">
+            <div>
+              <div class="settings-group-title" data-i18n="environmentStatus">Environment Status</div>
+              <div class="hint" id="environmentStatusSummary" data-i18n="checkingEnvironment">Checking environment...</div>
+            </div>
+            <button class="btn subtle setup-inline-btn" id="checkEnvironmentBtn" type="button" data-i18n="checkEnvironment">Check Environment</button>
+          </div>
+          <ul class="environment-check-list" id="environmentCheckList"></ul>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
 	</div>
 
 		<script nonce="${nonce}" src="${markdownItUri}"></script>
