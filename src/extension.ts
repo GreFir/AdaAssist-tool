@@ -12,6 +12,7 @@ interface LlmRequestConfig {
 	api_key: string;
 	model: string;
 	provider: ProviderType;
+	max_tokens: number;
 }
 
 interface PythonCommand {
@@ -259,6 +260,7 @@ interface ProfileMeta {
 	baseUrl: string;
 	model: string;
 	provider: ProviderType;
+	maxTokens?: number;
 	apiKeyEnv?: string;
 }
 
@@ -293,6 +295,14 @@ const DEFAULT_BACKEND_HOST = '127.0.0.1';
 const DEFAULT_BACKEND_PORT = 8765;
 const DEFAULT_LLM_BASE_URL = 'http://127.0.0.1:8003/v1';
 const DEFAULT_LLM_MODEL = 'deepseek-coder-33b-instruct';
+const DEFAULT_WORKFLOW_MAX_TOKENS = 1024;
+const MAX_WORKFLOW_OUTPUT_TOKENS = 32768;
+
+function normalizeWorkflowMaxTokens(value: unknown): number {
+	return typeof value === 'number' && Number.isInteger(value)
+		&& value >= 128 && value <= MAX_WORKFLOW_OUTPUT_TOKENS
+		? value : DEFAULT_WORKFLOW_MAX_TOKENS;
+}
 const DEFAULT_INLINE_BASE_URL = 'http://127.0.0.1:8004/v1';
 const DEFAULT_INLINE_MODEL = 'deepseek-coder-6.7b-instruct';
 const SESSION_POLL_INTERVAL_MS = 300;
@@ -1236,6 +1246,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			baseUrl: profile.baseUrl,
 			model: profile.model,
 			provider: profile.provider,
+			maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 			apiKeyConfigured: Boolean(profile.apiKey)
 		}));
 	}
@@ -1506,6 +1517,12 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		const model = modelRaw || DEFAULT_LLM_MODEL;
 		const provider = normalizeProvider(typeof message.provider === 'string' ? message.provider : 'other');
 		const apiKey = typeof message.apiKey === 'string' ? message.apiKey.trim() : '';
+		const maxTokens = message.maxTokens;
+		if (typeof maxTokens !== 'number' || !Number.isInteger(maxTokens)
+			|| maxTokens < 128 || maxTokens > MAX_WORKFLOW_OUTPUT_TOKENS) {
+			void vscode.window.showErrorMessage('最大输出 Tokens 必须为 128–32768 之间的整数。');
+			return;
+		}
 
 		if (!name) {
 			this.appendUiLog('error', 'Profile name is required.');
@@ -1522,6 +1539,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl,
 				model,
 				provider,
+				maxTokens,
 				apiKey: nextApiKey
 			};
 			if (apiKey) {
@@ -1539,6 +1557,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl,
 				model,
 				provider,
+				maxTokens,
 				apiKey
 			});
 			this.activeProfileId = id;
@@ -3351,6 +3370,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					baseUrl: profile.baseUrl || '',
 					model: profile.model || DEFAULT_LLM_MODEL,
 					provider: normalizeProvider(profile.provider),
+					maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 					apiKeyEnv,
 					apiKey: plaintextApiKey || await readProfileApiKey(context, id, apiKeyEnv, this.outputChannel)
 				});
@@ -3377,6 +3397,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			baseUrl: (getConfigurationValue<string>('baseUrl', DEFAULT_LLM_BASE_URL) || DEFAULT_LLM_BASE_URL).trim(),
 			model: (getConfigurationValue<string>('model', DEFAULT_LLM_MODEL) || DEFAULT_LLM_MODEL).trim(),
 			provider: 'other',
+			maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 			apiKey: legacyApiKey
 		};
 		this.profiles = [defaultProfile];
@@ -3398,6 +3419,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl: profile.baseUrl,
 				model: profile.model,
 				provider: profile.provider,
+				maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 				...(profile.apiKeyEnv ? { apiKeyEnv: profile.apiKeyEnv } : {})
 			}))
 		};
@@ -4034,6 +4056,7 @@ async function readProfilesFromFile(
 				baseUrl: typeof item.baseUrl === 'string' ? item.baseUrl : '',
 				model: typeof item.model === 'string' && item.model ? item.model : DEFAULT_LLM_MODEL,
 				provider: normalizeProvider(typeof item.provider === 'string' ? item.provider : 'other'),
+				maxTokens: normalizeWorkflowMaxTokens(item.maxTokens),
 				apiKeyEnv: normalizeOptionalString(item.apiKeyEnv),
 				apiKey: typeof item.apiKey === 'string' ? item.apiKey : ''
 			});
@@ -4107,6 +4130,7 @@ async function getActiveProfileForEditor(
 				baseUrl: selected.baseUrl.trim(),
 				model: selected.model.trim() || DEFAULT_LLM_MODEL,
 				provider: normalizeProvider(selected.provider),
+				maxTokens: normalizeWorkflowMaxTokens(selected.maxTokens),
 				apiKeyEnv: normalizeOptionalString(selected.apiKeyEnv),
 				apiKey
 			};
@@ -4119,6 +4143,7 @@ async function getActiveProfileForEditor(
 		baseUrl: (getConfigurationValue<string>('baseUrl', DEFAULT_LLM_BASE_URL) || DEFAULT_LLM_BASE_URL).trim(),
 		model: (getConfigurationValue<string>('model', DEFAULT_LLM_MODEL) || DEFAULT_LLM_MODEL).trim(),
 		provider: 'other',
+		maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 		apiKey: await readLegacyApiKey(context, outputChannel)
 	};
 }
@@ -4134,6 +4159,7 @@ async function getInlineCompletionProfile(
 		baseUrl: (getConfigurationValue<string>('inlineCompletion.baseUrl', DEFAULT_INLINE_BASE_URL) || DEFAULT_INLINE_BASE_URL).trim(),
 		model: (getConfigurationValue<string>('inlineCompletion.model', DEFAULT_INLINE_MODEL) || DEFAULT_INLINE_MODEL).trim(),
 		provider,
+		maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 		apiKey: provider === 'vllm' || provider === 'ollama' ? '' : await readLegacyApiKey(context, outputChannel)
 	};
 }
@@ -4143,7 +4169,8 @@ function profileToRequestConfig(profile: Profile): LlmRequestConfig {
 		base_url: profile.baseUrl,
 		api_key: profile.apiKey,
 		model: profile.model,
-		provider: profile.provider
+		provider: profile.provider,
+		max_tokens: normalizeWorkflowMaxTokens(profile.maxTokens)
 	};
 }
 
@@ -4929,6 +4956,11 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<div class="field">
 						<label for="profileModelInput" data-i18n="model">Model</label>
 						<input id="profileModelInput" type="text" placeholder="gpt-5.4" />
+					</div>
+					<div class="field span-2">
+						<label for="profileMaxTokensInput" data-i18n="workflowMaxTokens">Max Output Tokens</label>
+						<input id="profileMaxTokensInput" type="number" min="128" max="32768" step="1" value="1024" />
+						<div class="field-hint" data-i18n="workflowMaxTokensHint">Maximum output tokens for code generation in this workflow profile. Planning and test generation retain their shorter stage-specific caps.</div>
 					</div>
 					<div class="field span-2">
 						<label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
