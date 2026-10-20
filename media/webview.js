@@ -296,6 +296,7 @@
     activeProfileId: '',
     editingProfileId: '',
     session: null,
+    archivedSessions: [],
     running: false,
     runningLabel: '',
     localLogs: [],
@@ -783,6 +784,7 @@
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
+    if (Array.isArray(data.archivedSessions)) state.archivedSessions = data.archivedSessions;
     state.workflowMode = data.workflowMode === 'auto' ? 'auto' : 'continue';
     state.interactiveState = typeof data.interactiveState === 'string' ? data.interactiveState : 'idle';
     state.canResume = Boolean(data.canResume);
@@ -1323,7 +1325,7 @@
     const previousScrollTop = visualLogList.scrollTop;
     visualLogList.innerHTML = '';
     const entries = Array.isArray(state.logEntries) ? state.logEntries : [];
-    if (entries.length === 0) {
+    if (entries.length === 0 && !(state.archivedSessions || []).length) {
       const empty = document.createElement('div');
       empty.className = 'visual-log-empty';
       empty.textContent = t('noLogs');
@@ -2123,6 +2125,46 @@
   }
 
 
+  function renderArchivedSession(session, index) {
+    const group = document.createElement('section');
+    group.className = 'ada-archived-session';
+    group.style.cssText = 'border-bottom:1px solid var(--vscode-panel-border);padding:12px 0;margin-bottom:14px;';
+    const heading = document.createElement('div');
+    heading.style.cssText = 'display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:600;';
+    heading.textContent = (uiLanguage === 'zh-CN' ? '已归档任务 ' : 'Archived task ') + (index + 1)
+      + (session.passed ? ' ✓' : '');
+    group.appendChild(heading);
+    const requirement = document.createElement('div');
+    requirement.appendChild(renderMarkdown(session.problem_statement || ''));
+    group.appendChild(requirement);
+    (Array.isArray(session.events) ? session.events : []).forEach(event => {
+      const data = event.data || {};
+      const relevant = event.stage === 'generate' || event.stage === 'regenerate'
+        || event.stage === 'evaluate' || event.stage === 'plan' || event.stage === 'user_input'
+        || event.stage === 'guidance';
+      if (!relevant) return;
+      const entry = document.createElement('details');
+      entry.style.cssText = 'margin:8px 0;padding:8px;border:1px solid var(--vscode-panel-border);border-radius:8px;';
+      const summary = document.createElement('summary');
+      summary.textContent = (event.title || event.stage) + ' · ' + (event.status || '');
+      entry.appendChild(summary);
+      const body = [data.content, data.code, data.plan, data.test_code,
+        data.error, data.traceback, event.message].filter(x => typeof x === 'string' && x.trim()).join('\\n\\n');
+      const text = document.createElement('pre');
+      text.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:440px;overflow:auto;';
+      text.textContent = body;
+      entry.appendChild(text);
+      group.appendChild(entry);
+    });
+    return group;
+  }
+
+  function renderArchivedHistory() {
+    (state.archivedSessions || []).forEach((session, index) => {
+      timeline.appendChild(renderArchivedSession(session, index));
+    });
+  }
+
   function renderTimeline() {
     syncEditablePlanDraft();
     const entries = conversationEntries();
@@ -2133,6 +2175,7 @@
       || hasTimelineChange;
 
     timeline.innerHTML = '';
+    renderArchivedHistory();
     state.lastTimelineSignature = timelineSignature;
 
     if (entries.length === 0) {
@@ -2719,10 +2762,11 @@
 
   function syncActionButtons() {
     const hasSession = Boolean(state.session);
+    const taskPassed = Boolean(state.session && state.session.passed);
     const hasProblemDraft = Boolean(problemInput.value.trim());
     const hasResolvedTestsDraft = Boolean(configuredTestCode().trim());
     const interactiveSession = hasSession && isInteractiveSelected();
-    const guidanceEditable = !state.running && (!hasSession || interactiveSession);
+    const guidanceEditable = !state.running && (!hasSession || interactiveSession || taskPassed);
     const testsEditable = !state.running && (!hasSession || interactiveSession);
     const testsBusy = state.testOperationStatus === 'running';
 
@@ -2768,7 +2812,7 @@
     renderPrimaryActionButton(hasResolvedTestsDraft);
     submitWorkflowBtn.classList.toggle(
       'hidden',
-      hasSession && !interactiveSession && !state.running && !state.canResume
+      hasSession && !interactiveSession && !state.running && !state.canResume && !taskPassed
     );
   }
 
@@ -3133,6 +3177,13 @@
     });
   }
 
+  function awaitPassedTaskChoice() {
+    const newTask = window.confirm(uiLanguage === 'zh-CN'
+      ? '公开测试已通过。确定以当前输入开始新任务吗？\\n确定：新任务；取消：继续完善当前任务。'
+      : 'Public tests passed. Start a new task with this input?\\nOK: new task; Cancel: refine current task.');
+    return newTask ? 'new' : 'continue';
+  }
+
   submitWorkflowBtn.addEventListener('click', function () {
     if (state.running) {
       vscode.postMessage({ type: 'interruptWorkflow' });
@@ -3143,6 +3194,18 @@
       state.additionalInstructionPending = Boolean(resumePayload.additionalInstruction);
       postTrackedOperation('workflow', resumePayload);
       return;
+    }
+    if (state.session && state.session.passed) {
+      const chosen = awaitPassedTaskChoice();
+      if (chosen === 'new') {
+        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'new_task' });
+        return;
+      }
+      if (chosen === 'finish') {
+        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
+        return;
+      }
+      if (chosen !== 'continue') return;
     }
     if (state.session) {
       const additionalInstruction = problemInput.value.trim();
@@ -3232,6 +3295,7 @@
         const currentEditingProfileId = state.editingProfileId;
 
         state.profiles = Array.isArray(data.profiles) ? data.profiles : [];
+        if (Array.isArray(data.archivedSessions)) state.archivedSessions = data.archivedSessions;
         state.activeProfileId = typeof data.activeProfileId === 'string' ? data.activeProfileId : '';
 		state.environmentCheck = data.environmentCheck && typeof data.environmentCheck === 'object'
 			? data.environmentCheck
