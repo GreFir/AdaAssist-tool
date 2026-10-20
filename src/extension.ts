@@ -5,6 +5,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { discoverPythonEnvironments, getActiveWorkspacePythonEnvironment, getSelectedPythonEnvironment, getPythonEnvironmentsApi } from './pythonEnvironments';
+import { SessionSnapshotStore, type SavedWorkflowSession } from './sessionSnapshots';
 
 interface LlmRequestConfig {
 	base_url: string;
@@ -662,6 +663,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private readonly viewDisposables: vscode.Disposable[] = [];
 	private readonly backendServer: BackendServerManager;
 	private readonly visualLogStore: PersistentVisualLogStore;
+	private readonly sessionSnapshotStore: SessionSnapshotStore<BackendSessionState, ResumeState>;
 	private running = false;
 	private interruptRequested = false;
 	private pollingSession = false;
@@ -705,6 +707,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	) {
 		this.backendServer = new BackendServerManager(context, outputChannel);
 		this.visualLogStore = new PersistentVisualLogStore(context, outputChannel);
+		this.sessionSnapshotStore = new SessionSnapshotStore<BackendSessionState, ResumeState>(context, getWorkspaceRootPath());
 		this.captureEditorSelection(vscode.window.activeTextEditor);
 		this.disposables.push(
 			vscode.window.onDidChangeActiveTextEditor((editor) => this.captureEditorSelection(editor)),
@@ -752,6 +755,8 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 		await this.studyLogQueue;
 		await this.visualLogStore.flush();
+		try { await this.sessionSnapshotStore.flush(); }
+		catch (error) { this.outputChannel.appendLine(`[session snapshots] Flush failed: ${String(error)}`); }
 		this.backendServer.stop();
 		while (this.disposables.length > 0) {
 			this.disposables.pop()?.dispose();
@@ -869,6 +874,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private async initialize(context: vscode.ExtensionContext): Promise<void> {
 		this.archivedSessions = context.workspaceState.get<BackendSessionState[]>('adaassist.archivedSessions.v1', []).filter(item => Boolean(item?.session_id));
 		await this.visualLogStore.initialize();
+		await this.sessionSnapshotStore.refreshIndex();
 		await this.loadProfiles(context);
 		this.loadUserStudyTasks();
 	}
@@ -887,7 +893,31 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		void this.view.webview.postMessage(message);
 	}
 
+	private async persistActiveSessionSnapshot(): Promise<void> {
+		if (!this.activeSession?.session_id) { return; }
+		try {
+			await this.sessionSnapshotStore.save({
+				schemaVersion: 1,
+				savedAt: new Date().toISOString(),
+				session: this.activeSession,
+				workflowMode: this.workflowMode,
+				interactiveState: this.interactiveState,
+				...(this.resumeState ? { resumeState: this.resumeState } : {})
+			});
+		} catch (error) {
+			this.outputChannel.appendLine(`[session snapshots] Save failed: ${String(error)}`);
+		}
+	}
+
+	private restorableSessionIds(): string[] {
+		return [...new Set([
+			...this.sessionSnapshotStore.knownSessionIds(),
+			...this.archivedSessions.map(session => session.session_id)
+		])];
+	}
+
 	private async postState(): Promise<void> {
+		await this.persistActiveSessionSnapshot();
 		this.visualLogStore.recordSession(this.activeSession);
 		this.postMessage({
 			type: 'state',
@@ -904,6 +934,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			operation: this.activeOperation,
 			environmentCheck: this.environmentCheck,
 			archivedSessions: this.archivedSessions,
+			restorableSessionIds: this.restorableSessionIds(),
 			restoredSessionId: this.restoredSessionId,
 			pythonPath: getConfiguredPythonPath(this.context),
 			pythonEnvironmentLabel: await getPythonEnvironmentDisplayLabel(this.context),
@@ -1592,11 +1623,13 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	private postSessionState(stageResult?: BackendActionResult): void {
+		void this.persistActiveSessionSnapshot();
 		this.visualLogStore.recordSession(this.activeSession);
 		this.postMessage({
 			type: 'workflowSession',
 			session: this.activeSession,
 			archivedSessions: this.archivedSessions,
+			restorableSessionIds: this.restorableSessionIds(),
 			restoredSessionId: this.restoredSessionId,
 			stageResult,
 			workflowMode: this.workflowMode,
@@ -2955,6 +2988,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.studyTaskEnded = true;
 		}
 		await this.persistStudySnapshot('task_end', true);
+		await this.persistActiveSessionSnapshot();
 
 		// Archive the complete session for the visible conversation before detaching it.
 		const archived = [...this.archivedSessions, structuredClone(this.activeSession)];
