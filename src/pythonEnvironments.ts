@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
  */
 interface PythonEnvironmentsApi {
 	getEnvironments(scope: 'all'): Promise<PythonEnvironmentRecord[]>;
-	get(scope?: vscode.Uri): Promise<PythonEnvironmentRecord | undefined>;
+	getEnvironment(scope?: vscode.Uri): Promise<PythonEnvironmentRecord | undefined>;
 	refreshEnvironments(scope?: vscode.Uri): Promise<void>;
 	onDidChangeEnvironment?: vscode.Event<unknown>;
 }
@@ -96,8 +96,8 @@ export async function getActiveWorkspacePythonEnvironment(): Promise<DiscoveredP
 		: undefined;
 	const workspace = resource ?? vscode.workspace.workspaceFolders?.[0]?.uri;
 	try {
-		const active = await api.get(workspace);
-		return convertEnvironment(active ?? (workspace ? await api.get(undefined) : undefined));
+		const active = await api.getEnvironment(workspace);
+		return convertEnvironment(active ?? (workspace ? await api.getEnvironment(undefined) : undefined));
 	} catch {
 		return undefined;
 	}
