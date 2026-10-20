@@ -12,7 +12,6 @@
       profileEndpointRequired: 'This provider requires a Base URL.',
       keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
       environmentTab: 'Environment',
-      settingsHint: 'Clear, separate controls for workflows, models, completion, and Python.',
       workflowSettingsTitle: 'Task execution',
       workflowSettingsDescription: 'Set the next task’s behavior. A running task keeps its existing mode.',
       workflowModeDescription: 'Choose whether to pause for review or run automatically.',
@@ -90,7 +89,6 @@
       profileEndpointRequired: '当前服务类型需要填写 Base URL。',
       keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
       environmentTab: '运行环境',
-      settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。',
       workflowSettingsTitle: '任务执行',
       workflowSettingsDescription: '这些选项用于下一个任务；运行中的任务保留原有执行模式。',
       workflowModeDescription: '选择需要人工审查的交互模式，或自动完成整个工作流。',
@@ -391,6 +389,8 @@
     inlineSettingsSaving: false,
     inlineSaveStatus: '',
     profileStatusOverride: '',
+    preferredWorkflowMode: persistedWebviewState.workflowModePreference === 'auto' ? 'auto' : 'continue',
+    preferredContextEnabled: persistedWebviewState.workflowContextEnabled === true,
     session: null,
     archivedSessions: [],
     restorableSessionIds: [],
@@ -584,6 +584,14 @@
       renderLogsPage();
       vscode.postMessage({ type: 'requestLogHistory' });
     }
+  }
+
+  function persistSettingsPreferences() {
+    vscode.setState(Object.assign({}, vscode.getState() || {}, {
+      uiLanguage: uiLanguage,
+      workflowModePreference: state.preferredWorkflowMode,
+      workflowContextEnabled: state.preferredContextEnabled
+    }));
   }
 
   function switchSettingsTab(tab, focusTab) {
@@ -944,13 +952,16 @@
         state.autoScrollPinned = true;
       }
     }
-    state.workflowMode = data.workflowMode === 'auto' ? 'auto' : 'continue';
+    state.workflowMode = state.session
+      ? (data.workflowMode === 'auto' ? 'auto' : 'continue')
+      : state.preferredWorkflowMode;
     state.interactiveState = typeof data.interactiveState === 'string' ? data.interactiveState : 'idle';
     state.canResume = Boolean(data.canResume);
     state.canEditRequirement = Boolean(data.canEditRequirement);
     state.resumeLabel = typeof data.resumeLabel === 'string' ? data.resumeLabel : '';
     state.interruptRequested = Boolean(data.interruptRequested);
     executionModeSelect.value = state.workflowMode;
+    if (!state.session) contextEnabledInput.checked = state.preferredContextEnabled;
 
     if (state.session) {
       syncProblemInputFromSession(false);
@@ -3278,8 +3289,9 @@
     state.lastPostedOperation = null;
     state.lastProblemSessionId = '';
     state.lastSyncedProblem = '';
-    state.workflowMode = 'continue';
-    executionModeSelect.value = 'continue';
+    state.workflowMode = state.preferredWorkflowMode;
+    executionModeSelect.value = state.preferredWorkflowMode;
+    contextEnabledInput.checked = state.preferredContextEnabled;
     problemInput.value = '';
     if (testDescription) {
       testDescription.value = '';
@@ -3488,7 +3500,7 @@
   if (languageToggleBtn) {
     languageToggleBtn.addEventListener('click', function () {
       uiLanguage = uiLanguage === 'zh-CN' ? 'en' : 'zh-CN';
-      vscode.setState(Object.assign({}, persistedWebviewState, { uiLanguage }));
+      persistSettingsPreferences();
       vscode.postMessage({ type: 'setUiLanguage', uiLanguage });
       applyTranslations();
       loadProfileEditor();
@@ -3558,6 +3570,11 @@
   });
 
   executionModeSelect.addEventListener('change', function () {
+    if (!state.session) {
+      state.preferredWorkflowMode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
+      state.workflowMode = state.preferredWorkflowMode;
+      persistSettingsPreferences();
+    }
     renderAll();
   });
 
@@ -3566,6 +3583,10 @@
   });
 
   contextEnabledInput.addEventListener('change', function () {
+    if (!state.session) {
+      state.preferredContextEnabled = contextEnabledInput.checked;
+      persistSettingsPreferences();
+    }
     renderSetupSummaries();
   });
 
