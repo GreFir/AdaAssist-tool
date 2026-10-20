@@ -2797,6 +2797,9 @@
     add(label('时间', 'Time'), logTimestamp(event.created_at));
     add(label('耗时', 'Duration'), workflowDuration(event));
     if (typeof generation.strategy === 'string') add(label('生成策略', 'Strategy'), generation.strategy);
+    if (Number.isFinite(generation.max_output_tokens)) {
+      add(label('输出上限', 'Output limit'), generation.max_output_tokens + ' tokens');
+    }
     if (Number.isFinite(usage.input_tokens)) add(label('输入 Tokens', 'Input tokens'), usage.input_tokens);
     if (Number.isFinite(usage.output_tokens)) add(label('输出 Tokens', 'Output tokens'), usage.output_tokens);
     if (Number.isFinite(usage.total_tokens)) add(label('总 Tokens', 'Total tokens'), usage.total_tokens);
