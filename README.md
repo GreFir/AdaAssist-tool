@@ -95,7 +95,7 @@ LLM profiles can be configured from the AdaAssist UI:
 
 1. Click `Profiles`.
 2. Create or edit a profile.
-3. Set provider, base URL, model, and API key.
+3. Set provider, base URL, model, **Max Output Tokens**, and API key.
 4. Click `Save Profile`.
 
 Profiles are stored in `.vscode/adaassist-profiles.json` by default. You can open this file with `AdaAssist: Open Profile Config File` or the `Open Config` button.
@@ -114,7 +114,8 @@ Example:
       "name": "Ollama Local",
       "provider": "ollama",
       "baseUrl": "http://localhost:11434/v1",
-      "model": "qwen2.5-coder:7b"
+      "model": "qwen2.5-coder:7b",
+      "maxTokens": 4096
     },
     {
       "id": "openai",
@@ -130,6 +131,9 @@ Example:
 
 Notes:
 
+- `maxTokens` is the **maximum output tokens for workflow code generation**, accepted range 128–32768; old profiles without this field default to **1024**.
+- The plan/test stages retain shorter limits (up to 768 tokens). The inline completion model has its own independent maximum in Settings → Runtime.
+- Saving a profile changes the next workflow session's budget; already-running sessions retain the configuration with which they were created.
 - `provider` supports `other`, `openai`, `claude`, `ollama`, and `vllm`.
 - `other`, `ollama`, and `vllm` require an OpenAI-compatible `baseUrl`.
 - OpenAI and Claude can use their default official endpoints when `baseUrl` is empty.
