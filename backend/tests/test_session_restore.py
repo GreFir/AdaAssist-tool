@@ -78,6 +78,25 @@ class RestoreSessionTests(unittest.TestCase):
             restored = SessionStore().restore_session(snapshot, config)
             self.assertEqual(restored.to_dict()["llm"]["max_tokens"], 4096)
 
+    def test_updating_active_budget_keeps_progress_and_rebuilds_model(self) -> None:
+        snapshot = self.make_snapshot()
+        with patch("src.session_service.Adacoder"):
+            store = SessionStore()
+            session = store.restore_session(snapshot, self.config)
+            previous_engine = session.engine
+            previous_code = session.current_code
+            previous_plan = session.current_plan
+            previous_stage = session.current_stage
+            previous_events = list(session.events)
+            session.update_options(max_tokens=4096)
+        self.assertEqual(session.llm_config.max_tokens, 4096)
+        self.assertIsNot(session.engine, previous_engine)
+        self.assertEqual(session.current_code, previous_code)
+        self.assertEqual(session.current_plan, previous_plan)
+        self.assertEqual(session.current_stage, previous_stage)
+        self.assertEqual(session.events, previous_events)
+        self.assertEqual(session.study_events[-1]["event_type"], "output_budget_updated")
+
     def test_repeated_restore_does_not_duplicate_a_live_session(self) -> None:
         snapshot = self.make_snapshot()
         with patch("src.session_service.Adacoder"):
