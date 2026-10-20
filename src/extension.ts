@@ -82,6 +82,7 @@ interface BackendSessionState {
 		provider?: string;
 		base_url?: string;
 		model?: string;
+		max_tokens?: number;
 	};
 	context_enabled: boolean;
 	max_rounds: number;
@@ -2972,7 +2973,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 						method: 'POST',
 						body: JSON.stringify({
 							snapshot: stored.session,
-							llm: profileToRequestConfig(profile)
+							llm: {
+								...profileToRequestConfig(profile),
+								max_tokens: normalizeWorkflowMaxTokens(stored.session.llm?.max_tokens ?? profile.maxTokens)
+							}
 						})
 					}
 				);
