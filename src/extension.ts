@@ -4897,10 +4897,10 @@ async function insertGeneratedCode(code: string): Promise<void> {
 								</button>
 							</div>
 							<div class="composer-send-actions">
-								<select class="composer-mode-select" id="composerModeSelect" title="Task mode" aria-label="Workflow Mode" data-i18n-title="composerMode" data-i18n-aria-label="workflowMode">
-									<option value="continue" data-i18n="interactive">Interactive</option>
-									<option value="auto" data-i18n="auto">Auto</option>
-								</select>
+								<button class="composer-mode-trigger" id="composerModeButton" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="composerModeMenu" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
+									<span id="composerModeValue">Interactive</span>
+									<svg class="composer-mode-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+								</button>
 								<button class="composer-submit-button" id="submitWorkflowBtn" type="button" title="Send workflow" aria-label="Send workflow" data-i18n-title="sendWorkflow" data-i18n-aria-label="sendWorkflow">
 									<img class="composer-submit-icon" id="submitWorkflowIcon" src="${sendIconUri}" alt="" />
 									<span class="visually-hidden" id="submitWorkflowLabel" data-i18n="send">Send</span>
@@ -5178,6 +5178,7 @@ async function insertGeneratedCode(code: string): Promise<void> {
 </main>
 	</div>
 
+		<div class="composer-mode-menu" id="composerModeMenu" role="menu" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode" hidden></div>
 		<script nonce="${nonce}" src="${markdownItUri}"></script>
 		<script nonce="${nonce}" src="${highlightScriptUri}"></script>
 		<script nonce="${nonce}" src="${highlightPythonUri}"></script>
