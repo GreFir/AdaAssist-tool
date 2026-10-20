@@ -23,7 +23,7 @@ class Adacoder:
         self.coder_config = replace(config)
         self.planner_config = replace(
             planner_config or config,
-            max_tokens=planner_config.max_tokens if planner_config is not None else 768,
+            max_tokens=planner_config.max_tokens if planner_config is not None else min(config.max_tokens, 768),
             temperature=planner_config.temperature if planner_config is not None else 0.5,
         )
         self.tester_config = replace(config, max_tokens=min(config.max_tokens, 768))
