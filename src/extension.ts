@@ -1818,13 +1818,14 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			['generate', 'regenerate', 'debug_fix', 'evaluate', 'plan', 'tests'].includes(event.stage)
 			&& event.status !== 'running');
 		const stage = lastStageEvent?.stage ?? session.current_stage;
-		const base: ActionRequestState = {
+		const base: RunRequest & Pick<ActionRequestState, 'useErrorFeedback'> = {
 			problem: session.problem_statement,
 			testText: session.test_text || session.resolved_test_code,
 			testMode: 'manual',
 			useErrorFeedback: true,
 			contextEnabled: session.context_enabled,
 			maxRounds: session.max_rounds,
+			executionMode: 'continue',
 			resolvedTestCode: session.resolved_test_code,
 			testDescription: session.test_description,
 			additionalInstruction: session.additional_instruction
@@ -1845,7 +1846,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.interactiveState = 'await_test_setup';
 			this.resumeState = {
 				kind: 'tests-confirmation',
-				request: { ...base, executionMode: 'continue' },
+				request: base,
 				restartAfterTests: false
 			};
 		}
