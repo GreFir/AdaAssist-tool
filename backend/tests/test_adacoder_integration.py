@@ -46,12 +46,12 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIsNot(coder.config, planner.config)
         self.assertIsNot(coder.config, tester.config)
         self.assertEqual(coder.config.max_tokens, 1024)
-        self.assertEqual(planner.config.max_tokens, 768)
+        self.assertEqual(planner.config.max_tokens, 1024)
         self.assertEqual(planner.config.temperature, 0.5)
         self.assertEqual(coder.config.temperature, 0.2)
         self.assertEqual(tester.config.temperature, 0.2)
         self.assertEqual(config.temperature, 0.2)
-        self.assertEqual(tester.config.max_tokens, 768)
+        self.assertEqual(tester.config.max_tokens, 1024)
         self.assertEqual(config.max_tokens, 1024)
         self.assertIn("original task as the authoritative contract", coder.system_prompt)
         self.assertIn("max((score, name)) incorrectly chooses the largest tied name", coder.system_prompt)
@@ -60,10 +60,10 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIn("max((score, name))", planner.system_prompt)
         self.assertIn("Test only behavior explicitly required", tester.system_prompt)
 
-    def test_workflow_max_output_tokens_controls_generation_without_inflating_short_stages(self) -> None:
+    def test_workflow_max_output_tokens_apply_consistently_to_all_model_stages(self) -> None:
         for budget, expected_planner, expected_tester in (
             (256, 256, 256),
-            (4096, 768, 768),
+            (4096, 4096, 4096),
         ):
             with self.subTest(budget=budget):
                 RecordingExecutor.instances = []
