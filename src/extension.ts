@@ -684,6 +684,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private studyLogQueue: Promise<void> = Promise.resolve();
 	private lastStudySnapshot = '';
 	private archivedSessions: BackendSessionState[] = [];
+	private restoredSessionId = '';
 	private activeSession: BackendSessionState | undefined;
 	private workflowMode: RunRequest['executionMode'] = 'continue';
 	private interactiveState: InteractionState = 'idle';
@@ -903,6 +904,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			operation: this.activeOperation,
 			environmentCheck: this.environmentCheck,
 			archivedSessions: this.archivedSessions,
+			restoredSessionId: this.restoredSessionId,
 			pythonPath: getConfiguredPythonPath(this.context),
 			pythonEnvironmentLabel: await getPythonEnvironmentDisplayLabel(this.context),
 			inlineCompletion: getInlineCompletionSettings(),
@@ -1595,6 +1597,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			type: 'workflowSession',
 			session: this.activeSession,
 			archivedSessions: this.archivedSessions,
+			restoredSessionId: this.restoredSessionId,
 			stageResult,
 			workflowMode: this.workflowMode,
 			interactiveState: this.interactiveState,
@@ -2900,6 +2903,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
             }
             if (!restored) { throw new Error('后端没有返回恢复的 Session。'); }
             this.activeSession = restored;
+            this.restoredSessionId = sessionId;
             this.archivedSessions = this.archivedSessions.filter(item => item.session_id !== sessionId);
             await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
             this.workflowMode = 'continue';
@@ -2920,6 +2924,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
     }
 
 	private async clearWorkflowSession(reason: 'new_task' | 'user_confirmed' = 'new_task'): Promise<void> {
+		this.restoredSessionId = '';
 		this.stopSessionPolling();
 		if (!this.activeSession?.session_id) {
 			this.activeSession = undefined;
