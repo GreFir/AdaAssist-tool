@@ -2769,11 +2769,125 @@
     return seconds < 1 ? '<1s' : Math.round(seconds) + 's';
   }
 
+  let workflowStepTooltip = null;
+
+  function hideWorkflowStepTooltip() {
+    if (workflowStepTooltip) workflowStepTooltip.hidden = true;
+  }
+
+  function workflowProgressFacts(event) {
+    const data = event && event.data && typeof event.data === 'object' ? event.data : {};
+    const generation = data.generation && typeof data.generation === 'object' ? data.generation : {};
+    const usage = generation.usage && typeof generation.usage === 'object' ? generation.usage : {};
+    const evaluation = data.evaluation && typeof data.evaluation === 'object' ? data.evaluation : {};
+    const testSummary = evaluation.test_summary && typeof evaluation.test_summary === 'object'
+      ? evaluation.test_summary
+      : (data.test_summary && typeof data.test_summary === 'object' ? data.test_summary : {});
+    const label = function (zh, en) { return uiLanguage === 'zh-CN' ? zh : en; };
+    const facts = [];
+    const add = function (name, value) {
+      if (value !== undefined && value !== null && String(value).trim()) {
+        facts.push([name, String(value)]);
+      }
+    };
+    add(label('时间', 'Time'), logTimestamp(event.created_at));
+    add(label('耗时', 'Duration'), workflowDuration(event));
+    if (typeof generation.strategy === 'string') add(label('生成策略', 'Strategy'), generation.strategy);
+    if (Number.isFinite(usage.input_tokens)) add(label('输入 Tokens', 'Input tokens'), usage.input_tokens);
+    if (Number.isFinite(usage.output_tokens)) add(label('输出 Tokens', 'Output tokens'), usage.output_tokens);
+    if (Number.isFinite(usage.total_tokens)) add(label('总 Tokens', 'Total tokens'), usage.total_tokens);
+    if (Number.isFinite(testSummary.total)) {
+      add(label('公开测试', 'Public tests'),
+        (Number.isFinite(testSummary.passed) ? testSummary.passed : '?') + '/' + testSummary.total);
+      if (Number.isFinite(testSummary.pass_rate)) {
+        add(label('通过率', 'Pass rate'), Math.round(testSummary.pass_rate * 100) + '%');
+      }
+    }
+    if (data.code && typeof data.code === 'string') {
+      add(label('生成代码', 'Generated code'),
+        data.code.split('\\n').length + ' ' + label('行', 'lines'));
+    }
+    const excerpt = function (value, limit) {
+      return typeof value === 'string' ? value.trim().slice(0, limit) : '';
+    };
+    const error = excerpt(data.error || evaluation.error || data.traceback || evaluation.traceback, 340);
+    const plan = excerpt(data.plan, 260);
+    const code = excerpt(data.code, 240);
+    return {
+      facts,
+      note: error ? { label: label('失败信息', 'Failure details'), text: error } :
+        plan ? { label: label('修复计划', 'Repair plan'), text: plan } :
+        code ? { label: label('代码预览', 'Code preview'), text: code } : null
+    };
+  }
+
+  function showWorkflowStepTooltip(entry, source) {
+    if (!state.workflowProgressExpanded) return;
+    if (!workflowStepTooltip) {
+      workflowStepTooltip = document.createElement('div');
+      workflowStepTooltip.className = 'workflow-step-tooltip';
+      workflowStepTooltip.setAttribute('role', 'tooltip');
+      document.body.appendChild(workflowStepTooltip);
+    }
+    const tooltip = workflowStepTooltip;
+    tooltip.replaceChildren();
+    const title = document.createElement('div');
+    title.className = 'workflow-step-tooltip-title';
+    title.textContent = entry.title;
+    const status = document.createElement('div');
+    status.className = 'workflow-step-tooltip-status';
+    status.textContent = entry.statusLabel + (entry.detail ? ' · ' + entry.detail : '');
+    tooltip.append(title, status);
+    const info = workflowProgressFacts(entry.event);
+    if (info.facts.length) {
+      const facts = document.createElement('div');
+      facts.className = 'workflow-step-tooltip-facts';
+      info.facts.forEach(function (pair) {
+        const key = document.createElement('span');
+        key.className = 'workflow-step-tooltip-label';
+        key.textContent = pair[0];
+        const value = document.createElement('span');
+        value.className = 'workflow-step-tooltip-value';
+        value.textContent = pair[1];
+        facts.append(key, value);
+      });
+      tooltip.appendChild(facts);
+    }
+    if (info.note) {
+      const section = document.createElement('div');
+      section.className = 'workflow-step-tooltip-section';
+      const noteLabel = document.createElement('div');
+      noteLabel.className = 'workflow-step-tooltip-label';
+      noteLabel.textContent = info.note.label;
+      const note = document.createElement('div');
+      note.className = 'workflow-step-tooltip-note';
+      note.textContent = info.note.text;
+      section.append(noteLabel, note);
+      tooltip.appendChild(section);
+    }
+
+    tooltip.hidden = false;
+    const bounds = source.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+    const x = Math.max(12, Math.min(bounds.left + 22, viewportWidth - tooltipRect.width - 12));
+    let y = bounds.top - tooltipRect.height - 8;
+    if (y < 12) y = bounds.bottom + 8;
+    y = Math.max(12, Math.min(y, viewportHeight - tooltipRect.height - 12));
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+
+  window.addEventListener('scroll', hideWorkflowStepTooltip, true);
+  window.addEventListener('resize', hideWorkflowStepTooltip);
+
   function workflowProgressEntries() {
     return sortedSessionEvents().map(function (event) {
       const tone = workflowEventTone(event.status);
       return {
         id: event.id,
+        event,
         title: workflowStageLabel(event.stage),
         detail: String(event.message || event.title || ''),
         tone,
@@ -2787,6 +2901,7 @@
     if (!workflowProgress || !workflowProgressToggle || !workflowProgressPopover || !workflowProgressList || !workflowProgressCurrentTitle || !workflowProgressCurrentDetail || !workflowProgressMarker) {
       return;
     }
+    hideWorkflowStepTooltip();
     const composerText = String(composerStatus.textContent || '').trim();
     const currentText = state.workflowError
       ? state.workflowError
@@ -2825,6 +2940,12 @@
     entries.forEach(function (entry) {
       const item = document.createElement('li');
       item.className = 'workflow-progress-item ' + entry.tone;
+      item.tabIndex = 0;
+      item.setAttribute('aria-label', [entry.title, entry.statusLabel, entry.detail].filter(Boolean).join('. '));
+      item.addEventListener('mouseenter', function () { showWorkflowStepTooltip(entry, item); });
+      item.addEventListener('mouseleave', hideWorkflowStepTooltip);
+      item.addEventListener('focus', function () { showWorkflowStepTooltip(entry, item); });
+      item.addEventListener('blur', hideWorkflowStepTooltip);
       const marker = document.createElement('span');
       marker.className = 'workflow-progress-item-marker';
       marker.setAttribute('aria-label', entry.statusLabel);
