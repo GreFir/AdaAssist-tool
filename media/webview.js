@@ -2294,10 +2294,10 @@
       timeline.appendChild(renderNoteCard(entry.event));
     });
 
-    if (shouldStickToBottom) {
+    renderPassedTaskDecision();
+    if (shouldStickToBottom || awaitingTaskConfirmation()) {
       requestConversationAutoScroll();
     }
-    renderPassedTaskDecision();
   }
 
   function renderProfileOptions() {
