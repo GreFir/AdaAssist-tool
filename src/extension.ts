@@ -1348,6 +1348,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.interruptWorkflow();
 					break;
 				}
+				case 'switchInteractiveToAuto': {
+					await this.switchInteractiveToAuto();
+					break;
+				}
 				case 'switchPausedAutoToInteractive': {
 					await this.switchPausedAutoToInteractive();
 					break;
@@ -1857,6 +1861,52 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		this.postSessionState();
 	}
 
+	private async switchInteractiveToAuto(): Promise<void> {
+		// Switching modes is a checkpoint transition, not a fresh generation.
+		if (this.running || this.workflowMode !== 'continue' || !this.activeSession || this.activeSession.passed) {
+			return;
+		}
+		const session = this.activeSession;
+		const tests = (session.test_text || session.resolved_test_code).trim();
+		if (!tests) {
+			this.postOperationError('Configure or generate tests before switching to Auto.',
+				{ scope: 'workflow', action: 'switch_mode' }, 'Mode switch not available', false);
+			return;
+		}
+		const autoRequest: RunRequest = {
+			problem: session.problem_statement,
+			testText: tests,
+			testMode: 'manual',
+			contextEnabled: session.context_enabled,
+			maxRounds: session.max_rounds,
+			executionMode: 'auto',
+			testDescription: session.test_description,
+			additionalInstruction: session.additional_instruction
+		};
+		// A generated, not-yet-confirmed suite becomes the selected public test
+		// suite when the developer explicitly switches to automatic execution.
+		// Do not reset code, feedback, counters, or a user-edited plan.
+		try {
+			if (session.test_mode !== 'manual' || !session.resolved_tests_confirmed) {
+				await this.saveReviewedSetupToSession(autoRequest);
+			}
+			this.workflowMode = 'auto';
+			this.interactiveState = 'await_auto_test_edit';
+			this.resumeState = { kind: 'auto', request: autoRequest };
+			this.interruptRequested = false;
+			await this.recordStudyEvent({
+				eventType: 'mode_switch',
+				metadata: { from: 'interactive', to: 'auto', paused_stage: session.current_stage }
+			});
+			await this.postState();
+			this.postSessionState();
+		} catch (error) {
+			this.postOperationError(error instanceof Error ? error.message : String(error),
+				{ scope: 'workflow', action: 'switch_mode' }, 'Mode switch failed');
+			await this.postState();
+		}
+	}
+
 	private async continueAfterTestsConfirmation(
 		_context: vscode.ExtensionContext,
 		resumeState: Extract<ResumeState, { kind: 'tests-confirmation' }>,
@@ -2129,16 +2179,15 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				}
 				this.workflowMode = 'auto';
 				const payload = await this.invokeWorkflowAction({
-					action: testsChanged ? 'auto' : 'auto_resume',
-					problem: testsChanged ? resumeState.request.problem : undefined,
-					testText: testsChanged ? resumeState.request.testText : undefined,
-					testMode: testsChanged ? resumeState.request.testMode : undefined,
+					action: 'auto_resume',
+					// The reviewed test suite is already saved above. Never reset the
+					// candidate/plan simply because tests were edited while paused.
 					useErrorFeedback: true,
 					contextEnabled: resumeState.request.contextEnabled,
 					maxRounds: resumeState.request.maxRounds,
 					resolvedTestCode: testsChanged ? resumeState.request.resolvedTestCode : undefined,
 					testDescription: resumeState.request.testDescription,
-					additionalInstruction: resumeState.request.additionalInstruction
+					additionalInstruction: request.additionalInstruction?.trim() || resumeState.request.additionalInstruction
 				});
 				if (payload.stage_result?.interrupted) {
 					this.resumeState = { kind: 'auto', request: resumeState.request };
