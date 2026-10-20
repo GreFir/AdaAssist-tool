@@ -2893,69 +2893,150 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	private async restoreArchivedSession(sessionId: string): Promise<void> {
-        if (this.running || this.activeOperation) {
-            void vscode.window.showWarningMessage('当前任务正在运行，请等待运行结束后再恢复历史会话。');
-            return;
-        }
-        const snapshot = this.archivedSessions.find(session => session.session_id === sessionId);
-        if (!snapshot) {
-            void vscode.window.showWarningMessage('没有找到该历史 Session。');
-            return;
-        }
-        if (this.activeSession?.session_id) {
-            const action = await vscode.window.showWarningMessage(
-                '恢复历史任务前，需要先归档当前任务。是否继续？',
-                { modal: true }, '归档并恢复'
-            );
-            if (action !== '归档并恢复') { return; }
-            await this.clearWorkflowSession('new_task');
-        }
-        const profile = this.getActiveProfile();
-        if (!profile) {
-            void vscode.window.showErrorMessage('无法恢复：请先配置可用的模型 Profile。');
-            return;
-        }
-        try {
-            let restored: BackendSessionState | undefined;
-            try {
-                const result = await this.backendServer.request<BackendResponse>(
-                    `/api/sessions/${encodeURIComponent(sessionId)}`
-                );
-                restored = result.session;
-            } catch {
-                const result = await this.backendServer.request<BackendResponse>(
-                    '/api/sessions/restore', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            snapshot,
-                            llm: profileToRequestConfig(profile)
-                        })
-                    }
-                );
-                restored = result.session;
-            }
-            if (!restored) { throw new Error('后端没有返回恢复的 Session。'); }
-            this.activeSession = restored;
-            this.restoredSessionId = sessionId;
-            this.archivedSessions = this.archivedSessions.filter(item => item.session_id !== sessionId);
-            await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
-            this.workflowMode = 'continue';
-            this.interactiveState = 'idle';
-            this.clearResumeState();
-            this.interruptRequested = false;
-            this.lastSessionSnapshot = '';
-            this.activeStudyTaskId = '';
-            this.studyTaskEnded = true;
-            await this.postState();
-            this.postSessionState();
-            this.postMessage({ type: 'switchPage', page: 'task' });
-            this.appendUiLog('info', `Restored archived session ${sessionId}`);
-        } catch (error) {
-            void vscode.window.showErrorMessage(
-                `恢复历史 Session 失败：${error instanceof Error ? error.message : String(error)}`
-            );
-        }
-    }
+		if (this.running || this.activeOperation) {
+			void vscode.window.showWarningMessage('当前任务正在运行，请等待完成后再恢复历史会话。');
+			return;
+		}
+		if (!/^[a-zA-Z0-9_-]{8,128}$/.test(sessionId)) {
+			void vscode.window.showWarningMessage('无效的历史 Session ID。');
+			return;
+		}
+		if (this.activeSession?.session_id === sessionId) {
+			this.postMessage({ type: 'switchPage', page: 'task' });
+			return;
+		}
+
+		// History-v1 contains diagnostic events, not the code/test/plan needed
+		// to reconstruct a session. Resolve by ID from backend memory, the
+		// universal snapshot store, legacy study JSON, or archived task state.
+		const saved = await this.sessionSnapshotStore.load(sessionId);
+		const legacyArchive = this.archivedSessions.find(item => item.session_id === sessionId);
+		const stored: SavedWorkflowSession<BackendSessionState, ResumeState> | undefined =
+			saved ?? (legacyArchive ? {
+				schemaVersion: 1,
+				savedAt: legacyArchive.updated_at,
+				session: legacyArchive,
+				workflowMode: 'continue',
+				interactiveState: legacyArchive.passed ? 'done' : 'idle'
+			} : undefined);
+
+		let restored: BackendSessionState | undefined;
+		let backendLookupError = '';
+		try {
+			const response = await this.backendServer.request<BackendResponse>(
+				`/api/sessions/${encodeURIComponent(sessionId)}`
+			);
+			restored = response.session;
+		} catch (error) {
+			backendLookupError = error instanceof Error ? error.message : String(error);
+		}
+
+		if (!restored && !stored) {
+			void vscode.window.showWarningMessage(
+				`Session ${sessionId.slice(0, 8)} 只有诊断日志，当前后端也没有该会话，未找到完整 JSON 快照，无法恢复。`
+			);
+			this.outputChannel.appendLine(`[session restore] ${sessionId}: no snapshot; backend=${backendLookupError}`);
+			return;
+		}
+		if (!restored && stored) {
+			const wanted = stored.session.llm;
+			const modelProfile = this.profiles.find(item => item.model === wanted?.model
+				&& item.provider === wanted?.provider && item.baseUrl === wanted?.base_url);
+			const profile = modelProfile ?? this.getActiveProfile();
+			if (!profile) {
+				void vscode.window.showErrorMessage('恢复历史会话需要一个可用的模型 Profile。');
+				return;
+			}
+			try {
+				const response = await this.backendServer.request<BackendResponse>(
+					'/api/sessions/restore', {
+						method: 'POST',
+						body: JSON.stringify({
+							snapshot: stored.session,
+							llm: profileToRequestConfig(profile)
+						})
+					}
+				);
+				restored = response.session;
+			} catch (error) {
+				void vscode.window.showErrorMessage(
+					`重建历史 Session 失败：${error instanceof Error ? error.message : String(error)}`
+				);
+				return;
+			}
+		}
+		if (!restored) { return; }
+
+		// Never discard the active task until the target is verified/restored.
+		if (this.activeSession?.session_id) {
+			const answer = await vscode.window.showWarningMessage(
+				'恢复历史 Session 前需要归档当前任务，当前任务的快照和消息将保留。是否继续？',
+				{ modal: true }, '归档当前任务并恢复'
+			);
+			if (answer !== '归档当前任务并恢复') { return; }
+			await this.clearWorkflowSession('new_task');
+		}
+
+		this.activeSession = restored;
+		this.restoredSessionId = sessionId;
+		this.archivedSessions = this.archivedSessions.filter(item => item.session_id !== sessionId);
+		await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
+		// Preserve recorded host-side checkpoints for our new snapshots.
+		// Completed Auto tasks are opened in Interactive mode for follow-up edits.
+		this.workflowMode = stored?.workflowMode === 'auto' && !restored.passed ? 'auto' : 'continue';
+		this.interactiveState = restored.passed ? 'done' :
+			stored?.interactiveState === 'await_plan'
+				|| stored?.interactiveState === 'await_test_setup'
+				|| stored?.interactiveState === 'await_generation_tests'
+				|| stored?.interactiveState === 'await_code_review'
+				|| stored?.interactiveState === 'await_failure_choice'
+				|| stored?.interactiveState === 'await_auto_test_edit'
+				? stored.interactiveState as InteractionState
+				: restored.current_stage === 'plan' && restored.current_plan.trim() ? 'await_plan'
+				: restored.latest_evaluation && !restored.latest_evaluation.passed ? 'await_failure_choice'
+				: 'idle';
+		this.resumeState = stored?.resumeState && (
+			stored.resumeState.kind === 'tests-confirmation'
+			|| stored.resumeState.kind === 'generation-tests'
+			|| stored.resumeState.kind === 'code-review'
+			|| stored.resumeState.kind === 'auto'
+		) ? stored.resumeState : undefined;
+		if (!this.resumeState && !restored.current_code.trim()
+			&& restored.current_stage === 'tests'
+			&& Boolean((restored.resolved_test_code || restored.test_text).trim())) {
+			// Legacy study snapshots predate host-side pause metadata.
+			this.workflowMode = 'continue';
+			this.interactiveState = 'await_test_setup';
+			this.resumeState = {
+				kind: 'tests-confirmation',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					executionMode: 'continue',
+					resolvedTestCode: restored.resolved_test_code,
+					testDescription: restored.test_description,
+					additionalInstruction: restored.additional_instruction
+				},
+				restartAfterTests: false
+			};
+		}
+		if (!this.resumeState && this.interactiveState === 'await_code_review') {
+			this.interactiveState = 'idle';
+		}
+		this.interruptRequested = false;
+		this.lastSessionSnapshot = '';
+		this.activeStudyTaskId = '';
+		this.studyTaskEnded = true; // Historical replay never rewrites the original experiment.
+		this.studyTestSource = '';
+		this.lastStudySnapshot = '';
+		await this.postState();
+		this.postSessionState();
+		this.postMessage({ type: 'switchPage', page: 'task' });
+		this.appendUiLog('info', `Restored session ${sessionId} from ${saved ? 'persisted JSON' : legacyArchive ? 'archive' : 'backend'}`);
+	}
 
 	private async clearWorkflowSession(reason: 'new_task' | 'user_confirmed' = 'new_task'): Promise<void> {
 		this.restoredSessionId = '';
