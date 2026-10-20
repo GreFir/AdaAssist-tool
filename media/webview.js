@@ -1392,7 +1392,11 @@
     const previousScrollTop = visualLogList.scrollTop;
     visualLogList.innerHTML = '';
     const entries = Array.isArray(state.logEntries) ? state.logEntries : [];
-    if (entries.length === 0 && !(state.archivedSessions || []).length) {
+    const snapshotIds = new Set([
+      ...(state.restorableSessionIds || []),
+      ...(state.archivedSessions || []).map(session => session.session_id)
+    ]);
+    if (entries.length === 0 && snapshotIds.size === 0) {
       const empty = document.createElement('div');
       empty.className = 'visual-log-empty';
       empty.textContent = t('noLogs');
@@ -1406,6 +1410,11 @@
         groups.set(key, []);
       }
       groups.get(key).push(entry);
+    });
+    // Full checkpoints outlive the small 30-day diagnostic history.
+    // Keep those sessions visible in Logs even if their event summaries expired.
+    snapshotIds.forEach(function (id) {
+      if (id && !groups.has(id)) groups.set(id, []);
     });
 
     groups.forEach(function (groupEntries, sessionKey) {
@@ -1435,7 +1444,9 @@
       const latestTimestamp = groupEntries[0] && groupEntries[0].timestamp;
       summaryMeta.textContent = [
         isCurrent ? t('currentLogSession') : '',
-        groupEntries.length + ' ' + t('logEvents'),
+        groupEntries.length ? groupEntries.length + ' ' + t('logEvents') : (snapshotIds.has(sessionId)
+          ? (uiLanguage === 'zh-CN' ? '已保存完整快照' : 'Saved full snapshot')
+          : '0 ' + t('logEvents')),
         logTimestamp(latestTimestamp)
       ].filter(Boolean).join(' · ');
       const summaryContent = document.createElement('span');
