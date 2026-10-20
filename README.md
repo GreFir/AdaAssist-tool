@@ -98,7 +98,7 @@ The Settings view is divided into four focused sections:
 - **Completion** — independently configure Python inline suggestions, triggering, debounce, and output length. The debounce control is disabled when using manual triggering.
 - **Environment** — select the local Python interpreter and inspect backend dependency checks.
 
-Profile and inline-completion settings provide separate save feedback. Model budget changes to a matching idle Session retain its existing code/tests/plan; changing model or provider still requires a new Session. Workflow mode is locked while its task is running.
+Profile and inline-completion settings provide separate save feedback; both keep unsaved drafts during unrelated UI updates. The next-task workflow mode and context preference are retained with the Webview state. Model budget changes to a matching idle Session retain its existing code/tests/plan; changing model or provider still requires a new Session. Workflow mode is locked while its task is running.
 
 ## LLM Profile Configuration
 
