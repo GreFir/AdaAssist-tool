@@ -2182,37 +2182,67 @@
   }
 
 
+  function renderConversationEntry(entry) {
+    if (entry.kind === 'session') return renderSessionCard();
+    if (entry.kind === 'user-input') {
+      const card = createCardFrame('session', entry.event);
+      card.classList.add('user-card');
+      const label = document.createElement('div');
+      label.className = 'user-input-receipt';
+      const key = { guidance: 'savedGuidance', requirement: 'savedRequirement',
+        plan: 'savedPlan', testGoals: 'savedTestGoals' }[entry.inputKind] || 'savedGuidance';
+      label.textContent = t(key);
+      card.appendChild(label);
+      card.appendChild(renderMarkdown(entry.content));
+      return card;
+    }
+    if (entry.kind === 'attempt') return renderAttemptCard(entry);
+    if (entry.kind === 'result') return renderResultCard(entry.event, entry.isLatestEvaluate, entry.isLatestFailed);
+    if (entry.kind === 'plan') return renderPlanCard(entry.event, entry.plan, entry.editable);
+    if (entry.kind === 'test-setup') return renderTestSetupPromptCard();
+    return renderNoteCard(entry.event);
+  }
+
   function renderArchivedSession(session, index) {
     const group = document.createElement('section');
     group.className = 'ada-archived-session';
-    group.style.cssText = 'border-bottom:1px solid var(--vscode-panel-border);padding:12px 0;margin-bottom:14px;';
-    const heading = document.createElement('div');
-    heading.style.cssText = 'display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:600;';
-    heading.textContent = (uiLanguage === 'zh-CN' ? '已归档任务 ' : 'Archived task ') + (index + 1)
+    group.style.cssText = 'padding:0 0 12px;margin:0 0 14px;border-bottom:1px solid var(--vscode-panel-border);';
+    const divider = document.createElement('div');
+    divider.style.cssText = 'display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--vscode-descriptionForeground);';
+    const heading = document.createElement('span');
+    heading.textContent = (uiLanguage === 'zh-CN' ? '任务 ' : 'Task ') + (index + 1)
       + (session.passed ? ' ✓' : '');
-    group.appendChild(heading);
-    const requirement = document.createElement('div');
-    requirement.appendChild(renderMarkdown(session.problem_statement || ''));
-    group.appendChild(requirement);
-    (Array.isArray(session.events) ? session.events : []).forEach(event => {
-      const data = event.data || {};
-      const relevant = event.stage === 'generate' || event.stage === 'regenerate'
-        || event.stage === 'evaluate' || event.stage === 'plan' || event.stage === 'user_input'
-        || event.stage === 'guidance';
-      if (!relevant) return;
-      const entry = document.createElement('details');
-      entry.style.cssText = 'margin:8px 0;padding:8px;border:1px solid var(--vscode-panel-border);border-radius:8px;';
-      const summary = document.createElement('summary');
-      summary.textContent = (event.title || event.stage) + ' · ' + (event.status || '');
-      entry.appendChild(summary);
-      const body = [data.content, data.code, data.plan, data.test_code,
-        data.error, data.traceback, event.message].filter(x => typeof x === 'string' && x.trim()).join('\\n\\n');
-      const text = document.createElement('pre');
-      text.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:440px;overflow:auto;';
-      text.textContent = body;
-      entry.appendChild(text);
-      group.appendChild(entry);
-    });
+    divider.appendChild(heading);
+    group.appendChild(divider);
+
+    // Reuse exactly the live conversation renderer, with a read-only snapshot of its state.
+    const saved = {
+      session: state.session, running: state.running, workflowMode: state.workflowMode,
+      interactiveState: state.interactiveState, canResume: state.canResume,
+      codeDrafts: state.codeDrafts, testDrafts: state.testDrafts
+    };
+    try {
+      state.session = session;
+      state.running = true;
+      state.workflowMode = 'auto';
+      state.interactiveState = 'idle';
+      state.canResume = false;
+      state.codeDrafts = {};
+      state.testDrafts = {};
+      conversationEntries().filter(entry => entry.kind !== 'test-setup').forEach(entry => {
+        const card = renderConversationEntry(entry);
+        if (!card) return;
+        card.querySelectorAll('button, input, textarea, select').forEach(control => {
+          control.disabled = true;
+        });
+        card.querySelectorAll('[contenteditable]').forEach(node => {
+          node.setAttribute('contenteditable', 'false');
+        });
+        group.appendChild(card);
+      });
+    } finally {
+      Object.assign(state, saved);
+    }
     return group;
   }
 
@@ -2252,49 +2282,9 @@
       return;
     }
 
-    entries.forEach((entry) => {
-      if (entry.kind === 'session') {
-        const sessionCard = renderSessionCard();
-        if (sessionCard) {
-          timeline.appendChild(sessionCard);
-        }
-        return;
-      }
-
-      if (entry.kind === 'user-input') {
-        const card = createCardFrame('session', entry.event);
-        card.classList.add('user-card');
-        const label = document.createElement('div');
-        label.className = 'user-input-receipt';
-        const key = {guidance: 'savedGuidance', requirement: 'savedRequirement', plan: 'savedPlan', testGoals: 'savedTestGoals'}[entry.inputKind] || 'savedGuidance';
-        label.textContent = t(key);
-        card.appendChild(label);
-        card.appendChild(renderMarkdown(entry.content));
-        timeline.appendChild(card);
-        return;
-      }
-
-      if (entry.kind === 'attempt') {
-        timeline.appendChild(renderAttemptCard(entry));
-        return;
-      }
-
-      if (entry.kind === 'result') {
-        timeline.appendChild(renderResultCard(entry.event, entry.isLatestEvaluate, entry.isLatestFailed));
-        return;
-      }
-
-      if (entry.kind === 'plan') {
-        timeline.appendChild(renderPlanCard(entry.event, entry.plan, entry.editable));
-        return;
-      }
-
-      if (entry.kind === 'test-setup') {
-        timeline.appendChild(renderTestSetupPromptCard());
-        return;
-      }
-
-      timeline.appendChild(renderNoteCard(entry.event));
+    entries.forEach(entry => {
+      const card = renderConversationEntry(entry);
+      if (card) timeline.appendChild(card);
     });
 
     renderPassedTaskDecision();
