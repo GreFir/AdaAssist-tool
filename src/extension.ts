@@ -1276,9 +1276,16 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					break;
 				}
 				case 'saveInlineCompletionSettings': {
-					await saveInlineCompletionSettings(message);
-					await this.postState();
-					this.appendUiLog('info', `Inline completion settings saved: model=${getInlineCompletionSettings().model}`);
+					try {
+						await saveInlineCompletionSettings(message);
+						await this.postState();
+						this.appendUiLog('info', `Inline completion settings saved: model=${getInlineCompletionSettings().model}`);
+						this.postMessage({ type: 'inlineSettingsSaveResult', ok: true });
+					} catch (error) {
+						this.postMessage({ type: 'inlineSettingsSaveResult', ok: false,
+							message: error instanceof Error ? error.message : String(error) });
+						throw error;
+					}
 					break;
 				}
 				case 'selectPythonInterpreter': {
