@@ -3023,7 +3023,32 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				restartAfterTests: false
 			};
 		}
+		if (!this.resumeState && !restored.passed && this.workflowMode === 'continue'
+			&& restored.current_code.trim()
+			&& ['generate', 'regenerate', 'debug_fix'].includes(restored.current_stage)) {
+			// Older experiment JSON stores the generated candidate and workflow
+			// events but did not serialize the Extension Host pause request.
+			const latestCode = [...restored.events].reverse().find(event =>
+				['generate', 'regenerate', 'debug_fix'].includes(event.stage)
+				&& event.status === 'completed');
+			this.resumeState = {
+				kind: 'code-review',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					useErrorFeedback: true,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					resolvedTestCode: restored.resolved_test_code,
+					codeOverride: restored.current_code,
+					codeEventId: latestCode?.id
+				}
+			};
+			this.interactiveState = 'await_code_review';
+		}
 		if (!this.resumeState && this.interactiveState === 'await_code_review') {
+			// Do not display an unusable Continue button.
 			this.interactiveState = 'idle';
 		}
 		this.interruptRequested = false;
