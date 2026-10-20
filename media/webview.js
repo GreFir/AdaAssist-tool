@@ -2866,16 +2866,30 @@
       tooltip.appendChild(section);
     }
 
-    tooltip.hidden = false;
     const bounds = source.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
+    const heading = source.querySelector('.workflow-progress-item-heading');
+    const headingBounds = heading ? heading.getBoundingClientRect() : bounds;
     const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = document.documentElement.clientHeight;
-    const x = Math.max(12, Math.min(bounds.left + 22, viewportWidth - tooltipRect.width - 12));
-    let y = bounds.top - tooltipRect.height - 8;
-    if (y < 12) y = bounds.bottom + 8;
-    y = Math.max(12, Math.min(y, viewportHeight - tooltipRect.height - 12));
+    const margin = 12;
+
+    // Fly out to the RIGHT of the stage labels, rather than above the item.
+    // Workflow rows occupy the full width of the panel, so anchor inside their
+    // right-hand area instead of using bounds.right (which would be offscreen).
+    const minWidth = Math.min(180, Math.max(120, viewportWidth - margin * 2));
+    const preferredX = Math.max(
+      headingBounds.left + Math.min(240, bounds.width * 0.42),
+      headingBounds.left + 140
+    );
+    const maxX = Math.max(margin, viewportWidth - margin - minWidth);
+    const x = Math.max(margin, Math.min(preferredX, maxX));
+    tooltip.style.width = Math.min(340, viewportWidth - x - margin) + 'px';
     tooltip.style.left = x + 'px';
+
+    tooltip.hidden = false;
+    const tooltipHeight = tooltip.getBoundingClientRect().height;
+    // Align vertically with the hovered stage, with only viewport clamping.
+    const y = Math.max(margin, Math.min(bounds.top + 2, viewportHeight - tooltipHeight - margin));
     tooltip.style.top = y + 'px';
   }
 
