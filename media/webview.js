@@ -298,6 +298,8 @@
     session: null,
     archivedSessions: [],
     pendingNewRequirement: '',
+    passDecisionShownFor: '',
+    passDecisionScheduled: false,
     running: false,
     runningLabel: '',
     localLogs: [],
@@ -780,6 +782,27 @@
     renderLogsPage();
   }
 
+  function promptForPassedTask() {
+    const session = state.session;
+    if (!session || !session.passed || state.running || state.passDecisionScheduled) return;
+    const events = Array.isArray(session.events) ? session.events : [];
+    const latestEvaluation = events.filter(event => event.stage === 'evaluate' && event.status === 'completed').slice(-1)[0];
+    const decisionKey = session.session_id + ':' + (latestEvaluation?.id || session.updated_at || 'passed');
+    if (decisionKey === state.passDecisionShownFor) return;
+    state.passDecisionShownFor = decisionKey;
+    state.passDecisionScheduled = true;
+    setTimeout(function () {
+      state.passDecisionScheduled = false;
+      if (!state.session || !state.session.passed || state.session.session_id !== session.session_id || state.running) return;
+      const finish = window.confirm(uiLanguage === 'zh-CN'
+        ? '当前代码已通过全部公开测试。是否确认结束当前任务？\\n确定：归档当前任务，下一条输入将开启独立的新 Session。\\n取消：继续完善当前任务（输入作为 Guidance）。'
+        : 'All public tests passed. Finish this task?\\nOK: archive it; the next input starts a new session.\\nCancel: continue refining this task.');
+      if (finish) {
+        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
+      }
+    }, 0);
+  }
+
   function applyWorkflowSessionData(data) {
     if (Array.isArray(data.logEntries)) {
       state.logEntries = data.logEntries;
@@ -806,6 +829,7 @@
       testModeSelect.value = state.session.test_mode === 'generate' ? 'generate' : 'manual';
       contextEnabledInput.checked = Boolean(state.session.context_enabled);
       completePendingOperations();
+      promptForPassedTask();
       return;
     }
 
@@ -3186,13 +3210,6 @@
     });
   }
 
-  function awaitPassedTaskChoice() {
-    const newTask = window.confirm(uiLanguage === 'zh-CN'
-      ? '公开测试已通过。确定以当前输入开始新任务吗？\\n确定：新任务；取消：继续完善当前任务。'
-      : 'Public tests passed. Start a new task with this input?\\nOK: new task; Cancel: refine current task.');
-    return newTask ? 'new' : 'continue';
-  }
-
   submitWorkflowBtn.addEventListener('click', function () {
     if (state.running) {
       vscode.postMessage({ type: 'interruptWorkflow' });
@@ -3203,19 +3220,6 @@
       state.additionalInstructionPending = Boolean(resumePayload.additionalInstruction);
       postTrackedOperation('workflow', resumePayload);
       return;
-    }
-    if (state.session && state.session.passed) {
-      const chosen = awaitPassedTaskChoice();
-      if (chosen === 'new') {
-        state.pendingNewRequirement = problemInput.value.trim();
-        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'new_task' });
-        return;
-      }
-      if (chosen === 'finish') {
-        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
-        return;
-      }
-      if (chosen !== 'continue') return;
     }
     if (state.session) {
       const additionalInstruction = problemInput.value.trim();
