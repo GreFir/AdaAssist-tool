@@ -1,0 +1,53 @@
+# Change Log
+
+All notable changes to the "adacoder" extension will be documented in this file.
+
+Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+
+## [Unreleased]
+
+## [0.0.10]
+
+- Replace the boxed timeline with a compact conversation stream.
+- Keep the user request visible while removing model, provider, endpoint, context, and internal stage badges from the conversation.
+- Hide the redundant test-ready prompt and move diagnostics, test inputs, model metrics, and raw responses into collapsed details.
+- Present tests in a bounded, independently scrolling sheet; keep generation options collapsed and the composer visually separate.
+- Prevent code blocks, toolbars, and grid children from widening the conversation beyond a narrow sidebar.
+- Replace code action text buttons with compact, accessible icons in the code block toolbar.
+- Expose Interactive and Auto as explicit choices in the user-study task launcher.
+- Float the current workflow state above the composer and expand its complete progress history on demand.
+- Restyle workflow progress as a unified Codex-like goal panel with a compact two-line current stage.
+- Replace task-status icons with a tucked-under-composer, single-line Git Graph progress track.
+- Color Git Graph nodes, connecting segments, and status labels by workflow state.
+- Ground code generation in public tests, exact return contracts, and actionable failed-assert diagnostics.
+- Match workflow system, code, test, and planning prompts to the Webview's Chinese or English language setting.
+- Default new Webviews to English and condense the header actions into a native-style icon toolbar.
+- Keep task and generated tests collapsed until requested, generate missing tests automatically, and present test review as a conversational step.
+- Shorten and compact result and composer actions while hiding controls that do not apply to the current workflow state.
+- Preserve workflow history while the test editor is open.
+- Persist user-study events and complete session snapshots in each participant workspace, including test artifacts and participant/task/condition identity.
+
+## [0.0.9]
+
+- Ground planning, code repair, and test generation prompts in the original task contract.
+- Give the planner the current candidate, reviewed tests, and complete failure details.
+- Give plan-guided regeneration the failed candidate and latest evaluation result.
+- Keep Interactive guidance cumulative and deduplicated across workflow stages.
+- Limit plans to concise, non-redundant repair steps while preserving the full displayed response.
+- Isolate stage-specific LLM settings and cap planner/test output lengths.
+
+## [0.0.8]
+
+- Restore `Ċ` and `Ġ` tokenizer display markers in generated plans while preserving the complete model response.
+
+## [0.0.7]
+
+- Align Interactive and Auto execution with the user-study definitions.
+- Add mid-workflow guidance and test-generation goals to Interactive sessions.
+- Embed the shared test editor in the workflow page with selection append/replace.
+- Add visible running, saved, failed, and retry feedback for workflow operations.
+- Normalize right-click and workflow-generated tests through one parser.
+
+## [0.0.6]
+
+- Initial release.

@@ -1,0 +1,228 @@
+{
+  "name": "adaassist",
+  "publisher": "adaassist-study",
+  "displayName": "AdaAssist",
+  "description": "Programming assistant for code workflows in VS Code.",
+  "version": "0.0.15",
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:adaassist.openChat",
+    "onCommand:adaassist.openSettings",
+    "onCommand:adaassist.openProfileConfig",
+		"onCommand:adaassist.selectPythonInterpreter",
+    "onCommand:adaassist.runWorkflow",
+    "onCommand:adaassist.runFromSelection",
+    "onCommand:adaassist.generateTestsForCurrentFunction",
+    "onCommand:adaassist.triggerInlineCompletion",
+    "onLanguage:python",
+    "onView:adaassist.sidebarView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "adaassist.openChat",
+        "title": "AdaAssist: Open Chat"
+      },
+      {
+        "command": "adaassist.openSettings",
+        "title": "AdaAssist: Open Settings"
+      },
+      {
+        "command": "adaassist.openProfileConfig",
+        "title": "AdaAssist: Open Profile Config File"
+      },
+			{
+				"command": "adaassist.selectPythonInterpreter",
+				"title": "AdaAssist: 选择 Python 解释器"
+			},
+      {
+        "command": "adaassist.runWorkflow",
+        "title": "AdaAssist: Open Chat"
+      },
+      {
+        "command": "adaassist.runFromSelection",
+        "title": "AdaAssist: Generate From Selection"
+      },
+      {
+        "command": "adaassist.generateTestsForCurrentFunction",
+        "title": "AdaAssist: Generate Tests for Current Function"
+      },
+      {
+        "command": "adaassist.triggerInlineCompletion",
+        "title": "AdaAssist: Trigger Inline Completion"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "adaassist.runFromSelection",
+          "when": "editorHasSelection",
+          "group": "navigation@100"
+        },
+        {
+          "command": "adaassist.generateTestsForCurrentFunction",
+          "when": "editorLangId == python",
+          "group": "navigation@101"
+        },
+        {
+          "command": "adaassist.triggerInlineCompletion",
+          "when": "editorLangId == python",
+          "group": "navigation@102"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "adaassist.triggerInlineCompletion",
+          "when": "editorLangId == python"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "adaassist.triggerInlineCompletion",
+        "key": "ctrl+alt+space",
+        "mac": "cmd+alt+space",
+        "when": "editorTextFocus && editorLangId == python"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "adaassist-sidebar",
+          "title": "AdaAssist",
+          "icon": "media/adaassist.svg"
+        }
+      ]
+    },
+    "views": {
+      "adaassist-sidebar": [
+        {
+          "id": "adaassist.sidebarView",
+          "name": "Chat",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "AdaAssist",
+      "properties": {
+        "adaassist.pythonPath": {
+          "type": "string",
+          "default": "auto",
+          "description": "Python executable, or auto to detect a local environment then python/python3. Supports absolute path, relative path, ${workspaceFolder} and ${extensionPath}."
+        },
+        "adaassist.backendPath": {
+          "type": "string",
+          "default": "backend/main.py",
+          "description": "Path to the FastAPI backend entry file. Supports absolute path, relative path, ${workspaceFolder} and ${extensionPath}."
+        },
+        "adaassist.backendHost": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Host used when starting the bundled FastAPI backend."
+        },
+        "adaassist.backendPort": {
+          "type": "number",
+          "default": 8765,
+          "description": "Port used when starting the bundled FastAPI backend."
+        },
+        "adaassist.bridgePath": {
+          "type": "string",
+          "default": "backend/bridge.py",
+          "description": "Legacy bridge.py path kept for compatibility with older workspace settings."
+        },
+        "adaassist.profileConfigPath": {
+          "type": "string",
+          "default": ".vscode/adaassist-profiles.json",
+          "description": "Path to profile JSON config file. Supports absolute path, relative path, ${workspaceFolder} and ${extensionPath}."
+        },
+        "adaassist.baseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8003/v1",
+          "description": "Default LLM base_url sent to backend."
+        },
+        "adaassist.model": {
+          "type": "string",
+          "default": "deepseek-coder-33b-instruct",
+          "description": "Default model name sent to backend."
+        },
+        "adaassist.inlineCompletion.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable AdaAssist inline Python completions in the editor."
+        },
+        "adaassist.inlineCompletion.maxContextLines": {
+          "type": "number",
+          "default": 80,
+          "minimum": 20,
+          "maximum": 200,
+          "description": "Maximum number of nearby lines supplied to an inline completion request."
+        },
+        "adaassist.inlineCompletion.triggerMode": {
+          "type": "string",
+          "enum": ["automatic", "manual"],
+          "default": "automatic",
+          "description": "Request inline completions automatically while typing, or only through the trigger command."
+        },
+        "adaassist.inlineCompletion.baseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8004/v1",
+          "description": "Dedicated OpenAI-compatible endpoint for inline completion. This is independent from the workflow chat model."
+        },
+        "adaassist.inlineCompletion.model": {
+          "type": "string",
+          "default": "deepseek-coder-6.7b-instruct",
+          "description": "Dedicated model used for inline completion."
+        },
+        "adaassist.inlineCompletion.provider": {
+          "type": "string",
+          "enum": ["vllm", "other", "openai", "ollama"],
+          "default": "vllm",
+          "description": "Provider for the dedicated inline completion endpoint."
+        },
+        "adaassist.inlineCompletion.debounceMs": {
+          "type": "number",
+          "default": 700,
+          "minimum": 250,
+          "maximum": 5000,
+          "description": "Minimum pause before automatic inline completion requests."
+        },
+        "adaassist.inlineCompletion.maxTokens": {
+          "type": "number",
+          "default": 192,
+          "minimum": 32,
+          "maximum": 512,
+          "description": "Maximum generated tokens for one inline completion."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.110.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "@highlightjs/cdn-assets": "^11.11.1",
+    "markdown-it": "^14.1.1"
+  }
+}
