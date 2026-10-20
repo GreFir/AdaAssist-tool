@@ -1573,8 +1573,8 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			&& active.llm?.model === model
 			&& active.llm?.provider === provider
 			&& (active.llm?.base_url ?? '') === baseUrl;
-		if (matchingSession && !this.running
-			&& active?.llm?.max_tokens !== maxTokens) {
+		if (active?.session_id && matchingSession && !this.running
+			&& active.llm?.max_tokens !== maxTokens) {
 			try {
 				const response = await this.backendServer.request<BackendResponse>(
 					`/api/sessions/${encodeURIComponent(active.session_id)}`, {
