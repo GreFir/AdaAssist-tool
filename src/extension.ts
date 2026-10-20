@@ -4836,7 +4836,25 @@ async function insertGeneratedCode(code: string): Promise<void> {
 							<div class="panel-title" data-i18n="tests">Tests</div>
 
 						</div>
-						<div class="tests-icon-actions"><button class="tests-icon-button" id="useSelectionForTestsBtn" type="button" title="selectionToTests" aria-label="selectionToTests" data-i18n-title="selectionToTests" data-i18n-aria-label="selectionToTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7M3 6h7M3 9h4M11 8v6M8 11h6"/></svg></button><button class="tests-icon-button" id="replaceSelectionForTestsBtn" type="button" title="replaceWithSelection" aria-label="replaceWithSelection" data-i18n-title="replaceWithSelection" data-i18n-aria-label="replaceWithSelection"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h9M2 6h5M2 12h5M8 9h6m-3-3 3 3-3 3"/></svg></button><button class="tests-icon-button" id="generateTestsBtn" type="button" title="generateTests" aria-label="generateTests" data-i18n-title="generateTests" data-i18n-aria-label="generateTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 13 7-7m-8-4 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Zm9-1 1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" transform="translate(2 0) scale(.8)"/></svg></button><button class="tests-icon-button" id="testOptionsToggleBtn" type="button" aria-expanded="false" aria-controls="testGenerationOptions" title="testOptions" aria-label="testOptions" data-i18n-title="testOptions" data-i18n-aria-label="testOptions"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h12M2 12h12M5 2v4M11 10v4"/></svg></button><span class="tests-toolbar-divider" aria-hidden="true"></span><button class="tests-icon-button" id="saveResolvedTestsBtn" type="button" title="saveTests" aria-label="saveTests" data-i18n-title="saveTests" data-i18n-aria-label="saveTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2h8l2 2v10H3ZM5 2v4h5V2M5 14V9h6v5"/></svg></button><button class="tests-icon-button" id="closeTestsDrawerBtn" type="button" title="closeTests" aria-label="closeTests" data-i18n-title="closeTests" data-i18n-aria-label="closeTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
+						<div class="tests-icon-actions">
+              <button class="tests-icon-button" id="useSelectionForTestsBtn" type="button" title="Selection to Tests" aria-label="Selection to Tests" data-i18n-title="selectionToTests" data-i18n-aria-label="selectionToTests">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7M3 6h7M3 9h4M11 8v6M8 11h6"/></svg>
+              </button>
+              <label class="tests-selection-append" title="Append selected code" data-i18n-title="appendSelection">
+                <input id="appendSelectionForTests" type="checkbox" checked aria-label="Append selected code" data-i18n-aria-label="appendSelection" />
+                <span data-i18n="appendSelection">Append</span>
+              </label>
+              <button class="tests-icon-button" id="generateTestsBtn" type="button" title="Generate Tests" aria-label="Generate Tests" aria-expanded="false" aria-controls="testGenerationOptions" data-i18n-title="generateTests" data-i18n-aria-label="generateTests">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 13 7-7m-8-4 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Zm9-1 1 2 2 1-2 1-1 2-2-1 2-1 1-2Z" transform="translate(2 0) scale(.8)"/></svg>
+              </button>
+              <span class="tests-toolbar-divider" aria-hidden="true"></span>
+              <button class="tests-icon-button" id="saveResolvedTestsBtn" type="button" title="Save Tests" aria-label="Save Tests" data-i18n-title="saveTests" data-i18n-aria-label="saveTests">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2h8l2 2v10H3ZM5 2v4h5V2M5 14V9h6v5"/></svg>
+              </button>
+              <button class="tests-icon-button" id="closeTestsDrawerBtn" type="button" title="Close tests" aria-label="Close tests" data-i18n-title="closeTests" data-i18n-aria-label="closeTests">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
 					</div>
 
 					<details class="setup-details setup-card tests-editor-card" id="testSettingsDetails" open>
@@ -4853,16 +4871,17 @@ async function insertGeneratedCode(code: string): Promise<void> {
 								</select>
 							</div>
 							<div class="manual-tests-shell" id="manualTestsSection">
-								<div class="editable-code-shell tests-editor-shell">
+								<div class="editable-code-shell tests-editor-shell" id="testsEditorShell">
 									<pre class="code-block hljs editable-code-block"><code id="testInput" role="textbox" aria-multiline="true" aria-label="Test Suite" data-i18n-aria-label="testSuite" class="language-python editable-code" contenteditable="true" spellcheck="false"></code></pre>
-								</div>
-								<details class="test-options-details" id="testGenerationOptions">
-									<summary class="visually-hidden" tabindex="-1" data-i18n="testOptions">Generation options</summary>
-									<div class="field">
-										<label for="testDescription" data-i18n="testGenerationGoal">Test generation goal</label>
-										<textarea id="testDescription" rows="3" data-i18n-placeholder="testDescriptionPlaceholder" placeholder="Optional: describe the cases, constraints, or testing goals the generated tests should cover."></textarea>
+									<div class="test-generation-popover" id="testGenerationOptions" role="group" aria-label="Test generation goal" data-i18n-aria-label="testGenerationGoal" hidden>
+										<svg class="tests-generation-sparkle" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 2 1.2 4.8L13 8l-4.8 1.2L7 14l-1.2-4.8L1 8l4.8-1.2L7 2ZM13 1l.5 1.5L15 3l-1.5.5L13 5l-.5-1.5L11 3l1.5-.5L13 1Z"/></svg>
+										<input id="testDescription" type="text" autocomplete="off" aria-label="Test generation goal" data-i18n-aria-label="testGenerationGoal" data-i18n-placeholder="testDescriptionCompactPlaceholder" placeholder="Test focus (optional)..." />
+										<button class="tests-generate-submit" id="generateTestsConfirmBtn" type="button" title="Generate Tests" aria-label="Generate Tests" data-i18n-title="generateTests" data-i18n-aria-label="generateTests">
+											<span id="generateTestsConfirmLabel" data-i18n="generateShort">Generate</span>
+											<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
+										</button>
 									</div>
-								</details>
+								</div>
 								<div class="hint tests-editor-hint" id="resolvedTestsHint"></div>
 								<div class="inline-operation-status" id="testsSaveResult" aria-live="polite"></div>
 							</div>

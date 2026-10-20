@@ -53,7 +53,7 @@
       llmSetupRequired: 'LLM Setup Required', configureProfileBeforeStart: 'Configure an LLM profile before starting the workflow.', conversation: 'Conversation',
       conversationHint: 'Requirements, code, run results, and plans appear here in order.', problemPlaceholder: 'Describe the coding task, constraints, expected behavior, and anything the model must preserve.',
       selectionToPrompt: 'Use Selection', send: 'Send', sendWorkflow: 'Send workflow', newTask: 'New Task', composerNote: 'Ctrl/Cmd+Enter to send.', modelSelectHint: 'Choose a model from your profile config.', modelLockedHint: 'Click New Task to switch models.',
-      closeTests: 'Close tests', testsCompactEmpty: 'Leave empty to generate tests.', testsCompactDirty: 'Unsaved changes · save or continue to apply.', testsCompactReady: 'Edit the tests, then save or continue.', testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
+      closeTests: 'Close tests', testsCompactEmpty: 'Leave empty to generate tests.', testsCompactDirty: 'Unsaved changes · save or continue to apply.', testsCompactReady: 'Edit the tests, then save or continue.', testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', generateShort: 'Generate', replaceTestsShort: 'Replace?', replaceWithGeneratedTests: 'Replace existing tests with generated tests', appendSelection: 'Append selected code', testDescriptionCompactPlaceholder: 'Test focus (optional)...', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
       manualTestsHint: 'This is the single current test suite. Leave it empty to generate tests before code generation.', selectionToTests: 'Selection To Tests', saveTests: 'Save Tests',
       generatedTestSuite: 'Generated Test Suite', generatedTestsHint: 'Switch to generated tests mode to work with a separate editable test suite.', profileSettings: 'Profile Settings',
       profileSettingsHint: 'Manage OpenAI-compatible, Claude, Ollama, or vLLM profiles. Use the selector to edit an existing profile or start a new draft; the workflow page keeps using the active profile until you save.',
@@ -132,7 +132,7 @@
       llmSetupRequired: '需要配置 LLM', configureProfileBeforeStart: '请先配置一个 LLM 配置，再启动工作流。', conversation: '对话',
       conversationHint: '需求、代码、运行结果和计划会按顺序显示在这里。', problemPlaceholder: '描述编程任务、约束条件、预期行为，以及模型必须保留的内容。',
       selectionToPrompt: '使用选区', send: '发送', sendWorkflow: '发送工作流', newTask: '新任务', composerNote: '按 Ctrl/Cmd+Enter 发送。', modelSelectHint: '从配置文件列表中选择模型。', modelLockedHint: '点击“新任务”后可切换模型。',
-      testsHint: '为当前工作流维护一套共享的 Python assert 测试。', back: '返回', testSuite: '测试集', testMode: '测试模式', manualTests: '手动测试', generateTests: '生成测试', testOptions: '生成选项', testGenerationGoal: '测试生成目标', replaceWithSelection: '用选区替换', collapseTests: '完成',
+      testsHint: '为当前工作流维护一套共享的 Python assert 测试。', back: '返回', testSuite: '测试集', testMode: '测试模式', manualTests: '手动测试', generateTests: '生成测试', testOptions: '生成选项', testGenerationGoal: '测试生成目标', generateShort: '生成', replaceTestsShort: '替换?', replaceWithGeneratedTests: '再次点击以替换已有测试', appendSelection: '追加选区', testDescriptionCompactPlaceholder: '测试重点（可选）...', replaceWithSelection: '用选区替换', collapseTests: '完成',
       manualTestsHint: '这是当前唯一的测试集。留空可在生成代码前自动生成测试。', selectionToTests: '选区写入测试', saveTests: '保存测试',
       generatedTestSuite: '已生成的测试集', generatedTestsHint: '切换到生成测试模式，可使用独立且可编辑的测试集。', profileSettings: '配置设置',
       profileSettingsHint: '管理 OpenAI 兼容、Claude、Ollama 或 vLLM 配置。可选择已有配置编辑，或新建草稿；保存前工作流仍使用当前活动配置。',
@@ -355,11 +355,15 @@
   const resolvedTestsHint = document.getElementById('resolvedTestsHint');
   const resolvedTestsEditor = document.getElementById('resolvedTestsEditor');
   const generateTestsBtn = document.getElementById('generateTestsBtn');
+  const testGenerationOptions = document.getElementById('testGenerationOptions');
+  const testsEditorShell = document.getElementById('testsEditorShell');
+  const generateTestsConfirmBtn = document.getElementById('generateTestsConfirmBtn');
+  const generateTestsConfirmLabel = document.getElementById('generateTestsConfirmLabel');
+  const appendSelectionForTests = document.getElementById('appendSelectionForTests');
   const saveResolvedTestsBtn = document.getElementById('saveResolvedTestsBtn');
 
   const useSelectionForProblemBtn = document.getElementById('useSelectionForProblemBtn');
   const useSelectionForTestsBtn = document.getElementById('useSelectionForTestsBtn');
-  const replaceSelectionForTestsBtn = document.getElementById('replaceSelectionForTestsBtn');
   const clearSessionBtn = document.getElementById('clearSessionBtn');
   const submitWorkflowBtn = document.getElementById('submitWorkflowBtn');
 
@@ -878,7 +882,10 @@
     ) {
       state.testOperationStatus = 'passed';
       state.testOperationMessage = t('generatedTestsStatus');
-      state.resolvedTestsDirty = true;
+      setEditableCodeText(testInput, String(state.session.resolved_test_code || state.session.test_text || ''));
+      setEditableCodeText(resolvedTestsEditor, String(state.session.resolved_test_code || state.session.test_text || ''));
+      state.resolvedTestsDirty = false;
+      refreshEditableCodeBlocks();
       state.operationStatus = 'passed';
       state.operationMessage = t('generatedTestsStatus');
       state.lastPostedOperation = null;
@@ -3328,13 +3335,13 @@
     if (useSelectionForTestsBtn) {
       useSelectionForTestsBtn.disabled = state.running || testsBusy;
     }
-    if (replaceSelectionForTestsBtn) {
-      replaceSelectionForTestsBtn.disabled = state.running || testsBusy;
-    }
+    appendSelectionForTests.disabled = state.running || testsBusy;
     clearSessionBtn.disabled = state.running;
     useSelectionForProblemBtn.disabled = !guidanceEditable;
     useSelectionForProblemBtn.classList.toggle('hidden', !guidanceEditable);
-    generateTestsBtn.disabled = state.running || testsBusy || (hasSession && !interactiveSession) || (!hasSession && !hasProblemDraft);
+    generateTestsBtn.disabled = state.running || testsBusy || (hasSession && !interactiveSession);
+    generateTestsConfirmBtn.disabled = state.running || testsBusy || (hasSession && !interactiveSession) || (!hasSession && !hasProblemDraft);
+    if (generateTestsBtn.disabled && !testGenerationOptions.hidden) setTestGenerationOpen(false);
     updateTestsIconState(generateTestsBtn, testsBusy && state.testOperation === 'generate', 'generateTests', 'generatingTestsStatus');
     saveResolvedTestsBtn.disabled = state.running || testsBusy || !interactiveSession || !hasResolvedTestsDraft;
     updateTestsIconState(saveResolvedTestsBtn, testsBusy && state.testOperation === 'save', 'saveTests', 'savingTestsStatus');
@@ -3836,18 +3843,11 @@
   });
 
   useSelectionForTestsBtn.addEventListener('click', function () {
+    const mode = appendSelectionForTests.checked ? 'append' : 'replace';
     state.pendingSelectionTarget = 'tests';
-    state.pendingSelectionMode = 'append';
-    vscode.postMessage({ type: 'useEditorSelection', target: 'tests', mode: 'append' });
+    state.pendingSelectionMode = mode;
+    vscode.postMessage({ type: 'useEditorSelection', target: 'tests', mode: mode });
   });
-
-  if (replaceSelectionForTestsBtn) {
-    replaceSelectionForTestsBtn.addEventListener('click', function () {
-      state.pendingSelectionTarget = 'tests';
-      state.pendingSelectionMode = 'replace';
-      vscode.postMessage({ type: 'useEditorSelection', target: 'tests', mode: 'replace' });
-    });
-  }
 
   submitWorkflowBtn.addEventListener('click', function () {
     if (awaitingTaskConfirmation()) {
@@ -3890,18 +3890,35 @@
     vscode.postMessage({ type: 'clearWorkflowSession' });
   });
 
-  const testOptionsToggleBtn = document.getElementById('testOptionsToggleBtn');
-  const testGenerationOptions = document.getElementById('testGenerationOptions');
-  testOptionsToggleBtn.addEventListener('click', function () {
-    testGenerationOptions.open = !testGenerationOptions.open;
-    testOptionsToggleBtn.setAttribute('aria-expanded', String(testGenerationOptions.open));
-    if (testGenerationOptions.open) testDescription.focus();
-  });
-  testGenerationOptions.addEventListener('toggle', function () {
-    testOptionsToggleBtn.setAttribute('aria-expanded', String(testGenerationOptions.open));
-  });
-
+  let testReplacementAwaitingConfirmation = false;
+  function resetTestReplacementConfirmation() {
+    testReplacementAwaitingConfirmation = false;
+    generateTestsConfirmLabel.textContent = t('generateShort');
+    generateTestsConfirmBtn.title = t('generateTests');
+    generateTestsConfirmBtn.setAttribute('aria-label', t('generateTests'));
+  }
+  function setTestGenerationOpen(open) {
+    testGenerationOptions.hidden = !open;
+    testsEditorShell.classList.toggle('generation-open', open);
+    generateTestsBtn.setAttribute('aria-expanded', String(open));
+    resetTestReplacementConfirmation();
+    if (open) testDescription.focus();
+  }
   generateTestsBtn.addEventListener('click', function () {
+    if (generateTestsBtn.disabled) return;
+    setTestGenerationOpen(testGenerationOptions.hidden);
+  });
+  generateTestsConfirmBtn.addEventListener('click', function () {
+    if (generateTestsConfirmBtn.disabled) return;
+    // Two taps are required only when a generation would replace existing tests.
+    if (configuredTestCode().trim() && !testReplacementAwaitingConfirmation) {
+      testReplacementAwaitingConfirmation = true;
+      generateTestsConfirmLabel.textContent = t('replaceTestsShort');
+      generateTestsConfirmBtn.title = t('replaceWithGeneratedTests');
+      generateTestsConfirmBtn.setAttribute('aria-label', t('replaceWithGeneratedTests'));
+      return;
+    }
+    setTestGenerationOpen(false);
     postTrackedOperation('generate', Object.assign(currentActionPayload(), {
       type: 'runWorkflowAction',
       action: 'generate_tests',
@@ -3911,6 +3928,25 @@
       resolvedTestCode: '',
       useErrorFeedback: true
     }));
+  });
+  testDescription.addEventListener('input', resetTestReplacementConfirmation);
+  testDescription.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      generateTestsConfirmBtn.click();
+    }
+  });
+  testGenerationOptions.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setTestGenerationOpen(false);
+      generateTestsBtn.focus();
+    }
+  });
+  document.addEventListener('pointerdown', function (event) {
+    if (!testGenerationOptions.hidden && !testGenerationOptions.contains(event.target) && !generateTestsBtn.contains(event.target)) {
+      setTestGenerationOpen(false);
+    }
   });
 
   saveResolvedTestsBtn.addEventListener('click', function () {
