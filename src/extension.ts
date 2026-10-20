@@ -1814,7 +1814,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			return;
 		}
 		const session = this.activeSession;
-		const stage = session.current_stage;
+		const lastStageEvent = [...session.events].reverse().find(event =>
+			['generate', 'regenerate', 'debug_fix', 'evaluate', 'plan', 'tests'].includes(event.stage)
+			&& event.status !== 'running');
+		const stage = lastStageEvent?.stage ?? session.current_stage;
 		const base: ActionRequestState = {
 			problem: session.problem_statement,
 			testText: session.test_text || session.resolved_test_code,
@@ -1830,7 +1833,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.interactiveState = 'await_plan';
 			this.resumeState = undefined;
 		} else if (session.latest_evaluation && !session.latest_evaluation.passed
-			&& stage === 'evaluate') {
+			&& (stage === 'evaluate' || stage === 'debug_fix')) {
 			this.interactiveState = 'await_failure_choice';
 			this.resumeState = undefined;
 		} else if (session.current_code.trim()) {
