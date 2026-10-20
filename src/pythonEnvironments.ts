@@ -16,8 +16,8 @@ interface PythonEnvironmentRecord {
 	envId: { id: string; managerId: string };
 	name: string;
 	displayName: string;
-	version: string;
-	displayPath: string;
+	version?: string | { major?: number; minor?: number; micro?: number };
+	displayPath?: string;
 	error?: string;
 	execInfo?: { run?: { executable: string; args?: string[] } };
 }
@@ -53,7 +53,7 @@ function convertEnvironment(env: PythonEnvironmentRecord | undefined): Discovere
 	return {
 		id: `${env.envId.managerId}:${env.envId.id}`,
 		name: env.displayName || env.name || executable,
-		version: env.version || '',
+		version: typeof env.version === 'string' ? env.version : env.version ? [env.version.major, env.version.minor, env.version.micro].filter(value => value !== undefined).join('.') : '',
 		manager: env.envId.managerId.split(':').pop() || env.envId.managerId,
 		path: env.displayPath || executable,
 		executable,
