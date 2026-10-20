@@ -61,6 +61,23 @@ class RestoreSessionTests(unittest.TestCase):
             self.assertEqual(current[key], snapshot[key], key)
         self.assertIs(restored_store.get_session(snapshot["session_id"]), resumed)
 
+    def test_session_snapshot_includes_configured_output_limit(self) -> None:
+        config = LLMConfig(
+            provider="vllm", model="test-model",
+            base_url="http://127.0.0.1:8003/v1", max_tokens=4096,
+        )
+        with patch("src.session_service.Adacoder"):
+            store = SessionStore()
+            session = store.create_session(
+                problem_statement="Implement solve(x)", test_text="assert solve(1) == 2",
+                llm_config=config, test_mode="manual",
+                context_enabled=False, max_rounds=3,
+            )
+            snapshot = session.to_dict()
+            self.assertEqual(snapshot["llm"]["max_tokens"], 4096)
+            restored = SessionStore().restore_session(snapshot, config)
+            self.assertEqual(restored.to_dict()["llm"]["max_tokens"], 4096)
+
     def test_repeated_restore_does_not_duplicate_a_live_session(self) -> None:
         snapshot = self.make_snapshot()
         with patch("src.session_service.Adacoder"):
