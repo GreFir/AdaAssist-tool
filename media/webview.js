@@ -5,6 +5,9 @@
 
   const translations = {
     en: {
+      modelTab: 'Models', completionTab: 'Completion',
+      profileEndpointRequired: 'This provider requires a Base URL.',
+      keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
       environmentTab: 'Environment',
       settingsHint: 'Clear, separate controls for workflows, models, completion, and Python.',
       workflowSettingsTitle: 'Task execution',
@@ -40,7 +43,7 @@
       profileEndpointRequired: 'This provider needs a Base URL.',
       profileKeyRequired: 'Enter an API key or configure the associated environment variable.',
       profileSaveError: 'Profile was not saved.',
-      workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Configure workflow behavior, model access, and the local runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
+      workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Manage workflows, models, inline completion and the Python runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
       workflowSetup: 'Workflow setup', runSetup: 'Run Setup', mode: 'Mode', workflowMode: 'Workflow Mode', interactiveContinue: 'Interactive Continue', autoFullWorkflow: 'Auto Full Workflow',
       environmentStatus: 'Environment Status', checkingEnvironment: 'Checking environment...', environmentReady: 'Environment ready', environmentWarning: 'Environment needs attention', environmentFailed: 'Environment unavailable', checkEnvironment: 'Check Environment',
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
@@ -77,6 +80,9 @@
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
+      modelTab: '模型', completionTab: '补全',
+      profileEndpointRequired: '当前服务类型需要填写 Base URL。',
+      keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
       environmentTab: '运行环境',
       settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。',
       workflowSettingsTitle: '任务执行',
@@ -3478,10 +3484,38 @@
   });
 
   settingsProfileSelect.addEventListener('change', function () {
+    if (!requireCleanProfile()) {
+      settingsProfileSelect.value = state.editingProfileId || state.activeProfileId;
+      return;
+    }
     state.editingProfileId = settingsProfileSelect.value === NEW_PROFILE_DRAFT_ID
-      ? NEW_PROFILE_DRAFT_ID
-      : settingsProfileSelect.value;
+      ? NEW_PROFILE_DRAFT_ID : settingsProfileSelect.value;
     loadProfileEditor();
+  });
+  [profileNameInput, profileBaseUrlInput, profileModelInput,
+    profileMaxTokensInput, profileApiKeyInput].forEach(function (element) {
+    element.addEventListener('input', markProfileDirty);
+  });
+  profileProviderSelect.addEventListener('change', function () {
+    markProfileDirty();
+    updateProviderFieldHints();
+  });
+  if (discardProfileChangesBtn) discardProfileChangesBtn.addEventListener('click', loadProfileEditor);
+  [inlineCompletionEnabledInput, inlineCompletionTriggerModeSelect].forEach(function (element) {
+    if (element) element.addEventListener('change', updateCompletionFieldsState);
+  });
+  settingsTabButtons.forEach(function (button, index) {
+    button.addEventListener('click', function () { switchSettingsTab(button.dataset.settingsTab); });
+    button.addEventListener('keydown', function (event) {
+      let nextIndex = index;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % settingsTabButtons.length;
+      else if (event.key === 'ArrowLeft') nextIndex = (index + settingsTabButtons.length - 1) % settingsTabButtons.length;
+      else if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = settingsTabButtons.length - 1;
+      else return;
+      event.preventDefault();
+      switchSettingsTab(settingsTabButtons[nextIndex].dataset.settingsTab, true);
+    });
   });
 
   executionModeSelect.addEventListener('change', function () {
@@ -3547,38 +3581,56 @@
   });
 
   reloadProfilesBtn.addEventListener('click', function () {
-    vscode.postMessage({ type: 'reloadProfiles' });
+    if (requireCleanProfile()) vscode.postMessage({ type: 'reloadProfiles' });
   });
 
   saveProfileBtn.addEventListener('click', function () {
-    if (!profileMaxTokensInput.value.trim() || !profileMaxTokensInput.checkValidity()) {
-      profileMaxTokensInput.setCustomValidity(profileMaxTokensInput.value.trim()
-        ? '' : (uiLanguage === 'zh-CN' ? '请输入最大输出 Tokens' : 'Enter maximum output tokens'));
-      profileMaxTokensInput.reportValidity();
-      profileMaxTokensInput.addEventListener('input', function clearError() {
-        profileMaxTokensInput.setCustomValidity('');
-        profileMaxTokensInput.removeEventListener('input', clearError);
-      });
+    if (state.profileSaving) return;
+    const name = profileNameInput.value.trim();
+    const model = profileModelInput.value.trim();
+    const provider = profileProviderSelect.value;
+    const url = profileBaseUrlInput.value.trim();
+    const existing = findProfile(state.editingProfileId);
+    const keyPresent = profileApiKeyInput.value.trim() || (existing && existing.apiKeyConfigured);
+    function validationError(messageKey, element) {
+      state.profileStatusOverride = messageKey;
+      renderProfileEditStatus();
+      if (element) element.focus();
+    }
+    if (!name || !model) {
+      validationError('profileRequired', !name ? profileNameInput : profileModelInput);
       return;
     }
+    if (['vllm', 'ollama', 'other'].includes(provider) && !url) {
+      validationError('profileEndpointRequired', profileBaseUrlInput);
+      return;
+    }
+    if (['openai', 'claude'].includes(provider) && !keyPresent) {
+      validationError('profileKeyRequired', profileApiKeyInput);
+      return;
+    }
+    if (!profileMaxTokensInput.value.trim() || !profileMaxTokensInput.checkValidity()) {
+      profileMaxTokensInput.reportValidity();
+      return;
+    }
+    state.profileSaving = true;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
     const profileId = state.editingProfileId === NEW_PROFILE_DRAFT_ID ? '' : state.editingProfileId;
     vscode.postMessage({
       type: 'saveProfile',
       id: profileId,
-      name: profileNameInput.value,
-      baseUrl: profileBaseUrlInput.value,
-      model: profileModelInput.value,
+      name: name,
+      baseUrl: url,
+      model: model,
       maxTokens: Number(profileMaxTokensInput.value),
-      provider: profileProviderSelect.value,
+      provider: provider,
       apiKey: profileApiKeyInput.value
     });
-    if (state.returnToTaskAfterSave) {
-      state.returnToTaskAfterSave = false;
-      switchPage('task');
-    }
   });
 
   deleteProfileBtn.addEventListener('click', function () {
+    if (!requireCleanProfile()) return;
     if (!state.editingProfileId || state.editingProfileId === NEW_PROFILE_DRAFT_ID) {
       addLocalLog('Profile', 'No saved profile selected for deletion.', 'failed');
       return;
@@ -3734,8 +3786,29 @@
           state.editingProfileId = state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || NEW_PROFILE_DRAFT_ID;
         }
 
-        loadProfileEditor();
+        if (!state.profileDirty && !state.profileSaving) loadProfileEditor();
         renderAll();
+        break;
+      }
+      case 'profileSaveResult': {
+        state.profileSaving = false;
+        if (data.ok) {
+          state.profileDirty = false;
+          state.editingProfileId = data.profileId || state.activeProfileId;
+          loadProfileEditor();
+          state.profileStatusOverride = 'profileSavedStatus';
+          if (state.returnToTaskAfterSave) {
+            state.returnToTaskAfterSave = false;
+            switchPage('task');
+          }
+        } else {
+          state.profileDirty = true;
+          state.profileStatusOverride = 'profileSaveError';
+          if (typeof data.message === 'string') addLocalLog('Profile', data.message, 'failed');
+        }
+        renderProfileEditStatus();
+        renderProfileOptions();
+        renderWorkflowModelSummary();
         break;
       }
       case 'workflowSession':
