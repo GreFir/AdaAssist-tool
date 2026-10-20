@@ -3503,7 +3503,12 @@
       persistSettingsPreferences();
       vscode.postMessage({ type: 'setUiLanguage', uiLanguage });
       applyTranslations();
-      loadProfileEditor();
+      if (!state.profileDirty && !state.profileSaving) {
+        loadProfileEditor();
+      } else {
+        updateProviderFieldHints();
+        renderProfileEditStatus();
+      }
       renderAll();
     });
   }
