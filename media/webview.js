@@ -5,7 +5,47 @@
 
   const translations = {
     en: {
-      workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Configure workflow behavior, model access, and the local runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
+      inlineSettingsUnsaved: 'Unsaved changes — save to apply.',
+      inlineSettingsSaved: 'Inline completion settings saved.',
+      inlineSettingsFailed: 'Unable to save inline settings.',
+      modelTab: 'Models', completionTab: 'Completion',
+      profileEndpointRequired: 'This provider requires a Base URL.',
+      keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
+      environmentTab: 'Environment',
+      workflowSettingsTitle: 'Task execution',
+      workflowSettingsDescription: 'Set the next task’s behavior. A running task keeps its existing mode.',
+      workflowModeDescription: 'Choose whether to pause for review or run automatically.',
+      contextSettingDescription: 'Reuse prior generation and test feedback within the current task.',
+      workflowModelGroup: 'Model used for tasks',
+      workflowModelDescription: 'Connection details and output limits are managed in Models.',
+      configureModel: 'Configure model',
+      modelSettingsTitle: 'Model profiles',
+      modelSettingsDescription: 'Connections, credentials, and output budgets saved for each model.',
+      chooseProfile: 'Choose a profile',
+      connectionSection: 'Connection',
+      connectionSectionHint: 'Specify the model endpoint and credentials for workflow requests.',
+      endpointOptionalHint: 'Optional for OpenAI and Claude official endpoints.',
+      generationSection: 'Generation budget',
+      discardChanges: 'Discard changes',
+      advancedProfileActions: 'Advanced profile actions',
+      completionSettingsTitle: 'Inline completion',
+      completionEnableHint: 'Suggest code while editing Python files.',
+      completionModelSection: 'Completion model',
+      completionModelHint: 'Independent from the model selected for coding tasks.',
+      completionBehaviorSection: 'Trigger and limits',
+      completionLimitHint: 'Debounce applies only to automatic requests. This budget only affects inline suggestions.',
+      environmentSettingsTitle: 'Python runtime',
+      environmentSettingsDescription: 'Interpreter and dependency checks for the local AdaAssist backend.',
+      profileUnsaved: 'Unsaved profile changes — save or discard before switching profiles.',
+      profileReady: 'Changes apply when you save. Credentials remain in VS Code Secret Storage.',
+      profileSavedStatus: 'Profile saved successfully.',
+      profileSavingStatus: 'Saving profile…',
+      profileChangesBlocked: 'Save or discard the current changes before switching profiles.',
+      profileRequired: 'Profile name and model ID are required.',
+      profileEndpointRequired: 'This provider needs a Base URL.',
+      profileKeyRequired: 'Enter an API key or configure the associated environment variable.',
+      profileSaveError: 'Profile was not saved.',
+      workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Manage workflows, models, inline completion and the Python runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
       workflowSetup: 'Workflow setup', runSetup: 'Run Setup', mode: 'Mode', workflowMode: 'Workflow Mode', interactiveContinue: 'Interactive Continue', autoFullWorkflow: 'Auto Full Workflow',
       environmentStatus: 'Environment Status', checkingEnvironment: 'Checking environment...', environmentReady: 'Environment ready', environmentWarning: 'Environment needs attention', environmentFailed: 'Environment unavailable', checkEnvironment: 'Check Environment',
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
@@ -16,7 +56,7 @@
       manualTestsHint: 'This is the single current test suite. Leave it empty to generate tests before code generation.', selectionToTests: 'Selection To Tests', saveTests: 'Save Tests',
       generatedTestSuite: 'Generated Test Suite', generatedTestsHint: 'Switch to generated tests mode to work with a separate editable test suite.', profileSettings: 'Profile Settings',
       profileSettingsHint: 'Manage OpenAI-compatible, Claude, Ollama, or vLLM profiles. Use the selector to edit an existing profile or start a new draft; the workflow page keeps using the active profile until you save.',
-      profile: 'Profile', profileName: 'Profile Name', provider: 'Provider', baseUrl: 'Base URL', model: 'Model', apiKey: 'API Key', apiKeyHint: 'Optional for Ollama and vLLM. Required for hosted providers.',
+      profile: 'Profile', profileName: 'Profile Name', workflowMaxTokens: 'Max Output Tokens', workflowMaxTokensHint: 'Maximum output tokens for code, tests, and repair plans. Updates the current idle session when the model is unchanged.', provider: 'Provider', baseUrl: 'Base URL', model: 'Model', apiKey: 'API Key', apiKeyHint: 'Optional for Ollama and vLLM. Required for hosted providers.',
       profileEditorHint: 'Create a new profile draft or edit an existing profile.', newProfile: 'New Profile', openConfig: 'Open Config', reloadProfiles: 'Reload Profiles', deleteProfile: 'Delete Profile', saveProfile: 'Save Profile',
       pythonInterpreter: 'Python Interpreter', pythonInterpreterHint: 'Choose the Python environment used to start AdaAssist\'s local backend.', selectPythonInterpreter: 'Select Python Interpreter', autoDetectPython: 'Auto-detect Python',
       inlineCompletion: 'Inline Completion', inlineCompletionHint: 'These settings control gray Python suggestions and are separate from the workflow profile.', inlineCompletionEnabled: 'Enable inline completion', triggerMode: 'Trigger', automaticTrigger: 'Automatic', manualTrigger: 'Manual', debounceMs: 'Debounce (ms)', maxTokens: 'Max tokens', saveInlineCompletion: 'Save inline settings',
@@ -42,8 +82,48 @@
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
+      inlineSettingsUnsaved: '修改尚未保存，请点击保存应用。',
+      inlineSettingsSaved: '行内补全设置已保存。',
+      inlineSettingsFailed: '行内补全设置保存失败。',
+      modelTab: '模型', completionTab: '补全',
+      profileEndpointRequired: '当前服务类型需要填写 Base URL。',
+      keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
+      environmentTab: '运行环境',
+      workflowSettingsTitle: '任务执行',
+      workflowSettingsDescription: '这些选项用于下一个任务；运行中的任务保留原有执行模式。',
+      workflowModeDescription: '选择需要人工审查的交互模式，或自动完成整个工作流。',
+      contextSettingDescription: '在当前任务内部复用生成与测试反馈，不跨独立任务传递。',
+      workflowModelGroup: '任务使用的模型',
+      workflowModelDescription: '模型连接、凭据和输出长度统一在“模型”中管理。',
+      configureModel: '配置模型',
+      modelSettingsTitle: '模型配置',
+      modelSettingsDescription: '每个模型独立保存连接信息、凭据与生成预算。',
+      chooseProfile: '选择配置',
+      connectionSection: '模型连接',
+      connectionSectionHint: '用于生成代码、测试和修复计划的模型连接。',
+      endpointOptionalHint: 'OpenAI 和 Claude 使用官方接口时可留空。',
+      generationSection: '生成预算',
+      discardChanges: '放弃修改',
+      advancedProfileActions: '高级管理',
+      completionSettingsTitle: '行内代码补全',
+      completionEnableHint: '在编辑 Python 代码时生成行内建议。',
+      completionModelSection: '补全模型',
+      completionModelHint: '与主工作流使用的模型独立配置。',
+      completionBehaviorSection: '触发方式与限制',
+      completionLimitHint: '防抖仅在自动触发时生效，此处 Token 上限只影响行内补全。',
+      environmentSettingsTitle: 'Python 运行环境',
+      environmentSettingsDescription: '管理 AdaAssist 本地后端的 Python 解释器与依赖检查。',
+      profileUnsaved: '配置有未保存的修改，请先保存或放弃修改后再切换。',
+      profileReady: '点击保存后才会应用修改，密钥保存在 VS Code 安全存储中。',
+      profileSavedStatus: '模型配置已保存。',
+      profileSavingStatus: '正在保存配置…',
+      profileChangesBlocked: '请先保存或放弃当前配置的修改，再切换其他模型。',
+      profileRequired: '请输入配置名称和模型 ID。',
+      profileEndpointRequired: '当前服务类型必须配置 Base URL。',
+      profileKeyRequired: '请填写 API Key 或在配置文件中设置密钥环境变量。',
+      profileSaveError: '模型配置未保存。',
       closeTests: '关闭测试', testsCompactEmpty: '留空可自动生成测试。', testsCompactDirty: '有未保存修改 · 保存或继续以应用。', testsCompactReady: '编辑后保存，或继续工作流。',
-      workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '配置工作流行为、模型连接和本地运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
+      workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
       workflowSetup: '工作流设置', runSetup: '运行设置', mode: '模式', workflowMode: '工作流模式', interactiveContinue: '交互式继续', autoFullWorkflow: '自动完整工作流',
       environmentStatus: '环境状态', checkingEnvironment: '正在检查环境...', environmentReady: '环境已就绪', environmentWarning: '环境需要注意', environmentFailed: '环境不可用', checkEnvironment: '检查环境',
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
@@ -54,7 +134,7 @@
       manualTestsHint: '这是当前唯一的测试集。留空可在生成代码前自动生成测试。', selectionToTests: '选区写入测试', saveTests: '保存测试',
       generatedTestSuite: '已生成的测试集', generatedTestsHint: '切换到生成测试模式，可使用独立且可编辑的测试集。', profileSettings: '配置设置',
       profileSettingsHint: '管理 OpenAI 兼容、Claude、Ollama 或 vLLM 配置。可选择已有配置编辑，或新建草稿；保存前工作流仍使用当前活动配置。',
-      profile: '配置', profileName: '配置名称', provider: '提供方', baseUrl: '基础 URL', model: '模型', apiKey: 'API 密钥', apiKeyHint: 'Ollama 和 vLLM 可不填；托管服务提供方需要填写。',
+      profile: '配置', profileName: '配置名称', workflowMaxTokens: '最大输出 Tokens', workflowMaxTokensHint: '控制代码生成、测试生成和修复规划的最大输出 Tokens；模型不变时，也会更新当前空闲 Session。', provider: '提供方', baseUrl: '基础 URL', model: '模型', apiKey: 'API 密钥', apiKeyHint: 'Ollama 和 vLLM 可不填；托管服务提供方需要填写。',
       profileEditorHint: '新建配置草稿，或编辑已有配置。', newProfile: '新建配置', openConfig: '打开配置文件', reloadProfiles: '重新加载配置', deleteProfile: '删除配置', saveProfile: '保存配置',
       pythonInterpreter: 'Python 解释器', pythonInterpreterHint: '选择用于启动 AdaAssist 本地后端的 Python 环境。', selectPythonInterpreter: '选择 Python 解释器', autoDetectPython: '自动检测 Python',
       inlineCompletion: '行内代码补全', inlineCompletionHint: '这里的配置控制 Python 编辑器中的灰色补全，与工作流 LLM 配置相互独立。', inlineCompletionEnabled: '启用行内代码补全', triggerMode: '触发方式', automaticTrigger: '自动触发', manualTrigger: '手动触发', debounceMs: '防抖延迟（毫秒）', maxTokens: '最大生成 token', saveInlineCompletion: '保存行内配置',
@@ -281,6 +361,14 @@
   const profileNameInput = document.getElementById('profileNameInput');
   const profileBaseUrlInput = document.getElementById('profileBaseUrlInput');
   const profileModelInput = document.getElementById('profileModelInput');
+  const workflowModelSummary = document.getElementById('workflowModelSummary');
+  const profileEditStatus = document.getElementById('profileEditStatus');
+  const discardProfileChangesBtn = document.getElementById('discardProfileChangesBtn');
+  const profileEndpointHint = document.getElementById('profileEndpointHint');
+  const profileKeyHint = document.getElementById('profileKeyHint');
+  const completionServiceGroup = document.getElementById('completionServiceGroup');
+  const completionBehaviorGroup = document.getElementById('completionBehaviorGroup');
+  const profileMaxTokensInput = document.getElementById('profileMaxTokensInput');
   const profileProviderSelect = document.getElementById('profileProviderSelect');
   const profileApiKeyInput = document.getElementById('profileApiKeyInput');
   const profileHint = document.getElementById('profileHint');
@@ -295,7 +383,22 @@
     profiles: [],
     activeProfileId: '',
     editingProfileId: '',
+    profileDirty: false,
+    profileSaving: false,
+    inlineSettingsDirty: false,
+    inlineSettingsSaving: false,
+    inlineSaveStatus: '',
+    profileStatusOverride: '',
+    preferredWorkflowMode: persistedWebviewState.workflowModePreference === 'auto' ? 'auto' : 'continue',
+    preferredContextEnabled: persistedWebviewState.workflowContextEnabled === true,
     session: null,
+    archivedSessions: [],
+    restorableSessionIds: [],
+    archiveTransitionPending: false,
+    pendingNewRequirement: '',
+    passDecisionShownFor: '',
+    passDecisionScheduled: false,
+    passedTaskConfirmedContinue: '',
     running: false,
     runningLabel: '',
     localLogs: [],
@@ -483,18 +586,30 @@
     }
   }
 
-	function switchSettingsTab(tab) {
-		const selected = tab === 'profiles' || tab === 'runtime' ? tab : 'workflow';
-		state.settingsTab = selected;
-		settingsTabButtons.forEach(function (button) {
-			const active = button.dataset.settingsTab === selected;
-			button.classList.toggle('active', active);
-			button.setAttribute('aria-selected', active ? 'true' : 'false');
-		});
-		settingsTabPanels.forEach(function (panel) {
-			panel.classList.toggle('hidden', panel.dataset.settingsPanel !== selected);
-		});
-	}
+  function persistSettingsPreferences() {
+    vscode.setState(Object.assign({}, vscode.getState() || {}, {
+      uiLanguage: uiLanguage,
+      workflowModePreference: state.preferredWorkflowMode,
+      workflowContextEnabled: state.preferredContextEnabled
+    }));
+  }
+
+  function switchSettingsTab(tab, focusTab) {
+    const requested = tab === 'runtime' ? 'completion' : tab;
+    const selected = ['workflow', 'profiles', 'completion', 'environment'].includes(requested)
+      ? requested : 'workflow';
+    state.settingsTab = selected;
+    settingsTabButtons.forEach(function (button) {
+      const active = button.dataset.settingsTab === selected;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+      if (active && focusTab) button.focus();
+    });
+    settingsTabPanels.forEach(function (panel) {
+      panel.classList.toggle('hidden', panel.dataset.settingsPanel !== selected);
+    });
+  }
 
   function updateTestInputPlaceholder() {
     if (testInput) {
@@ -778,18 +893,75 @@
     renderLogsPage();
   }
 
+  function awaitingTaskConfirmation() {
+    return Boolean(state.session && state.session.passed
+      && state.passedTaskConfirmedContinue !== state.session.session_id);
+  }
+
+  function renderPassedTaskDecision() {
+    if (!awaitingTaskConfirmation()) return;
+    const card = document.createElement('section');
+    card.className = 'ada-task-confirmation';
+    card.style.cssText = 'margin:12px 0;padding:14px;border:1px solid var(--vscode-focusBorder);border-radius:10px;';
+    const title = document.createElement('strong');
+    title.textContent = uiLanguage === 'zh-CN' ? '公开测试全部通过，是否结束当前任务？' : 'Public tests passed. Finish this task?';
+    const description = document.createElement('p');
+    description.textContent = uiLanguage === 'zh-CN'
+      ? '确认结束将归档当前 Session，保留上方历史。下一条输入是全新任务，不会作为 Guidance。'
+      : 'Finishing archives this session without deleting its history; your next input starts a new task.';
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+    const finish = document.createElement('button');
+    finish.type = 'button';
+    finish.className = 'btn primary';
+    finish.textContent = uiLanguage === 'zh-CN' ? '确认结束 · 新任务' : 'Finish · New task';
+    finish.disabled = state.running;
+    finish.addEventListener('click', function () {
+      finish.disabled = true;
+      vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
+    });
+    const continueButton = document.createElement('button');
+    continueButton.type = 'button';
+    continueButton.className = 'btn';
+    continueButton.textContent = uiLanguage === 'zh-CN' ? '继续完善当前任务' : 'Continue refining';
+    continueButton.disabled = state.running;
+    continueButton.addEventListener('click', function () {
+      state.passedTaskConfirmedContinue = state.session.session_id;
+      renderAll();
+      problemInput.focus();
+    });
+    actions.append(finish, continueButton);
+    card.append(title, description, actions);
+    timeline.appendChild(card);
+  }
+
   function applyWorkflowSessionData(data) {
     if (Array.isArray(data.logEntries)) {
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
-    state.workflowMode = data.workflowMode === 'auto' ? 'auto' : 'continue';
+    if (Array.isArray(data.restorableSessionIds)) state.restorableSessionIds = data.restorableSessionIds;
+    if (state.session && state.session.session_id === data.restoredSessionId) {
+      state.passedTaskConfirmedContinue = state.session.session_id;
+    }
+    if (Array.isArray(data.archivedSessions)) {
+      const previousCount = state.archivedSessions.length;
+      state.archivedSessions = data.archivedSessions;
+      if (state.archivedSessions.length > previousCount) {
+        state.archiveTransitionPending = true;
+        state.autoScrollPinned = true;
+      }
+    }
+    state.workflowMode = state.session
+      ? (data.workflowMode === 'auto' ? 'auto' : 'continue')
+      : state.preferredWorkflowMode;
     state.interactiveState = typeof data.interactiveState === 'string' ? data.interactiveState : 'idle';
     state.canResume = Boolean(data.canResume);
     state.canEditRequirement = Boolean(data.canEditRequirement);
     state.resumeLabel = typeof data.resumeLabel === 'string' ? data.resumeLabel : '';
     state.interruptRequested = Boolean(data.interruptRequested);
     executionModeSelect.value = state.workflowMode;
+    if (!state.session) contextEnabledInput.checked = state.preferredContextEnabled;
 
     if (state.session) {
       syncProblemInputFromSession(false);
@@ -810,6 +982,14 @@
     state.lastTimelineSignature = '';
     state.lastProblemSessionId = '';
     state.lastSyncedProblem = '';
+    if (state.pendingNewRequirement) {
+      const newRequirement = state.pendingNewRequirement;
+      state.pendingNewRequirement = '';
+      resetTaskDraft();
+      problemInput.value = newRequirement;
+      state.problemDraftDirty = true;
+      postTrackedOperation('workflow', Object.assign({ type: 'runWorkflow' }, currentRequestPayload()));
+    }
   }
 
   function findProfile(id) {
@@ -1323,7 +1503,11 @@
     const previousScrollTop = visualLogList.scrollTop;
     visualLogList.innerHTML = '';
     const entries = Array.isArray(state.logEntries) ? state.logEntries : [];
-    if (entries.length === 0) {
+    const snapshotIds = new Set([
+      ...(state.restorableSessionIds || []),
+      ...(state.archivedSessions || []).map(session => session.session_id)
+    ]);
+    if (entries.length === 0 && snapshotIds.size === 0) {
       const empty = document.createElement('div');
       empty.className = 'visual-log-empty';
       empty.textContent = t('noLogs');
@@ -1337,6 +1521,11 @@
         groups.set(key, []);
       }
       groups.get(key).push(entry);
+    });
+    // Full checkpoints outlive the small 30-day diagnostic history.
+    // Keep those sessions visible in Logs even if their event summaries expired.
+    snapshotIds.forEach(function (id) {
+      if (id && !groups.has(id)) groups.set(id, []);
     });
 
     groups.forEach(function (groupEntries, sessionKey) {
@@ -1366,11 +1555,35 @@
       const latestTimestamp = groupEntries[0] && groupEntries[0].timestamp;
       summaryMeta.textContent = [
         isCurrent ? t('currentLogSession') : '',
-        groupEntries.length + ' ' + t('logEvents'),
+        groupEntries.length ? groupEntries.length + ' ' + t('logEvents') : (snapshotIds.has(sessionId)
+          ? (uiLanguage === 'zh-CN' ? '已保存完整快照' : 'Saved full snapshot')
+          : '0 ' + t('logEvents')),
         logTimestamp(latestTimestamp)
       ].filter(Boolean).join(' · ');
-      groupSummary.appendChild(identity);
-      groupSummary.appendChild(summaryMeta);
+      const summaryContent = document.createElement('span');
+      summaryContent.className = 'visual-log-session-identity';
+      summaryContent.append(identity, summaryMeta);
+      groupSummary.appendChild(summaryContent);
+      const hasSnapshot = Boolean((state.archivedSessions || []).some(item => item.session_id === sessionId))
+        || (state.restorableSessionIds || []).includes(sessionId);
+      if (sessionId && !isCurrent) {
+        const restore = document.createElement('button');
+        restore.type = 'button';
+        restore.className = 'ada-restore-session visual-log-restore';
+        restore.textContent = '↩';
+        restore.title = hasSnapshot
+          ? (uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore session')
+          : (uiLanguage === 'zh-CN'
+            ? '尝试从后端恢复（仅有诊断日志的会话可能无法恢复）'
+            : 'Try restoring from backend (diagnostic-only logs may not be recoverable)');
+        restore.setAttribute('aria-label', restore.title);
+        restore.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          vscode.postMessage({ type: 'restoreArchivedSession', sessionId });
+        });
+        groupSummary.appendChild(restore);
+      }
       group.appendChild(groupSummary);
 
       const groupBody = document.createElement('div');
@@ -1867,8 +2080,11 @@
       focusTestSettings();
     }, state.running));
     row.appendChild(createButton(t('continue'), '', function () {
-      submitWorkflowBtn.click();
-    }, state.running || !configuredTestCode().trim()));
+      if (state.running || !state.canResume || !configuredTestCode().trim()) return;
+      const resumePayload = Object.assign({ type: 'resumeWorkflow' }, currentActionPayload());
+      state.additionalInstructionPending = Boolean(resumePayload.additionalInstruction);
+      postTrackedOperation('workflow', resumePayload);
+    }, state.running || !state.canResume || !configuredTestCode().trim()));
     card.appendChild(row);
     return card;
   }
@@ -2123,6 +2339,104 @@
   }
 
 
+  function renderConversationEntry(entry) {
+    if (entry.kind === 'session') return renderSessionCard();
+    if (entry.kind === 'user-input') {
+      const card = createCardFrame('session', entry.event);
+      card.classList.add('user-card');
+      const label = document.createElement('div');
+      label.className = 'user-input-receipt';
+      const key = { guidance: 'savedGuidance', requirement: 'savedRequirement',
+        plan: 'savedPlan', testGoals: 'savedTestGoals' }[entry.inputKind] || 'savedGuidance';
+      label.textContent = t(key);
+      card.appendChild(label);
+      card.appendChild(renderMarkdown(entry.content));
+      return card;
+    }
+    if (entry.kind === 'attempt') return renderAttemptCard(entry);
+    if (entry.kind === 'result') return renderResultCard(entry.event, entry.isLatestEvaluate, entry.isLatestFailed);
+    if (entry.kind === 'plan') return renderPlanCard(entry.event, entry.plan, entry.editable);
+    if (entry.kind === 'test-setup') return renderTestSetupPromptCard();
+    return renderNoteCard(entry.event);
+  }
+
+  function renderArchivedSession(session, index) {
+    const group = document.createElement('section');
+    group.className = 'ada-archived-session';
+    group.style.cssText = 'padding:0 0 12px;margin:0 0 14px;border-bottom:1px solid var(--vscode-panel-border);';
+    const divider = document.createElement('div');
+    divider.style.cssText = 'display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--vscode-descriptionForeground);';
+    const heading = document.createElement('span');
+    heading.textContent = (uiLanguage === 'zh-CN' ? '任务 ' : 'Task ') + (index + 1)
+      + (session.passed ? ' ✓' : '');
+    divider.appendChild(heading);
+    group.appendChild(divider);
+
+    // Reuse exactly the live conversation renderer, with a read-only snapshot of its state.
+    const saved = {
+      session: state.session, running: state.running, workflowMode: state.workflowMode,
+      interactiveState: state.interactiveState, canResume: state.canResume,
+      codeDrafts: state.codeDrafts, testDrafts: state.testDrafts
+    };
+    try {
+      state.session = session;
+      state.running = true;
+      state.workflowMode = 'auto';
+      state.interactiveState = 'idle';
+      state.canResume = false;
+      state.codeDrafts = {};
+      state.testDrafts = {};
+      conversationEntries().filter(entry => entry.kind !== 'test-setup').forEach(entry => {
+        const card = renderConversationEntry(entry);
+        if (!card) return;
+        card.querySelectorAll('button, input, textarea, select').forEach(control => {
+          control.disabled = true;
+        });
+        card.querySelectorAll('[contenteditable]').forEach(node => {
+          node.setAttribute('contenteditable', 'false');
+        });
+        group.appendChild(card);
+      });
+    } finally {
+      Object.assign(state, saved);
+    }
+    return group;
+  }
+
+  function renderArchivedHistory() {
+    (state.archivedSessions || []).forEach((session, index) => {
+      timeline.appendChild(renderArchivedSession(session, index));
+    });
+  }
+
+  function animateToNewTask() {
+    if (!conversationScroll || !state.archiveTransitionPending) return;
+    state.archiveTransitionPending = false;
+    const anchor = timeline.querySelector('.ada-new-task-anchor');
+    if (!anchor) return;
+    const target = Math.max(0, anchor.getBoundingClientRect().top
+      - conversationScroll.getBoundingClientRect().top + conversationScroll.scrollTop - 12);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(function () {
+      conversationScroll.scrollTo({ top: target, behavior: reduced ? 'instant' : 'smooth' });
+    });
+  }
+
+  function appendNewTaskAnchor() {
+    if (!(state.archivedSessions || []).length) return;
+    const anchor = document.createElement('div');
+    anchor.className = 'ada-new-task-anchor';
+    anchor.textContent = uiLanguage === 'zh-CN'
+      ? '新任务 · 输入需求以开始'
+      : 'New task · Enter a requirement to begin';
+    timeline.appendChild(anchor);
+    // Provide enough room to scroll old history above the visible viewport
+    // even before the new task contains its first message.
+    if (!state.session) {
+      anchor.style.minHeight = Math.max(0, conversationScroll.clientHeight - 28) + 'px';
+    }
+  }
+
   function renderTimeline() {
     syncEditablePlanDraft();
     const entries = conversationEntries();
@@ -2133,9 +2447,11 @@
       || hasTimelineChange;
 
     timeline.innerHTML = '';
+    renderArchivedHistory();
+    appendNewTaskAnchor();
     state.lastTimelineSignature = timelineSignature;
 
-    if (entries.length === 0) {
+    if (entries.length === 0 && !(state.archivedSessions || []).length) {
 			const guide = renderStudyGuideCard();
 			if (guide) {
 				timeline.appendChild(guide);
@@ -2152,52 +2468,15 @@
       return;
     }
 
-    entries.forEach((entry) => {
-      if (entry.kind === 'session') {
-        const sessionCard = renderSessionCard();
-        if (sessionCard) {
-          timeline.appendChild(sessionCard);
-        }
-        return;
-      }
-
-      if (entry.kind === 'user-input') {
-        const card = createCardFrame('session', entry.event);
-        card.classList.add('user-card');
-        const label = document.createElement('div');
-        label.className = 'user-input-receipt';
-        const key = {guidance: 'savedGuidance', requirement: 'savedRequirement', plan: 'savedPlan', testGoals: 'savedTestGoals'}[entry.inputKind] || 'savedGuidance';
-        label.textContent = t(key);
-        card.appendChild(label);
-        card.appendChild(renderMarkdown(entry.content));
-        timeline.appendChild(card);
-        return;
-      }
-
-      if (entry.kind === 'attempt') {
-        timeline.appendChild(renderAttemptCard(entry));
-        return;
-      }
-
-      if (entry.kind === 'result') {
-        timeline.appendChild(renderResultCard(entry.event, entry.isLatestEvaluate, entry.isLatestFailed));
-        return;
-      }
-
-      if (entry.kind === 'plan') {
-        timeline.appendChild(renderPlanCard(entry.event, entry.plan, entry.editable));
-        return;
-      }
-
-      if (entry.kind === 'test-setup') {
-        timeline.appendChild(renderTestSetupPromptCard());
-        return;
-      }
-
-      timeline.appendChild(renderNoteCard(entry.event));
+    entries.forEach(entry => {
+      const card = renderConversationEntry(entry);
+      if (card) timeline.appendChild(card);
     });
 
-    if (shouldStickToBottom) {
+    renderPassedTaskDecision();
+    if (state.archiveTransitionPending) {
+      animateToNewTask();
+    } else if (shouldStickToBottom || awaitingTaskConfirmation()) {
       requestConversationAutoScroll();
     }
   }
@@ -2241,7 +2520,69 @@
       : (state.profiles.some((item) => item.id === currentSettings) ? currentSettings : (active || NEW_PROFILE_DRAFT_ID));
   }
 
+  function renderProfileEditStatus() {
+    if (!profileEditStatus) return;
+    const key = state.profileSaving ? 'profileSavingStatus'
+      : state.profileStatusOverride || (state.profileDirty ? 'profileUnsaved' : 'profileReady');
+    profileEditStatus.textContent = t(key);
+    profileEditStatus.classList.toggle('is-dirty', state.profileDirty && !state.profileSaving);
+    profileEditStatus.classList.toggle('is-saving', state.profileSaving);
+    if (discardProfileChangesBtn) discardProfileChangesBtn.classList.toggle('hidden', !state.profileDirty);
+    if (saveProfileBtn) saveProfileBtn.disabled = state.profileSaving;
+  }
+
+  function markProfileDirty() {
+    state.profileDirty = true;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
+  }
+
+  function requireCleanProfile() {
+    if (!state.profileDirty && !state.profileSaving) return true;
+    state.profileStatusOverride = 'profileChangesBlocked';
+    renderProfileEditStatus();
+    return false;
+  }
+
+  function updateProviderFieldHints() {
+    const local = ['vllm', 'ollama', 'other'].includes(profileProviderSelect.value);
+    if (profileEndpointHint) {
+      profileEndpointHint.textContent = t(local ? 'profileEndpointRequired' : 'endpointOptionalHint');
+    }
+    if (profileKeyHint) {
+      profileKeyHint.textContent = t(local ? 'keyOptionalHint' : 'apiKeyHint');
+    }
+  }
+
+  function renderWorkflowModelSummary() {
+    if (!workflowModelSummary) return;
+    const profile = selectedProfile();
+    workflowModelSummary.textContent = profile
+      ? profile.name + ' · ' + profile.model + ' · '
+        + (profile.maxTokens || 1024).toLocaleString() + ' tokens'
+      : t('noProfile');
+  }
+
+  function updateCompletionFieldsState() {
+    const enabled = Boolean(inlineCompletionEnabledInput && inlineCompletionEnabledInput.checked);
+    const manual = inlineCompletionTriggerModeSelect
+      && inlineCompletionTriggerModeSelect.value === 'manual';
+    [inlineCompletionProviderSelect, inlineCompletionBaseUrlInput,
+      inlineCompletionModelInput, inlineCompletionTriggerModeSelect,
+      inlineCompletionMaxTokensInput].forEach(function (element) {
+        if (element) element.disabled = !enabled;
+    });
+    if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.disabled = !enabled || manual;
+    if (completionServiceGroup) completionServiceGroup.classList.toggle('is-inactive', !enabled);
+    if (completionBehaviorGroup) completionBehaviorGroup.classList.toggle('is-inactive', !enabled);
+  }
+
   function loadProfileEditor() {
+    state.profileDirty = false;
+    state.profileSaving = false;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
+    updateProviderFieldHints();
     const isNewDraft = !state.editingProfileId || state.editingProfileId === NEW_PROFILE_DRAFT_ID;
     if (deleteProfileBtn) {
       deleteProfileBtn.disabled = isNewDraft;
@@ -2251,10 +2592,12 @@
       profileNameInput.value = t('newProfileName');
       profileBaseUrlInput.value = '';
       profileModelInput.value = 'gpt-5.4';
+      profileMaxTokensInput.value = '1024';
       profileProviderSelect.value = 'other';
       profileApiKeyInput.value = '';
       profileApiKeyInput.placeholder = 'sk-...';
       profileHint.textContent = t('newProfileHint');
+      updateProviderFieldHints();
       return;
     }
 
@@ -2266,16 +2609,19 @@
       profileNameInput.value = '';
       profileBaseUrlInput.value = '';
       profileModelInput.value = 'gpt-5.4';
+      profileMaxTokensInput.value = '1024';
       profileProviderSelect.value = 'other';
       profileApiKeyInput.value = '';
       profileApiKeyInput.placeholder = 'sk-...';
       profileHint.textContent = t('profileNotFound');
+      updateProviderFieldHints();
       return;
     }
 
     profileNameInput.value = profile.name;
     profileBaseUrlInput.value = profile.baseUrl;
     profileModelInput.value = profile.model;
+    profileMaxTokensInput.value = String(profile.maxTokens || 1024);
     profileProviderSelect.value = profile.provider || 'other';
     profileApiKeyInput.value = '';
     profileApiKeyInput.placeholder = profile.apiKeyConfigured
@@ -2287,9 +2633,11 @@
     if (deleteProfileBtn) {
       deleteProfileBtn.disabled = false;
     }
+    updateProviderFieldHints();
   }
 
   function startNewProfile(returnToTask) {
+    if (!requireCleanProfile()) return;
     state.editingProfileId = NEW_PROFILE_DRAFT_ID;
     state.returnToTaskAfterSave = returnToTask;
     loadProfileEditor();
@@ -2385,7 +2733,7 @@
     submitWorkflowBtn.setAttribute('aria-label', accessibleLabel);
     submitWorkflowIcon.src = actionMeta.icon;
     submitWorkflowLabel.textContent = actionMeta.label;
-    submitWorkflowBtn.disabled = lockedInteractive
+    submitWorkflowBtn.disabled = awaitingTaskConfirmation() || lockedInteractive
       || (action === 'stop'
         ? Boolean(state.interruptRequested)
         : action === 'continue'
@@ -2449,24 +2797,29 @@
 		pythonInterpreterValue.textContent = String(state.pythonEnvironmentLabel || (state.pythonPath === 'auto' ? t('autoDetectPython') : state.pythonPath) || t('autoDetectPython'));
 	}
 
-	function renderInlineCompletionSettings() {
-		const settings = state.inlineCompletion;
-		if (!settings) {
-			return;
-		}
-		if (inlineCompletionEnabledInput) inlineCompletionEnabledInput.checked = settings.enabled !== false;
-		if (inlineCompletionProviderSelect) inlineCompletionProviderSelect.value = settings.provider || 'vllm';
-		if (inlineCompletionTriggerModeSelect) inlineCompletionTriggerModeSelect.value = settings.triggerMode === 'manual' ? 'manual' : 'automatic';
-		if (inlineCompletionBaseUrlInput) inlineCompletionBaseUrlInput.value = settings.baseUrl || '';
-		if (inlineCompletionModelInput) inlineCompletionModelInput.value = settings.model || '';
-		if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.value = String(settings.debounceMs || 700);
-		if (inlineCompletionMaxTokensInput) inlineCompletionMaxTokensInput.value = String(settings.maxTokens || 192);
-		if (inlineCompletionStatus) {
-			inlineCompletionStatus.textContent = settings.enabled === false
-				? 'Disabled'
-				: `${settings.model || 'unknown'} @ ${settings.baseUrl || 'unknown'}`;
-		}
-	}
+  function renderInlineCompletionSettings() {
+    const settings = state.inlineCompletion;
+    if (!settings) return;
+    if (!state.inlineSettingsDirty && !state.inlineSettingsSaving) {
+      if (inlineCompletionEnabledInput) inlineCompletionEnabledInput.checked = settings.enabled !== false;
+      if (inlineCompletionProviderSelect) inlineCompletionProviderSelect.value = settings.provider || 'vllm';
+      if (inlineCompletionTriggerModeSelect) inlineCompletionTriggerModeSelect.value =
+        settings.triggerMode === 'manual' ? 'manual' : 'automatic';
+      if (inlineCompletionBaseUrlInput) inlineCompletionBaseUrlInput.value = settings.baseUrl || '';
+      if (inlineCompletionModelInput) inlineCompletionModelInput.value = settings.model || '';
+      if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.value = String(settings.debounceMs || 700);
+      if (inlineCompletionMaxTokensInput) inlineCompletionMaxTokensInput.value = String(settings.maxTokens || 192);
+    }
+    updateCompletionFieldsState();
+    if (saveInlineCompletionBtn) saveInlineCompletionBtn.disabled = state.inlineSettingsSaving;
+    if (inlineCompletionStatus) {
+      inlineCompletionStatus.textContent = state.inlineSettingsSaving ? t('profileSavingStatus')
+        : state.inlineSettingsDirty ? t('inlineSettingsUnsaved')
+        : state.inlineSaveStatus ? t(state.inlineSaveStatus)
+        : settings.enabled === false ? t('disabled')
+        : `${settings.model || 'unknown'} @ ${settings.baseUrl || 'unknown'}`;
+    }
+  }
 
   function renderComposerStatus() {
     let text = '';
@@ -2601,11 +2954,142 @@
     return seconds < 1 ? '<1s' : Math.round(seconds) + 's';
   }
 
+  let workflowStepTooltip = null;
+
+  function hideWorkflowStepTooltip() {
+    if (workflowStepTooltip) workflowStepTooltip.hidden = true;
+  }
+
+  function workflowProgressFacts(event) {
+    const data = event && event.data && typeof event.data === 'object' ? event.data : {};
+    const generation = data.generation && typeof data.generation === 'object' ? data.generation : {};
+    const usage = generation.usage && typeof generation.usage === 'object' ? generation.usage : {};
+    const evaluation = data.evaluation && typeof data.evaluation === 'object' ? data.evaluation : {};
+    const testSummary = evaluation.test_summary && typeof evaluation.test_summary === 'object'
+      ? evaluation.test_summary
+      : (data.test_summary && typeof data.test_summary === 'object' ? data.test_summary : {});
+    const label = function (zh, en) { return uiLanguage === 'zh-CN' ? zh : en; };
+    const facts = [];
+    const add = function (name, value) {
+      if (value !== undefined && value !== null && String(value).trim()) {
+        facts.push([name, String(value)]);
+      }
+    };
+    add(label('时间', 'Time'), logTimestamp(event.created_at));
+    add(label('耗时', 'Duration'), workflowDuration(event));
+    if (typeof generation.strategy === 'string') add(label('生成策略', 'Strategy'), generation.strategy);
+    if (Number.isFinite(generation.max_output_tokens)) {
+      add(label('输出上限', 'Output limit'), generation.max_output_tokens + ' tokens');
+    }
+    if (Number.isFinite(usage.input_tokens)) add(label('输入 Tokens', 'Input tokens'), usage.input_tokens);
+    if (Number.isFinite(usage.output_tokens)) add(label('输出 Tokens', 'Output tokens'), usage.output_tokens);
+    if (Number.isFinite(usage.total_tokens)) add(label('总 Tokens', 'Total tokens'), usage.total_tokens);
+    if (Number.isFinite(testSummary.total)) {
+      add(label('公开测试', 'Public tests'),
+        (Number.isFinite(testSummary.passed) ? testSummary.passed : '?') + '/' + testSummary.total);
+      if (Number.isFinite(testSummary.pass_rate)) {
+        add(label('通过率', 'Pass rate'), Math.round(testSummary.pass_rate * 100) + '%');
+      }
+    }
+    if (data.code && typeof data.code === 'string') {
+      add(label('生成代码', 'Generated code'),
+        data.code.split('\\n').length + ' ' + label('行', 'lines'));
+    }
+    const excerpt = function (value, limit) {
+      return typeof value === 'string' ? value.trim().slice(0, limit) : '';
+    };
+    const error = excerpt(data.error || evaluation.error || data.traceback || evaluation.traceback, 340);
+    const plan = excerpt(data.plan, 260);
+    const code = excerpt(data.code, 240);
+    return {
+      facts,
+      note: error ? { label: label('失败信息', 'Failure details'), text: error } :
+        plan ? { label: label('修复计划', 'Repair plan'), text: plan } :
+        code ? { label: label('代码预览', 'Code preview'), text: code } : null
+    };
+  }
+
+  function showWorkflowStepTooltip(entry, source) {
+    if (!state.workflowProgressExpanded) return;
+    if (!workflowStepTooltip) {
+      workflowStepTooltip = document.createElement('div');
+      workflowStepTooltip.className = 'workflow-step-tooltip';
+      workflowStepTooltip.setAttribute('role', 'tooltip');
+      document.body.appendChild(workflowStepTooltip);
+    }
+    const tooltip = workflowStepTooltip;
+    tooltip.replaceChildren();
+    const title = document.createElement('div');
+    title.className = 'workflow-step-tooltip-title';
+    title.textContent = entry.title;
+    const status = document.createElement('div');
+    status.className = 'workflow-step-tooltip-status';
+    status.textContent = entry.statusLabel + (entry.detail ? ' · ' + entry.detail : '');
+    tooltip.append(title, status);
+    const info = workflowProgressFacts(entry.event);
+    if (info.facts.length) {
+      const facts = document.createElement('div');
+      facts.className = 'workflow-step-tooltip-facts';
+      info.facts.forEach(function (pair) {
+        const key = document.createElement('span');
+        key.className = 'workflow-step-tooltip-label';
+        key.textContent = pair[0];
+        const value = document.createElement('span');
+        value.className = 'workflow-step-tooltip-value';
+        value.textContent = pair[1];
+        facts.append(key, value);
+      });
+      tooltip.appendChild(facts);
+    }
+    if (info.note) {
+      const section = document.createElement('div');
+      section.className = 'workflow-step-tooltip-section';
+      const noteLabel = document.createElement('div');
+      noteLabel.className = 'workflow-step-tooltip-label';
+      noteLabel.textContent = info.note.label;
+      const note = document.createElement('div');
+      note.className = 'workflow-step-tooltip-note';
+      note.textContent = info.note.text;
+      section.append(noteLabel, note);
+      tooltip.appendChild(section);
+    }
+
+    const bounds = source.getBoundingClientRect();
+    const heading = source.querySelector('.workflow-progress-item-heading');
+    const headingBounds = heading ? heading.getBoundingClientRect() : bounds;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+    const margin = 12;
+
+    // Fly out to the RIGHT of the stage labels, rather than above the item.
+    // Workflow rows occupy the full width of the panel, so anchor inside their
+    // right-hand area instead of using bounds.right (which would be offscreen).
+    const minWidth = Math.min(180, Math.max(120, viewportWidth - margin * 2));
+    const preferredX = Math.max(
+      headingBounds.left + Math.min(240, bounds.width * 0.42),
+      headingBounds.left + 140
+    );
+    const maxX = Math.max(margin, viewportWidth - margin - minWidth);
+    const x = Math.max(margin, Math.min(preferredX, maxX));
+    tooltip.style.width = Math.min(340, viewportWidth - x - margin) + 'px';
+    tooltip.style.left = x + 'px';
+
+    tooltip.hidden = false;
+    const tooltipHeight = tooltip.getBoundingClientRect().height;
+    // Align vertically with the hovered stage, with only viewport clamping.
+    const y = Math.max(margin, Math.min(bounds.top + 2, viewportHeight - tooltipHeight - margin));
+    tooltip.style.top = y + 'px';
+  }
+
+  window.addEventListener('scroll', hideWorkflowStepTooltip, true);
+  window.addEventListener('resize', hideWorkflowStepTooltip);
+
   function workflowProgressEntries() {
     return sortedSessionEvents().map(function (event) {
       const tone = workflowEventTone(event.status);
       return {
         id: event.id,
+        event,
         title: workflowStageLabel(event.stage),
         detail: String(event.message || event.title || ''),
         tone,
@@ -2619,6 +3103,7 @@
     if (!workflowProgress || !workflowProgressToggle || !workflowProgressPopover || !workflowProgressList || !workflowProgressCurrentTitle || !workflowProgressCurrentDetail || !workflowProgressMarker) {
       return;
     }
+    hideWorkflowStepTooltip();
     const composerText = String(composerStatus.textContent || '').trim();
     const currentText = state.workflowError
       ? state.workflowError
@@ -2657,6 +3142,12 @@
     entries.forEach(function (entry) {
       const item = document.createElement('li');
       item.className = 'workflow-progress-item ' + entry.tone;
+      item.tabIndex = 0;
+      item.setAttribute('aria-label', [entry.title, entry.statusLabel, entry.detail].filter(Boolean).join('. '));
+      item.addEventListener('mouseenter', function () { showWorkflowStepTooltip(entry, item); });
+      item.addEventListener('mouseleave', hideWorkflowStepTooltip);
+      item.addEventListener('focus', function () { showWorkflowStepTooltip(entry, item); });
+      item.addEventListener('blur', hideWorkflowStepTooltip);
       const marker = document.createElement('span');
       marker.className = 'workflow-progress-item-marker';
       marker.setAttribute('aria-label', entry.statusLabel);
@@ -2719,10 +3210,11 @@
 
   function syncActionButtons() {
     const hasSession = Boolean(state.session);
+    const taskPassed = Boolean(state.session && state.session.passed);
     const hasProblemDraft = Boolean(problemInput.value.trim());
     const hasResolvedTestsDraft = Boolean(configuredTestCode().trim());
     const interactiveSession = hasSession && isInteractiveSelected();
-    const guidanceEditable = !state.running && (!hasSession || interactiveSession);
+    const guidanceEditable = !state.running && (!hasSession || interactiveSession || taskPassed) && !awaitingTaskConfirmation();
     const testsEditable = !state.running && (!hasSession || interactiveSession);
     const testsBusy = state.testOperationStatus === 'running';
 
@@ -2768,7 +3260,7 @@
     renderPrimaryActionButton(hasResolvedTestsDraft);
     submitWorkflowBtn.classList.toggle(
       'hidden',
-      hasSession && !interactiveSession && !state.running && !state.canResume
+      hasSession && !interactiveSession && !state.running && !state.canResume && !taskPassed
     );
   }
 
@@ -2782,6 +3274,7 @@
     state.testDrafts = {};
     state.lastTimelineSignature = '';
     state.session = null;
+    state.passedTaskConfirmedContinue = '';
     state.lastSessionId = '';
     state.problemDraftDirty = false;
     state.additionalInstructionPending = false;
@@ -2796,8 +3289,9 @@
     state.lastPostedOperation = null;
     state.lastProblemSessionId = '';
     state.lastSyncedProblem = '';
-    state.workflowMode = 'continue';
-    executionModeSelect.value = 'continue';
+    state.workflowMode = state.preferredWorkflowMode;
+    executionModeSelect.value = state.preferredWorkflowMode;
+    contextEnabledInput.checked = state.preferredContextEnabled;
     problemInput.value = '';
     if (testDescription) {
       testDescription.value = '';
@@ -2818,6 +3312,8 @@
     syncLayout();
     setTestsDrawerOpen(state.testsDrawerOpen);
     renderSetupSummaries();
+    renderWorkflowModelSummary();
+    renderProfileEditStatus();
 		renderProfileNotice();
 		renderEnvironmentStatus();
 		renderPythonInterpreter();
@@ -2844,8 +3340,12 @@
   }
 
   function openProfileSettingsFromSetup() {
-    state.editingProfileId = taskProfileSelect.value || state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || '';
-    loadProfileEditor();
+    if (!state.profileDirty && !state.profileSaving) {
+      state.editingProfileId = taskProfileSelect.value || state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || '';
+      loadProfileEditor();
+    } else {
+      requireCleanProfile();
+    }
     switchPage('settings');
 		switchSettingsTab('profiles');
     renderAll();
@@ -2938,6 +3438,17 @@
 
 	if (saveInlineCompletionBtn) {
 		saveInlineCompletionBtn.addEventListener('click', function () {
+			if (state.inlineSettingsSaving) return;
+			const model = inlineCompletionModelInput?.value.trim() || '';
+			const debounceValid = inlineCompletionDebounceInput?.checkValidity() !== false;
+			const tokensValid = inlineCompletionMaxTokensInput?.checkValidity() !== false;
+			if (!model) { inlineCompletionModelInput?.focus(); return; }
+			if (!debounceValid || !tokensValid) {
+				(!debounceValid ? inlineCompletionDebounceInput : inlineCompletionMaxTokensInput)?.reportValidity();
+				return;
+			}
+			state.inlineSettingsSaving = true;
+			renderInlineCompletionSettings();
 			vscode.postMessage({
 				type: 'saveInlineCompletionSettings',
 				enabled: Boolean(inlineCompletionEnabledInput && inlineCompletionEnabledInput.checked),
@@ -2951,11 +3462,6 @@
 		});
 	}
 
-	settingsTabButtons.forEach(function (button) {
-		button.addEventListener('click', function () {
-			switchSettingsTab(button.dataset.settingsTab || 'workflow');
-		});
-	});
 
   if (backFromTestsBtn) {
     backFromTestsBtn.addEventListener('click', function () {
@@ -2994,10 +3500,15 @@
   if (languageToggleBtn) {
     languageToggleBtn.addEventListener('click', function () {
       uiLanguage = uiLanguage === 'zh-CN' ? 'en' : 'zh-CN';
-      vscode.setState(Object.assign({}, persistedWebviewState, { uiLanguage }));
+      persistSettingsPreferences();
       vscode.postMessage({ type: 'setUiLanguage', uiLanguage });
       applyTranslations();
-      loadProfileEditor();
+      if (!state.profileDirty && !state.profileSaving) {
+        loadProfileEditor();
+      } else {
+        updateProviderFieldHints();
+        renderProfileEditStatus();
+      }
       renderAll();
     });
   }
@@ -3013,13 +3524,62 @@
   });
 
   settingsProfileSelect.addEventListener('change', function () {
+    if (!requireCleanProfile()) {
+      settingsProfileSelect.value = state.editingProfileId || state.activeProfileId;
+      return;
+    }
     state.editingProfileId = settingsProfileSelect.value === NEW_PROFILE_DRAFT_ID
-      ? NEW_PROFILE_DRAFT_ID
-      : settingsProfileSelect.value;
+      ? NEW_PROFILE_DRAFT_ID : settingsProfileSelect.value;
     loadProfileEditor();
+  });
+  [profileNameInput, profileBaseUrlInput, profileModelInput,
+    profileMaxTokensInput, profileApiKeyInput].forEach(function (element) {
+    element.addEventListener('input', markProfileDirty);
+  });
+  profileProviderSelect.addEventListener('change', function () {
+    markProfileDirty();
+    updateProviderFieldHints();
+  });
+  if (discardProfileChangesBtn) discardProfileChangesBtn.addEventListener('click', loadProfileEditor);
+  [inlineCompletionEnabledInput, inlineCompletionTriggerModeSelect,
+    inlineCompletionProviderSelect].forEach(function (element) {
+    if (!element) return;
+    element.addEventListener('change', function () {
+      state.inlineSettingsDirty = true;
+      state.inlineSaveStatus = '';
+      updateCompletionFieldsState();
+      renderInlineCompletionSettings();
+    });
+  });
+  [inlineCompletionBaseUrlInput, inlineCompletionModelInput,
+    inlineCompletionDebounceInput, inlineCompletionMaxTokensInput].forEach(function (element) {
+    if (!element) return;
+    element.addEventListener('input', function () {
+      state.inlineSettingsDirty = true;
+      state.inlineSaveStatus = '';
+      renderInlineCompletionSettings();
+    });
+  });
+  settingsTabButtons.forEach(function (button, index) {
+    button.addEventListener('click', function () { switchSettingsTab(button.dataset.settingsTab); });
+    button.addEventListener('keydown', function (event) {
+      let nextIndex = index;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % settingsTabButtons.length;
+      else if (event.key === 'ArrowLeft') nextIndex = (index + settingsTabButtons.length - 1) % settingsTabButtons.length;
+      else if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = settingsTabButtons.length - 1;
+      else return;
+      event.preventDefault();
+      switchSettingsTab(settingsTabButtons[nextIndex].dataset.settingsTab, true);
+    });
   });
 
   executionModeSelect.addEventListener('change', function () {
+    if (!state.session) {
+      state.preferredWorkflowMode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
+      state.workflowMode = state.preferredWorkflowMode;
+      persistSettingsPreferences();
+    }
     renderAll();
   });
 
@@ -3028,6 +3588,10 @@
   });
 
   contextEnabledInput.addEventListener('change', function () {
+    if (!state.session) {
+      state.preferredContextEnabled = contextEnabledInput.checked;
+      persistSettingsPreferences();
+    }
     renderSetupSummaries();
   });
 
@@ -3082,27 +3646,56 @@
   });
 
   reloadProfilesBtn.addEventListener('click', function () {
-    vscode.postMessage({ type: 'reloadProfiles' });
+    if (requireCleanProfile()) vscode.postMessage({ type: 'reloadProfiles' });
   });
 
   saveProfileBtn.addEventListener('click', function () {
+    if (state.profileSaving) return;
+    const name = profileNameInput.value.trim();
+    const model = profileModelInput.value.trim();
+    const provider = profileProviderSelect.value;
+    const url = profileBaseUrlInput.value.trim();
+    const existing = findProfile(state.editingProfileId);
+    const keyPresent = profileApiKeyInput.value.trim() || (existing && existing.apiKeyConfigured);
+    function validationError(messageKey, element) {
+      state.profileStatusOverride = messageKey;
+      renderProfileEditStatus();
+      if (element) element.focus();
+    }
+    if (!name || !model) {
+      validationError('profileRequired', !name ? profileNameInput : profileModelInput);
+      return;
+    }
+    if (['vllm', 'ollama', 'other'].includes(provider) && !url) {
+      validationError('profileEndpointRequired', profileBaseUrlInput);
+      return;
+    }
+    if (['openai', 'claude'].includes(provider) && !keyPresent) {
+      validationError('profileKeyRequired', profileApiKeyInput);
+      return;
+    }
+    if (!profileMaxTokensInput.value.trim() || !profileMaxTokensInput.checkValidity()) {
+      profileMaxTokensInput.reportValidity();
+      return;
+    }
+    state.profileSaving = true;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
     const profileId = state.editingProfileId === NEW_PROFILE_DRAFT_ID ? '' : state.editingProfileId;
     vscode.postMessage({
       type: 'saveProfile',
       id: profileId,
-      name: profileNameInput.value,
-      baseUrl: profileBaseUrlInput.value,
-      model: profileModelInput.value,
-      provider: profileProviderSelect.value,
+      name: name,
+      baseUrl: url,
+      model: model,
+      maxTokens: Number(profileMaxTokensInput.value),
+      provider: provider,
       apiKey: profileApiKeyInput.value
     });
-    if (state.returnToTaskAfterSave) {
-      state.returnToTaskAfterSave = false;
-      switchPage('task');
-    }
   });
 
   deleteProfileBtn.addEventListener('click', function () {
+    if (!requireCleanProfile()) return;
     if (!state.editingProfileId || state.editingProfileId === NEW_PROFILE_DRAFT_ID) {
       addLocalLog('Profile', 'No saved profile selected for deletion.', 'failed');
       return;
@@ -3134,6 +3727,10 @@
   }
 
   submitWorkflowBtn.addEventListener('click', function () {
+    if (awaitingTaskConfirmation()) {
+      renderTimeline();
+      return;
+    }
     if (state.running) {
       vscode.postMessage({ type: 'interruptWorkflow' });
       return;
@@ -3232,6 +3829,8 @@
         const currentEditingProfileId = state.editingProfileId;
 
         state.profiles = Array.isArray(data.profiles) ? data.profiles : [];
+        if (Array.isArray(data.archivedSessions)) state.archivedSessions = data.archivedSessions;
+        if (Array.isArray(data.restorableSessionIds)) state.restorableSessionIds = data.restorableSessionIds;
         state.activeProfileId = typeof data.activeProfileId === 'string' ? data.activeProfileId : '';
 		state.environmentCheck = data.environmentCheck && typeof data.environmentCheck === 'object'
 			? data.environmentCheck
@@ -3252,8 +3851,39 @@
           state.editingProfileId = state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || NEW_PROFILE_DRAFT_ID;
         }
 
-        loadProfileEditor();
+        if (!state.profileDirty && !state.profileSaving) loadProfileEditor();
         renderAll();
+        break;
+      }
+      case 'profileSaveResult': {
+        state.profileSaving = false;
+        if (data.ok) {
+          state.profileDirty = false;
+          state.editingProfileId = data.profileId || state.activeProfileId;
+          loadProfileEditor();
+          state.profileStatusOverride = 'profileSavedStatus';
+          if (state.returnToTaskAfterSave) {
+            state.returnToTaskAfterSave = false;
+            switchPage('task');
+          }
+        } else {
+          state.profileDirty = true;
+          state.profileStatusOverride = 'profileSaveError';
+          if (typeof data.message === 'string') addLocalLog('Profile', data.message, 'failed');
+        }
+        renderProfileEditStatus();
+        renderProfileOptions();
+        renderWorkflowModelSummary();
+        break;
+      }
+      case 'inlineSettingsSaveResult': {
+        state.inlineSettingsSaving = false;
+        state.inlineSettingsDirty = !data.ok;
+        state.inlineSaveStatus = data.ok ? 'inlineSettingsSaved' : 'inlineSettingsFailed';
+        if (!data.ok && typeof data.message === 'string') {
+          addLocalLog('Inline completion', data.message, 'failed');
+        }
+        renderInlineCompletionSettings();
         break;
       }
       case 'workflowSession':

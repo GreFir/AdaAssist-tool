@@ -46,12 +46,12 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIsNot(coder.config, planner.config)
         self.assertIsNot(coder.config, tester.config)
         self.assertEqual(coder.config.max_tokens, 1024)
-        self.assertEqual(planner.config.max_tokens, 768)
+        self.assertEqual(planner.config.max_tokens, 1024)
         self.assertEqual(planner.config.temperature, 0.5)
         self.assertEqual(coder.config.temperature, 0.2)
         self.assertEqual(tester.config.temperature, 0.2)
         self.assertEqual(config.temperature, 0.2)
-        self.assertEqual(tester.config.max_tokens, 768)
+        self.assertEqual(tester.config.max_tokens, 1024)
         self.assertEqual(config.max_tokens, 1024)
         self.assertIn("original task as the authoritative contract", coder.system_prompt)
         self.assertIn("max((score, name)) incorrectly chooses the largest tied name", coder.system_prompt)
@@ -59,6 +59,22 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIn("with 4 to 8 distinct, actionable steps", planner.system_prompt)
         self.assertIn("max((score, name))", planner.system_prompt)
         self.assertIn("Test only behavior explicitly required", tester.system_prompt)
+
+    def test_workflow_max_output_tokens_apply_consistently_to_all_model_stages(self) -> None:
+        for budget, expected_planner, expected_tester in (
+            (256, 256, 256),
+            (4096, 4096, 4096),
+        ):
+            with self.subTest(budget=budget):
+                RecordingExecutor.instances = []
+                config = LLMConfig(provider="vllm", model="test", max_tokens=budget)
+                with patch("src.Adacoder.AdacoderExecutor", RecordingExecutor):
+                    engine = Adacoder(config)
+                coder, planner, tester = RecordingExecutor.instances
+                self.assertEqual(coder.config.max_tokens, budget)
+                self.assertEqual(planner.config.max_tokens, expected_planner)
+                self.assertEqual(tester.config.max_tokens, expected_tester)
+                self.assertEqual(engine.coder_config.max_tokens, budget)
 
     def test_explicit_planner_budget_is_preserved(self) -> None:
         config = LLMConfig(provider="vllm", model="test", max_tokens=1024)

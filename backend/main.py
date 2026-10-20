@@ -18,6 +18,7 @@ class LLMSettingsRequest(BaseModel):
     base_url: str = ""
     api_key: str = ""
     model: str = Field(min_length=1)
+    max_tokens: int = Field(default=1024, ge=128, le=32768)
 
 
 class CreateSessionRequest(BaseModel):
@@ -43,6 +44,7 @@ class UpdateSessionRequest(BaseModel):
     resolved_test_code: str | None = None
     context_enabled: bool | None = None
     max_rounds: int | None = Field(default=None, ge=1, le=10)
+    max_tokens: int | None = Field(default=None, ge=128, le=32768)
     prompt_language: Literal["en", "zh-CN"] | None = None
 
 
@@ -120,6 +122,7 @@ def make_llm_config(settings: LLMSettingsRequest) -> LLMConfig:
         base_url=settings.base_url,
         api_key=settings.api_key,
         model=settings.model,
+        max_tokens=settings.max_tokens,
     )
 
 
@@ -231,12 +234,7 @@ def list_sessions() -> dict[str, Any]:
 
 @app.post("/api/sessions")
 def create_session(request: CreateSessionRequest) -> dict[str, Any]:
-    llm_config = LLMConfig(
-        provider=request.llm.provider,  # type: ignore[arg-type]
-        base_url=request.llm.base_url,
-        api_key=request.llm.api_key,
-        model=request.llm.model,
-    )
+    llm_config = make_llm_config(request.llm)
     session = store.create_session(
         problem_statement=request.problem,
         test_text=request.test_text,
@@ -250,6 +248,20 @@ def create_session(request: CreateSessionRequest) -> dict[str, Any]:
     )
     if request.resolved_test_code.strip():
         session.update_options(resolved_test_code=request.resolved_test_code)
+    return ok(session.to_dict())
+
+
+class RestoreSessionRequest(BaseModel):
+    snapshot: dict[str, Any]
+    llm: LLMSettingsRequest
+
+
+@app.post("/api/sessions/restore")
+def restore_session(request: RestoreSessionRequest) -> dict[str, Any]:
+    try:
+        session = store.restore_session(request.snapshot, make_llm_config(request.llm))
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ok(session.to_dict())
 
 
@@ -272,6 +284,7 @@ def update_session(session_id: str, request: UpdateSessionRequest) -> dict[str, 
             resolved_test_code=request.resolved_test_code,
             context_enabled=request.context_enabled,
             max_rounds=request.max_rounds,
+            max_tokens=request.max_tokens,
             prompt_language=request.prompt_language,
             plan=request.plan,
             announce_resolved_tests=request.resolved_test_code is not None,

@@ -17,16 +17,16 @@ class Adacoder:
         planner_config: LLMConfig | None = None,
         prompt_language: str = "en",
     ):
-        # Keep stage settings independent: mutating one stage must not silently
-        # change the others. Planning uses its validated sampling defaults;
-        # explicit planner settings still override them.
+        # Keep stage configs independent while honoring the workflow's
+        # user-selected max_tokens for *all* model output stages.
+        # Planner retains its distinct sampling temperature, not a hidden
+        # 768-token output ceiling. Explicit planner configuration can override.
         self.coder_config = replace(config)
         self.planner_config = replace(
             planner_config or config,
-            max_tokens=planner_config.max_tokens if planner_config is not None else 768,
             temperature=planner_config.temperature if planner_config is not None else 0.5,
         )
-        self.tester_config = replace(config, max_tokens=min(config.max_tokens, 768))
+        self.tester_config = replace(config)
         self.prompt_language = "zh-CN" if prompt_language == "zh-CN" else "en"
         self.coder = self._init_coder()
         self.planner = self._init_planner()

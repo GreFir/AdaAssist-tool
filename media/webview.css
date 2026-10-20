@@ -1055,6 +1055,17 @@ textarea {
   transform: translateY(-2px) rotate(225deg);
 }
 
+/* The expanded history and summary form one continuous panel:
+   only the outer four corners are rounded, never the joining seam. */
+.workflow-progress-anchor.expanded .workflow-progress-summary {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-color: transparent;
+}
+.workflow-progress-anchor.expanded .workflow-progress-summary:hover {
+  border-top-color: transparent;
+}
+
 .workflow-progress-popover {
   position: absolute;
   right: 0;
@@ -1228,6 +1239,73 @@ textarea {
   padding: 8px;
   color: var(--muted);
   font-size: 12px;
+}
+
+/* Step details are mounted under document.body so the scrollable
+   workflow popover does not clip the hover/focus panel. */
+.workflow-progress-item:hover,
+.workflow-progress-item:focus-visible {
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--vscode-foreground, var(--fg)) 5%, transparent);
+}
+.workflow-progress-item:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--accent));
+  outline-offset: -1px;
+}
+.workflow-step-tooltip {
+  position: fixed;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(340px, calc(100vw - 24px));
+  max-height: min(360px, calc(100vh - 24px));
+  overflow-y: auto;
+  pointer-events: none;
+  border: 1px solid var(--vscode-editorWidget-border, var(--border-strong));
+  border-radius: 9px;
+  padding: 12px 14px;
+  background: var(--vscode-editorHoverWidget-background, var(--vscode-editorWidget-background, var(--surface-strong)));
+  color: var(--vscode-editorHoverWidget-foreground, var(--fg));
+  box-shadow: 0 8px 24px color-mix(in srgb, #000 22%, transparent);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.workflow-step-tooltip[hidden] { display: none !important; }
+.workflow-step-tooltip-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 3px;
+}
+.workflow-step-tooltip-status {
+  color: var(--vscode-descriptionForeground, var(--muted));
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.workflow-step-tooltip-facts {
+  display: grid;
+  grid-template-columns: minmax(78px, max-content) minmax(0, 1fr);
+  gap: 4px 12px;
+}
+.workflow-step-tooltip-label {
+  color: var(--vscode-descriptionForeground, var(--muted));
+}
+.workflow-step-tooltip-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.workflow-step-tooltip-section {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+}
+.workflow-step-tooltip-note {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--fg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .workflow-progress-chevron { transition: none; }
 }
 
 .composer-shell > #operationState,
@@ -2539,4 +2617,183 @@ body.vscode-high-contrast-light .workflow-progress-popover {
 #testsDrawer .test-options-details[open] { margin: 0 10px; }
 #testsDrawer .tests-editor-shell:focus-within {
   box-shadow: inset 2px 0 var(--vscode-focusBorder);
+}
+
+/* Archived sessions remain in the same scroll stream; a new task starts below them. */
+.ada-new-task-anchor {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 0 12px;
+  margin-top: 10px;
+  border-top: 1px solid var(--vscode-panel-border);
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+  scroll-margin-top: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-scroll {
+    scroll-behavior: auto;
+  }
+}
+
+/* Compact resume control for archived task headings. */
+.ada-restore-session {
+  margin-left: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--vscode-descriptionForeground);
+  font-size: 18px;
+  cursor: pointer;
+}
+.ada-restore-session:hover,
+.ada-restore-session:focus-visible {
+  color: var(--vscode-foreground);
+  border-color: var(--vscode-focusBorder);
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+/* The Logs session heading keeps its original stacked title/meta at left,
+   with a discreet session restore action at right. */
+.visual-log-session-summary {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.visual-log-session-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.visual-log-restore {
+  align-self: center;
+  flex: none;
+}
+.visual-log-restore:disabled {
+  opacity: .28;
+  cursor: not-allowed;
+}
+
+/* Settings: compact navigation and quiet, intentional information hierarchy. */
+.settings-panel { gap: 15px; padding-top: 12px; }
+.settings-page-header { align-items: center; }
+.settings-page-header .panel-title { font-size: 13px; letter-spacing: .03em; }
+.settings-page-header .panel-copy { max-width: 44ch; margin-top: 5px; }
+.settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-strong) 75%, transparent);
+}
+.settings-tab {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 7px 3px;
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.settings-tab:hover { border-color: color-mix(in srgb, var(--accent) 18%, transparent); }
+.settings-tab.active {
+  color: var(--fg);
+  background: var(--vscode-input-background, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  box-shadow: 0 1px 5px color-mix(in srgb, #000 11%, transparent);
+}
+.settings-tab-panel { gap: 11px; min-width: 0; }
+.settings-intro { padding: 1px 1px 4px; }
+.settings-intro-title { font-size: 13px; font-weight: 650; color: var(--fg); }
+.settings-intro-detail { font-size: 11px; line-height: 1.55; color: var(--muted); margin-top: 4px; }
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 13px;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--border) 95%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-strong) 77%, var(--surface) 23%);
+}
+.settings-group-head { display: flex; flex-direction: column; gap: 4px; }
+.settings-group-title { font-size: 12px; font-weight: 650; color: var(--fg); }
+.settings-group-desc { font-size: 11px; line-height: 1.5; color: var(--muted); }
+.settings-form-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+.settings-group .field { min-width: 0; }
+.settings-group .field label { text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 600; }
+.settings-group input, .settings-group select { min-width: 0; padding: 9px 10px; }
+.settings-group .field-hint { font-size: 11px; margin-top: 1px; }
+.settings-profile-pick { display: grid; gap: 9px; grid-template-columns: minmax(0,1fr) auto; align-items: end; }
+.settings-profile-pick .btn { white-space: normal; max-width: 106px; }
+.settings-profile-status {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  min-height: 1.5em;
+}
+.settings-profile-status.is-dirty { color: var(--vscode-editorWarning-foreground, var(--warn)); }
+.settings-profile-status.is-saving { color: var(--vscode-charts-blue, var(--accent)); }
+.settings-switch-row {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px;
+  border-radius: 8px;
+}
+.settings-switch-row > input { flex: none; margin-top: 2px; }
+.settings-switch-row > span { display: flex; flex-direction: column; gap: 4px; }
+.settings-switch-title { font-size: 12px; font-weight: 600; }
+.settings-switch-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.settings-model-summary, .settings-range-caption {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.settings-model-summary {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--vscode-input-background, var(--input-bg));
+  overflow-wrap: anywhere;
+}
+.settings-inline-action { align-self: flex-start; }
+.settings-save-bar { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 2px; }
+.settings-save-bar .btn:first-child { font-weight: 650; }
+.settings-save-note { padding: 0 2px; font-size: 11px; }
+.settings-advanced {
+  border-top: 1px solid var(--border);
+  padding: 10px 2px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.settings-advanced summary { cursor: pointer; width: fit-content; }
+.settings-advanced summary:hover { color: var(--fg); }
+.settings-secondary-actions { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 0 3px; }
+.settings-secondary-actions .btn { font-size: 11px; }
+.settings-danger-action { color: var(--vscode-errorForeground, var(--error)); }
+.settings-group.is-inactive { opacity: .62; }
+.settings-group.is-inactive input:not([type=checkbox]),
+.settings-group.is-inactive select { cursor: not-allowed; }
+.settings-group .environment-status {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+@media (max-width: 350px) {
+  .settings-tabs { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .settings-form-grid { grid-template-columns: minmax(0,1fr); }
+  .settings-form-grid .field.span-2 { grid-column: auto; }
+  .settings-profile-pick { grid-template-columns: minmax(0,1fr); }
+  .settings-profile-pick .btn { max-width: none; justify-self: start; }
 }

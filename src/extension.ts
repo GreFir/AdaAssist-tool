@@ -5,12 +5,14 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { discoverPythonEnvironments, getActiveWorkspacePythonEnvironment, getSelectedPythonEnvironment, getPythonEnvironmentsApi } from './pythonEnvironments';
+import { SessionSnapshotStore, type SavedWorkflowSession } from './sessionSnapshots';
 
 interface LlmRequestConfig {
 	base_url: string;
 	api_key: string;
 	model: string;
 	provider: ProviderType;
+	max_tokens: number;
 }
 
 interface PythonCommand {
@@ -80,6 +82,7 @@ interface BackendSessionState {
 		provider?: string;
 		base_url?: string;
 		model?: string;
+		max_tokens?: number;
 	};
 	context_enabled: boolean;
 	max_rounds: number;
@@ -258,6 +261,7 @@ interface ProfileMeta {
 	baseUrl: string;
 	model: string;
 	provider: ProviderType;
+	maxTokens?: number;
 	apiKeyEnv?: string;
 }
 
@@ -292,6 +296,14 @@ const DEFAULT_BACKEND_HOST = '127.0.0.1';
 const DEFAULT_BACKEND_PORT = 8765;
 const DEFAULT_LLM_BASE_URL = 'http://127.0.0.1:8003/v1';
 const DEFAULT_LLM_MODEL = 'deepseek-coder-33b-instruct';
+const DEFAULT_WORKFLOW_MAX_TOKENS = 1024;
+const MAX_WORKFLOW_OUTPUT_TOKENS = 32768;
+
+function normalizeWorkflowMaxTokens(value: unknown): number {
+	return typeof value === 'number' && Number.isInteger(value)
+		&& value >= 128 && value <= MAX_WORKFLOW_OUTPUT_TOKENS
+		? value : DEFAULT_WORKFLOW_MAX_TOKENS;
+}
 const DEFAULT_INLINE_BASE_URL = 'http://127.0.0.1:8004/v1';
 const DEFAULT_INLINE_MODEL = 'deepseek-coder-6.7b-instruct';
 const SESSION_POLL_INTERVAL_MS = 300;
@@ -662,6 +674,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private readonly viewDisposables: vscode.Disposable[] = [];
 	private readonly backendServer: BackendServerManager;
 	private readonly visualLogStore: PersistentVisualLogStore;
+	private readonly sessionSnapshotStore: SessionSnapshotStore<BackendSessionState, ResumeState>;
 	private running = false;
 	private interruptRequested = false;
 	private pollingSession = false;
@@ -683,6 +696,8 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private studyBuildHash = '';
 	private studyLogQueue: Promise<void> = Promise.resolve();
 	private lastStudySnapshot = '';
+	private archivedSessions: BackendSessionState[] = [];
+	private restoredSessionId = '';
 	private activeSession: BackendSessionState | undefined;
 	private workflowMode: RunRequest['executionMode'] = 'continue';
 	private interactiveState: InteractionState = 'idle';
@@ -703,6 +718,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	) {
 		this.backendServer = new BackendServerManager(context, outputChannel);
 		this.visualLogStore = new PersistentVisualLogStore(context, outputChannel);
+		this.sessionSnapshotStore = new SessionSnapshotStore<BackendSessionState, ResumeState>(context, getWorkspaceRootPath());
 		this.captureEditorSelection(vscode.window.activeTextEditor);
 		this.disposables.push(
 			vscode.window.onDidChangeActiveTextEditor((editor) => this.captureEditorSelection(editor)),
@@ -750,6 +766,8 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 		await this.studyLogQueue;
 		await this.visualLogStore.flush();
+		try { await this.sessionSnapshotStore.flush(); }
+		catch (error) { this.outputChannel.appendLine(`[session snapshots] Flush failed: ${String(error)}`); }
 		this.backendServer.stop();
 		while (this.disposables.length > 0) {
 			this.disposables.pop()?.dispose();
@@ -865,7 +883,9 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	private async initialize(context: vscode.ExtensionContext): Promise<void> {
+		this.archivedSessions = context.workspaceState.get<BackendSessionState[]>('adaassist.archivedSessions.v1', []).filter(item => Boolean(item?.session_id));
 		await this.visualLogStore.initialize();
+		await this.sessionSnapshotStore.refreshIndex();
 		await this.loadProfiles(context);
 		this.loadUserStudyTasks();
 	}
@@ -884,7 +904,31 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		void this.view.webview.postMessage(message);
 	}
 
+	private async persistActiveSessionSnapshot(): Promise<void> {
+		if (!this.activeSession?.session_id) { return; }
+		try {
+			await this.sessionSnapshotStore.save({
+				schemaVersion: 1,
+				savedAt: new Date().toISOString(),
+				session: this.activeSession,
+				workflowMode: this.workflowMode,
+				interactiveState: this.interactiveState,
+				...(this.resumeState ? { resumeState: this.resumeState } : {})
+			});
+		} catch (error) {
+			this.outputChannel.appendLine(`[session snapshots] Save failed: ${String(error)}`);
+		}
+	}
+
+	private restorableSessionIds(): string[] {
+		return [...new Set([
+			...this.sessionSnapshotStore.knownSessionIds(),
+			...this.archivedSessions.map(session => session.session_id)
+		])];
+	}
+
 	private async postState(): Promise<void> {
+		await this.persistActiveSessionSnapshot();
 		this.visualLogStore.recordSession(this.activeSession);
 		this.postMessage({
 			type: 'state',
@@ -900,6 +944,9 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			running: this.running,
 			operation: this.activeOperation,
 			environmentCheck: this.environmentCheck,
+			archivedSessions: this.archivedSessions,
+			restorableSessionIds: this.restorableSessionIds(),
+			restoredSessionId: this.restoredSessionId,
 			pythonPath: getConfiguredPythonPath(this.context),
 			pythonEnvironmentLabel: await getPythonEnvironmentDisplayLabel(this.context),
 			inlineCompletion: getInlineCompletionSettings(),
@@ -1200,6 +1247,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			baseUrl: profile.baseUrl,
 			model: profile.model,
 			provider: profile.provider,
+			maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 			apiKeyConfigured: Boolean(profile.apiKey)
 		}));
 	}
@@ -1228,9 +1276,16 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					break;
 				}
 				case 'saveInlineCompletionSettings': {
-					await saveInlineCompletionSettings(message);
-					await this.postState();
-					this.appendUiLog('info', `Inline completion settings saved: model=${getInlineCompletionSettings().model}`);
+					try {
+						await saveInlineCompletionSettings(message);
+						await this.postState();
+						this.appendUiLog('info', `Inline completion settings saved: model=${getInlineCompletionSettings().model}`);
+						this.postMessage({ type: 'inlineSettingsSaveResult', ok: true });
+					} catch (error) {
+						this.postMessage({ type: 'inlineSettingsSaveResult', ok: false,
+							message: error instanceof Error ? error.message : String(error) });
+						throw error;
+					}
 					break;
 				}
 				case 'selectPythonInterpreter': {
@@ -1253,7 +1308,13 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 						break;
 					}
 					case 'saveProfile': {
-						await this.saveProfile(context, message);
+						try {
+							await this.saveProfile(context, message);
+						} catch (error) {
+							this.postMessage({ type: 'profileSaveResult', ok: false,
+								message: error instanceof Error ? error.message : String(error) });
+							throw error;
+						}
 						break;
 					}
 					case 'deleteProfile': {
@@ -1352,8 +1413,13 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.recordStudyEvent(message);
 					break;
 				}
-				case 'clearWorkflowSession': {
-					await this.clearWorkflowSession();
+				case 'restoreArchivedSession': {
+                    const sessionId = typeof message.sessionId === 'string' ? message.sessionId : '';
+                    await this.restoreArchivedSession(sessionId);
+                    break;
+                }
+                case 'clearWorkflowSession': {
+					await this.clearWorkflowSession(message.reason === 'user_confirmed' ? 'user_confirmed' : 'new_task');
 					break;
 				}
 					case 'useEditorSelection': {
@@ -1465,9 +1531,17 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		const model = modelRaw || DEFAULT_LLM_MODEL;
 		const provider = normalizeProvider(typeof message.provider === 'string' ? message.provider : 'other');
 		const apiKey = typeof message.apiKey === 'string' ? message.apiKey.trim() : '';
+		const maxTokens = message.maxTokens;
+		if (typeof maxTokens !== 'number' || !Number.isInteger(maxTokens)
+			|| maxTokens < 128 || maxTokens > MAX_WORKFLOW_OUTPUT_TOKENS) {
+			void vscode.window.showErrorMessage('最大输出 Tokens 必须为 128–32768 之间的整数。');
+			this.postMessage({ type: 'profileSaveResult', ok: false, message: '无效的最大输出 Tokens。' });
+			return;
+		}
 
 		if (!name) {
 			this.appendUiLog('error', 'Profile name is required.');
+			this.postMessage({ type: 'profileSaveResult', ok: false, message: 'Profile name is required.' });
 			return;
 		}
 
@@ -1481,6 +1555,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl,
 				model,
 				provider,
+				maxTokens,
 				apiKey: nextApiKey
 			};
 			if (apiKey) {
@@ -1498,15 +1573,46 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl,
 				model,
 				provider,
+				maxTokens,
 				apiKey
 			});
 			this.activeProfileId = id;
 		}
 
 		await this.persistProfiles(context);
+		// Applying the user's new output limit should not require discarding
+		// the current code, tests or plan. Never change the model/endpoint
+		// of an already-running session implicitly.
+		const active = this.activeSession;
+		const matchingSession = active?.session_id
+			&& active.llm?.model === model
+			&& active.llm?.provider === provider
+			&& (active.llm?.base_url ?? '') === baseUrl;
+		if (active?.session_id && matchingSession && !this.running
+			&& active.llm?.max_tokens !== maxTokens) {
+			try {
+				const response = await this.backendServer.request<BackendResponse>(
+					`/api/sessions/${encodeURIComponent(active.session_id)}`, {
+						method: 'PATCH',
+						body: JSON.stringify({ max_tokens: maxTokens })
+					}
+				);
+				if (response.session) {
+					this.activeSession = response.session;
+					this.appendUiLog('info', `Updated active session output budget to ${maxTokens} tokens.`);
+				}
+			} catch (error) {
+				const detail = error instanceof Error ? error.message : String(error);
+				this.appendUiLog('error', `Profile saved, but current session token limit was not updated: ${detail}`);
+				void vscode.window.showWarningMessage(
+					'Profile 已保存，但当前 Session 的输出上限未更新；新建任务可使用新设置。'
+				);
+			}
+		}
 		await this.postState();
 		await this.checkEnvironment();
 		this.appendUiLog('info', `Profile saved: ${name}`);
+		this.postMessage({ type: 'profileSaveResult', ok: true, profileId: this.activeProfileId });
 	}
 
 	private async deleteProfile(context: vscode.ExtensionContext, message: Record<string, unknown>): Promise<void> {
@@ -1566,12 +1672,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			problem: request.problem.trim(),
 			test_text: request.testText.trim(),
 			test_mode: request.testMode,
-			llm: {
-				base_url: profile.baseUrl,
-				api_key: profile.apiKey,
-				model: profile.model,
-				provider: profile.provider
-			},
+			llm: profileToRequestConfig(profile),
 			context_enabled: request.contextEnabled,
 			max_rounds: request.maxRounds,
 			resolved_test_code: request.testMode === 'generate' ? request.resolvedTestCode?.trim() : undefined,
@@ -1582,10 +1683,14 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	private postSessionState(stageResult?: BackendActionResult): void {
+		void this.persistActiveSessionSnapshot();
 		this.visualLogStore.recordSession(this.activeSession);
 		this.postMessage({
 			type: 'workflowSession',
 			session: this.activeSession,
+			archivedSessions: this.archivedSessions,
+			restorableSessionIds: this.restorableSessionIds(),
+			restoredSessionId: this.restoredSessionId,
 			stageResult,
 			workflowMode: this.workflowMode,
 			interactiveState: this.interactiveState,
@@ -2847,7 +2952,201 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 	}
 
-	private async clearWorkflowSession(): Promise<void> {
+	private async restoreArchivedSession(sessionId: string): Promise<void> {
+		if (this.running || this.activeOperation) {
+			void vscode.window.showWarningMessage('当前任务正在运行，请等待完成后再恢复历史会话。');
+			return;
+		}
+		if (!/^[a-zA-Z0-9_-]{8,128}$/.test(sessionId)) {
+			void vscode.window.showWarningMessage('无效的历史 Session ID。');
+			return;
+		}
+		if (this.activeSession?.session_id === sessionId) {
+			this.postMessage({ type: 'switchPage', page: 'task' });
+			return;
+		}
+
+		// History-v1 contains diagnostic events, not the code/test/plan needed
+		// to reconstruct a session. Resolve by ID from backend memory, the
+		// universal snapshot store, legacy study JSON, or archived task state.
+		const saved = await this.sessionSnapshotStore.load(sessionId);
+		const legacyArchive = this.archivedSessions.find(item => item.session_id === sessionId);
+		const stored: SavedWorkflowSession<BackendSessionState, ResumeState> | undefined =
+			saved ?? (legacyArchive ? {
+				schemaVersion: 1,
+				savedAt: legacyArchive.updated_at,
+				session: legacyArchive,
+				workflowMode: 'continue',
+				interactiveState: legacyArchive.passed ? 'done' : 'idle'
+			} : undefined);
+
+		let restored: BackendSessionState | undefined;
+		let backendLookupError = '';
+		try {
+			const response = await this.backendServer.request<BackendResponse>(
+				`/api/sessions/${encodeURIComponent(sessionId)}`
+			);
+			restored = response.session;
+		} catch (error) {
+			backendLookupError = error instanceof Error ? error.message : String(error);
+		}
+
+		if (!restored && !stored) {
+			void vscode.window.showWarningMessage(
+				`Session ${sessionId.slice(0, 8)}：当前工作区未找到完整 JSON 快照，也无法从后端读取会话。请检查是否打开了原实验工作区，以及后端是否可用；仅凭诊断日志无法重建代码和测试。`
+			);
+			this.outputChannel.appendLine(`[session restore] ${sessionId}: no snapshot; backend=${backendLookupError}`);
+			return;
+		}
+		if (!restored && stored) {
+			const wanted = stored.session.llm;
+			const modelProfile = this.profiles.find(item => item.model === wanted?.model
+				&& item.provider === wanted?.provider && item.baseUrl === wanted?.base_url);
+			const profile = modelProfile ?? this.getActiveProfile();
+			if (!profile) {
+				void vscode.window.showErrorMessage('恢复历史会话需要一个可用的模型 Profile。');
+				return;
+			}
+			try {
+				const response = await this.backendServer.request<BackendResponse>(
+					'/api/sessions/restore', {
+						method: 'POST',
+						body: JSON.stringify({
+							snapshot: stored.session,
+							llm: {
+								...profileToRequestConfig(profile),
+								max_tokens: normalizeWorkflowMaxTokens(stored.session.llm?.max_tokens ?? profile.maxTokens)
+							}
+						})
+					}
+				);
+				restored = response.session;
+			} catch (error) {
+				void vscode.window.showErrorMessage(
+					`重建历史 Session 失败：${error instanceof Error ? error.message : String(error)}`
+				);
+				return;
+			}
+		}
+		if (!restored) { return; }
+
+		// Never discard the active task until the target is verified/restored.
+		if (this.activeSession?.session_id) {
+			const answer = await vscode.window.showWarningMessage(
+				'恢复历史 Session 前需要归档当前任务，当前任务的快照和消息将保留。是否继续？',
+				{ modal: true }, '归档当前任务并恢复'
+			);
+			if (answer !== '归档当前任务并恢复') { return; }
+			await this.clearWorkflowSession('new_task');
+		}
+
+		this.activeSession = restored;
+		this.restoredSessionId = sessionId;
+		this.archivedSessions = this.archivedSessions.filter(item => item.session_id !== sessionId);
+		await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
+		// Preserve recorded host-side checkpoints for our new snapshots.
+		// Completed Auto tasks are opened in Interactive mode for follow-up edits.
+		this.workflowMode = stored?.workflowMode === 'auto' && !restored.passed ? 'auto' : 'continue';
+		this.interactiveState = restored.passed ? 'done' :
+			stored?.interactiveState === 'await_plan'
+				|| stored?.interactiveState === 'await_test_setup'
+				|| stored?.interactiveState === 'await_generation_tests'
+				|| stored?.interactiveState === 'await_code_review'
+				|| stored?.interactiveState === 'await_failure_choice'
+				|| stored?.interactiveState === 'await_auto_test_edit'
+				? stored.interactiveState as InteractionState
+				: restored.current_stage === 'plan' && restored.current_plan.trim() ? 'await_plan'
+				: restored.latest_evaluation && !restored.latest_evaluation.passed ? 'await_failure_choice'
+				: 'idle';
+		this.resumeState = stored?.resumeState && (
+			stored.resumeState.kind === 'tests-confirmation'
+			|| stored.resumeState.kind === 'generation-tests'
+			|| stored.resumeState.kind === 'code-review'
+			|| stored.resumeState.kind === 'auto'
+		) ? stored.resumeState : undefined;
+		if (!this.resumeState && !restored.current_code.trim()
+			&& restored.current_stage === 'tests'
+			&& Boolean((restored.resolved_test_code || restored.test_text).trim())) {
+			// Legacy study snapshots predate host-side pause metadata.
+			this.workflowMode = 'continue';
+			this.interactiveState = 'await_test_setup';
+			this.resumeState = {
+				kind: 'tests-confirmation',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					executionMode: 'continue',
+					resolvedTestCode: restored.resolved_test_code,
+					testDescription: restored.test_description,
+					additionalInstruction: restored.additional_instruction
+				},
+				restartAfterTests: false
+			};
+		}
+		if (!this.resumeState && !restored.passed && this.workflowMode === 'continue'
+			&& restored.current_code.trim()
+			&& ['generate', 'regenerate', 'debug_fix'].includes(restored.current_stage)) {
+			// Older experiment JSON stores the generated candidate and workflow
+			// events but did not serialize the Extension Host pause request.
+			const latestCode = [...restored.events].reverse().find(event =>
+				['generate', 'regenerate', 'debug_fix'].includes(event.stage)
+				&& event.status === 'completed');
+			this.resumeState = {
+				kind: 'code-review',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					useErrorFeedback: true,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					resolvedTestCode: restored.resolved_test_code,
+					codeOverride: restored.current_code,
+					codeEventId: latestCode?.id
+				}
+			};
+			this.interactiveState = 'await_code_review';
+		}
+		if (!this.resumeState && this.workflowMode === 'auto' && !restored.passed) {
+			// The legacy study JSON records the backend's auto progress but not
+			// the Extension Host resume button. Recreate its auto-resume request.
+			this.resumeState = {
+				kind: 'auto',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					executionMode: 'auto',
+					resolvedTestCode: restored.resolved_test_code,
+					testDescription: restored.test_description,
+					additionalInstruction: restored.additional_instruction
+				}
+			};
+			this.interactiveState = 'await_auto_test_edit';
+		}
+		if (!this.resumeState && this.interactiveState === 'await_code_review') {
+			// Do not display an unusable Continue button.
+			this.interactiveState = 'idle';
+		}
+		this.interruptRequested = false;
+		this.lastSessionSnapshot = '';
+		this.activeStudyTaskId = '';
+		this.studyTaskEnded = true; // Historical replay never rewrites the original experiment.
+		this.studyTestSource = '';
+		this.lastStudySnapshot = '';
+		await this.postState();
+		this.postSessionState();
+		this.postMessage({ type: 'switchPage', page: 'task' });
+		this.appendUiLog('info', `Restored session ${sessionId} from ${saved ? 'persisted JSON' : legacyArchive ? 'archive' : 'backend'}`);
+	}
+
+	private async clearWorkflowSession(reason: 'new_task' | 'user_confirmed' = 'new_task'): Promise<void> {
+		this.restoredSessionId = '';
 		this.stopSessionPolling();
 		if (!this.activeSession?.session_id) {
 			this.activeSession = undefined;
@@ -2868,7 +3167,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			await this.recordStudyEvent({
 				eventType: 'task_end',
 				metadata: {
-					reason: this.activeSession.passed ? 'completed' : 'new_task',
+					reason,
 					passed: this.activeSession.passed,
 					attempt_count: this.activeSession.attempt_count,
 					regeneration_count: this.activeSession.regeneration_count
@@ -2877,14 +3176,12 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.studyTaskEnded = true;
 		}
 		await this.persistStudySnapshot('task_end', true);
+		await this.persistActiveSessionSnapshot();
 
-		try {
-			await this.backendServer.fetch(`/api/sessions/${this.activeSession.session_id}`, {
-				method: 'DELETE'
-			});
-		} catch {
-			// Ignore cleanup failures for stale sessions.
-		}
+		// Archive the complete session for the visible conversation before detaching it.
+		const archived = [...this.archivedSessions, structuredClone(this.activeSession)];
+		this.archivedSessions = archived.slice(-20);
+		await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
 
 		this.activeSession = undefined;
 		this.workflowMode = 'continue';
@@ -3117,6 +3414,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					baseUrl: profile.baseUrl || '',
 					model: profile.model || DEFAULT_LLM_MODEL,
 					provider: normalizeProvider(profile.provider),
+					maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 					apiKeyEnv,
 					apiKey: plaintextApiKey || await readProfileApiKey(context, id, apiKeyEnv, this.outputChannel)
 				});
@@ -3143,6 +3441,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			baseUrl: (getConfigurationValue<string>('baseUrl', DEFAULT_LLM_BASE_URL) || DEFAULT_LLM_BASE_URL).trim(),
 			model: (getConfigurationValue<string>('model', DEFAULT_LLM_MODEL) || DEFAULT_LLM_MODEL).trim(),
 			provider: 'other',
+			maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 			apiKey: legacyApiKey
 		};
 		this.profiles = [defaultProfile];
@@ -3164,6 +3463,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				baseUrl: profile.baseUrl,
 				model: profile.model,
 				provider: profile.provider,
+				maxTokens: normalizeWorkflowMaxTokens(profile.maxTokens),
 				...(profile.apiKeyEnv ? { apiKeyEnv: profile.apiKeyEnv } : {})
 			}))
 		};
@@ -3800,6 +4100,7 @@ async function readProfilesFromFile(
 				baseUrl: typeof item.baseUrl === 'string' ? item.baseUrl : '',
 				model: typeof item.model === 'string' && item.model ? item.model : DEFAULT_LLM_MODEL,
 				provider: normalizeProvider(typeof item.provider === 'string' ? item.provider : 'other'),
+				maxTokens: normalizeWorkflowMaxTokens(item.maxTokens),
 				apiKeyEnv: normalizeOptionalString(item.apiKeyEnv),
 				apiKey: typeof item.apiKey === 'string' ? item.apiKey : ''
 			});
@@ -3873,6 +4174,7 @@ async function getActiveProfileForEditor(
 				baseUrl: selected.baseUrl.trim(),
 				model: selected.model.trim() || DEFAULT_LLM_MODEL,
 				provider: normalizeProvider(selected.provider),
+				maxTokens: normalizeWorkflowMaxTokens(selected.maxTokens),
 				apiKeyEnv: normalizeOptionalString(selected.apiKeyEnv),
 				apiKey
 			};
@@ -3885,6 +4187,7 @@ async function getActiveProfileForEditor(
 		baseUrl: (getConfigurationValue<string>('baseUrl', DEFAULT_LLM_BASE_URL) || DEFAULT_LLM_BASE_URL).trim(),
 		model: (getConfigurationValue<string>('model', DEFAULT_LLM_MODEL) || DEFAULT_LLM_MODEL).trim(),
 		provider: 'other',
+		maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 		apiKey: await readLegacyApiKey(context, outputChannel)
 	};
 }
@@ -3900,6 +4203,7 @@ async function getInlineCompletionProfile(
 		baseUrl: (getConfigurationValue<string>('inlineCompletion.baseUrl', DEFAULT_INLINE_BASE_URL) || DEFAULT_INLINE_BASE_URL).trim(),
 		model: (getConfigurationValue<string>('inlineCompletion.model', DEFAULT_INLINE_MODEL) || DEFAULT_INLINE_MODEL).trim(),
 		provider,
+		maxTokens: DEFAULT_WORKFLOW_MAX_TOKENS,
 		apiKey: provider === 'vllm' || provider === 'ollama' ? '' : await readLegacyApiKey(context, outputChannel)
 	};
 }
@@ -3909,7 +4213,8 @@ function profileToRequestConfig(profile: Profile): LlmRequestConfig {
 		base_url: profile.baseUrl,
 		api_key: profile.apiKey,
 		model: profile.model,
-		provider: profile.provider
+		provider: profile.provider,
+		max_tokens: normalizeWorkflowMaxTokens(profile.maxTokens)
 	};
 }
 
@@ -4627,158 +4932,240 @@ async function insertGeneratedCode(code: string): Promise<void> {
 		</main>
 
 			<main class="page" id="settingsPage">
-				<section class="panel settings-panel">
-					<div class="panel-header">
-						<div>
-							<div class="panel-title" data-i18n="settings">Settings</div>
-							<div class="panel-copy" data-i18n="settingsHint">Configure workflow behavior, model access, and the local runtime.</div>
-						</div>
-						<button class="btn subtle" id="backToWorkflowBtn" type="button" data-i18n="back">Back</button>
-					</div>
-					<div class="settings-tabs" role="tablist" aria-label="Settings">
-						<button class="settings-tab active" id="workflowSettingsTabBtn" type="button" role="tab" data-settings-tab="workflow" data-i18n="workflow">Workflow</button>
-						<button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" data-i18n="profiles">Profiles</button>
-						<button class="settings-tab" id="runtimeSettingsTabBtn" type="button" role="tab" data-settings-tab="runtime" data-i18n="runtime">Runtime</button>
-					</div>
-					<section class="settings-tab-panel" id="workflowSettingsTab" data-settings-panel="workflow">
-						<div class="field mode-field">
-							<label for="executionModeSelect" data-i18n="mode">Mode</label>
-							<select id="executionModeSelect" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
-								<option value="continue" data-i18n="interactiveContinue">Interactive Continue</option>
-								<option value="auto" data-i18n="autoFullWorkflow">Auto Full Workflow</option>
-							</select>
-							<div class="field-hint" id="workflowModeHint" data-i18n="interactiveHint">Interactive mode pauses at review points and accepts edits or additional directions.</div>
-						</div>
-						<div class="field">
-							<span data-i18n="llmProfile">LLM Profile</span>
-							<div class="profile-picker-row">
-								<button class="btn secondary setup-inline-btn" id="editProfileFromSetupBtn" type="button" data-i18n="configure">Configure</button>
-							</div>
-						</div>
-						<label class="checkbox-chip" for="contextEnabledInput">
-							<input id="contextEnabledInput" type="checkbox" />
-							<span data-i18n="startupContext">Startup Context</span>
-						</label>
-						<div class="setup-alert hidden" id="profileNotice">
-							<div>
-								<div class="mini-heading" data-i18n="llmSetupRequired">LLM Setup Required</div>
-								<div class="hint" id="profileNoticeText" data-i18n="configureProfileBeforeStart">Configure an LLM profile before starting the workflow.</div>
-							</div>
-							<button class="btn secondary" id="profileNoticeBtn" type="button" data-i18n="configure">Configure</button>
-						</div>
-					</section>
-					<section class="settings-tab-panel hidden" id="profilesSettingsTab" data-settings-panel="profiles">
+  <section class="panel settings-panel">
+    <div class="panel-header settings-page-header">
+      <div>
+        <div class="panel-title" data-i18n="settings">Settings</div>
+        <div class="panel-copy" data-i18n="settingsHint">Manage task behavior, models, completion, and Python runtime.</div>
+      </div>
+      <button class="btn subtle" id="backToWorkflowBtn" type="button" data-i18n="back">Back</button>
+    </div>
+    <div class="settings-tabs" role="tablist" aria-label="Settings">
+      <button class="settings-tab active" id="workflowSettingsTabBtn" type="button" role="tab" data-settings-tab="workflow" aria-controls="workflowSettingsTab" data-i18n="workflow">Workflow</button>
+      <button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" aria-controls="profilesSettingsTab" data-i18n="modelTab">Models</button>
+      <button class="settings-tab" id="completionSettingsTabBtn" type="button" role="tab" data-settings-tab="completion" aria-controls="completionSettingsTab" data-i18n="completionTab">Completion</button>
+      <button class="settings-tab" id="environmentSettingsTabBtn" type="button" role="tab" data-settings-tab="environment" aria-controls="environmentSettingsTab" data-i18n="environmentTab">Environment</button>
+    </div>
 
-					<div class="form-grid">
-					<div class="field span-2">
-						<label for="settingsProfileSelect" data-i18n="profile">Profile</label>
-						<select id="settingsProfileSelect"></select>
-					</div>
-					<div class="field">
-						<label for="profileNameInput" data-i18n="profileName">Profile Name</label>
-						<input id="profileNameInput" type="text" placeholder="Local GPT-5.4" />
-					</div>
-					<div class="field">
-						<label for="profileProviderSelect" data-i18n="provider">Provider</label>
-						<select id="profileProviderSelect">
-							<option value="other">OpenAI-Compatible</option>
-							<option value="openai">OpenAI</option>
-							<option value="claude">Claude</option>
-							<option value="ollama">Ollama</option>
-							<option value="vllm">vLLM</option>
-						</select>
-					</div>
-					<div class="field">
-						<label for="profileBaseUrlInput" data-i18n="baseUrl">Base URL</label>
-						<input id="profileBaseUrlInput" type="text" placeholder="https://api.openai.com/v1" />
-					</div>
-					<div class="field">
-						<label for="profileModelInput" data-i18n="model">Model</label>
-						<input id="profileModelInput" type="text" placeholder="gpt-5.4" />
-					</div>
-					<div class="field span-2">
-						<label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
-						<input id="profileApiKeyInput" type="password" placeholder="sk-..." />
-						<div class="field-hint" data-i18n="apiKeyHint">Optional for Ollama and vLLM. Required for hosted providers.</div>
-					</div>
-				</div>
+    <section class="settings-tab-panel" id="workflowSettingsTab" data-settings-panel="workflow" role="tabpanel" aria-labelledby="workflowSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="workflowSettingsTitle">Task execution</div>
+        <div class="settings-intro-detail" data-i18n="workflowSettingsDescription">Set the behavior of your next coding task. A running task keeps its current mode.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="workflowMode">Workflow Mode</div>
+          <div class="settings-group-desc" data-i18n="workflowModeDescription">Choose whether to pause for human review.</div>
+        </div>
+        <div class="field">
+          <label for="executionModeSelect" data-i18n="mode">Mode</label>
+          <select id="executionModeSelect" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
+            <option value="continue" data-i18n="interactiveContinue">Interactive Continue</option>
+            <option value="auto" data-i18n="autoFullWorkflow">Auto Full Workflow</option>
+          </select>
+          <div class="field-hint" id="workflowModeHint" data-i18n="interactiveHint">Interactive mode pauses at review points so you can edit tests, code, and plans.</div>
+        </div>
+        <label class="checkbox-chip settings-switch-row" for="contextEnabledInput">
+          <input id="contextEnabledInput" type="checkbox" />
+          <span>
+            <span class="settings-switch-title" data-i18n="startupContext">Startup Context</span>
+            <span class="settings-switch-desc" data-i18n="contextSettingDescription">Reuse previous stage feedback within this task, not across unrelated tasks.</span>
+          </span>
+        </label>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="workflowModelGroup">Model used for tasks</div>
+          <div class="settings-group-desc" data-i18n="workflowModelDescription">Model connection and output limit are managed in Models.</div>
+        </div>
+        <div class="settings-model-summary" id="workflowModelSummary">—</div>
+        <button class="btn secondary settings-inline-action" id="editProfileFromSetupBtn" type="button" data-i18n="configureModel">Configure model</button>
+        <div class="setup-alert hidden" id="profileNotice">
+          <div>
+            <div class="mini-heading" data-i18n="llmSetupRequired">LLM Setup Required</div>
+            <div class="hint" id="profileNoticeText" data-i18n="configureProfileBeforeStart">Configure an LLM profile before starting the workflow.</div>
+          </div>
+          <button class="btn secondary" id="profileNoticeBtn" type="button" data-i18n="configure">Configure</button>
+        </div>
+      </div>
+    </section>
 
-				<div class="hint" id="profileHint" data-i18n="profileEditorHint">Create a new profile draft or edit an existing profile.</div>
+    <section class="settings-tab-panel hidden" id="profilesSettingsTab" data-settings-panel="profiles" role="tabpanel" aria-labelledby="profilesSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="modelSettingsTitle">Model profiles</div>
+        <div class="settings-intro-detail" data-i18n="modelSettingsDescription">Save a reusable connection and output budget for code generation, tests, and repair planning.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="chooseProfile">Choose a profile</div>
+        </div>
+        <div class="settings-profile-pick">
+          <div class="field">
+            <label for="settingsProfileSelect" data-i18n="profile">Profile</label>
+            <select id="settingsProfileSelect"></select>
+          </div>
+          <button class="btn secondary" id="newProfileBtn" type="button" data-i18n="newProfile">New Profile</button>
+        </div>
+        <div class="settings-profile-status" id="profileEditStatus" role="status" aria-live="polite"></div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="connectionSection">Connection</div>
+          <div class="settings-group-desc" data-i18n="connectionSectionHint">Enter the service and model information. Secrets are stored securely.</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="profileNameInput" data-i18n="profileName">Profile Name</label>
+            <input id="profileNameInput" type="text" placeholder="Local coding model" />
+          </div>
+          <div class="field">
+            <label for="profileProviderSelect" data-i18n="provider">Provider</label>
+            <select id="profileProviderSelect">
+              <option value="other">OpenAI-Compatible</option>
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude</option>
+              <option value="ollama">Ollama</option>
+              <option value="vllm">vLLM</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="profileBaseUrlInput" data-i18n="baseUrl">Base URL</label>
+            <input id="profileBaseUrlInput" type="text" placeholder="https://api.openai.com/v1" />
+            <div class="field-hint" id="profileEndpointHint" data-i18n="endpointOptionalHint">Optional for hosted providers using their official endpoint.</div>
+          </div>
+          <div class="field span-2">
+            <label for="profileModelInput" data-i18n="model">Model</label>
+            <input id="profileModelInput" type="text" placeholder="Model ID" />
+          </div>
+          <div class="field span-2">
+            <label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
+            <input id="profileApiKeyInput" type="password" autocomplete="off" placeholder="sk-..." />
+            <div class="field-hint" id="profileKeyHint" data-i18n="apiKeyHint">Optional for Ollama and vLLM. Required for hosted providers.</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="generationSection">Generation budget</div>
+          <div class="settings-group-desc" data-i18n="workflowMaxTokensHint">Maximum output tokens for code generation, tests, and repair planning. Applies to an idle session using the same model.</div>
+        </div>
+        <div class="field">
+          <label for="profileMaxTokensInput" data-i18n="workflowMaxTokens">Max Output Tokens</label>
+          <input id="profileMaxTokensInput" type="number" min="128" max="32768" step="1" value="1024" />
+          <div class="settings-range-caption">128 – 32,768 tokens</div>
+        </div>
+      </div>
+      <div class="settings-save-bar">
+        <button class="btn" id="saveProfileBtn" type="button" data-i18n="saveProfile">Save Profile</button>
+        <button class="btn secondary hidden" id="discardProfileChangesBtn" type="button" data-i18n="discardChanges">Discard changes</button>
+      </div>
+      <div class="hint settings-save-note" id="profileHint" data-i18n="profileEditorHint">Create or edit a model profile. Changes are not applied until you save.</div>
+      <details class="settings-advanced">
+        <summary data-i18n="advancedProfileActions">Advanced profile actions</summary>
+        <div class="settings-secondary-actions">
+          <button class="btn secondary" id="openProfileConfigBtn" type="button" data-i18n="openConfig">Open Config</button>
+          <button class="btn secondary" id="reloadProfilesBtn" type="button" data-i18n="reloadProfiles">Reload Profiles</button>
+          <button class="btn secondary settings-danger-action" id="deleteProfileBtn" type="button" data-i18n="deleteProfile">Delete Profile</button>
+        </div>
+      </details>
+    </section>
 
-				<div class="button-grid">
-					<button class="btn secondary" id="newProfileBtn" type="button" data-i18n="newProfile">New Profile</button>
-					<button class="btn secondary" id="openProfileConfigBtn" type="button" data-i18n="openConfig">Open Config</button>
-					<button class="btn secondary" id="reloadProfilesBtn" type="button" data-i18n="reloadProfiles">Reload Profiles</button>
-					<button class="btn secondary" id="deleteProfileBtn" type="button" data-i18n="deleteProfile">Delete Profile</button>
-						<button class="btn" id="saveProfileBtn" type="button" data-i18n="saveProfile">Save Profile</button>
-					</div>
-					</section>
-					<section class="settings-tab-panel hidden" id="runtimeSettingsTab" data-settings-panel="runtime">
-						<div class="settings-subsection">
-							<div class="mini-heading" data-i18n="inlineCompletion">Inline Completion</div>
-							<div class="field-hint" data-i18n="inlineCompletionHint">These settings control the gray Python suggestions shown while typing and are separate from the workflow profile.</div>
-							<label class="checkbox-chip" for="inlineCompletionEnabledInput">
-								<input id="inlineCompletionEnabledInput" type="checkbox" />
-								<span data-i18n="inlineCompletionEnabled">Enable inline completion</span>
-							</label>
-							<div class="form-grid">
-								<div class="field">
-									<label for="inlineCompletionProviderSelect" data-i18n="provider">Provider</label>
-									<select id="inlineCompletionProviderSelect">
-										<option value="vllm">vLLM</option>
-										<option value="other">OpenAI-Compatible</option>
-										<option value="openai">OpenAI</option>
-										<option value="ollama">Ollama</option>
-									</select>
-								</div>
-								<div class="field">
-									<label for="inlineCompletionTriggerModeSelect" data-i18n="triggerMode">Trigger</label>
-									<select id="inlineCompletionTriggerModeSelect">
-										<option value="automatic" data-i18n="automaticTrigger">Automatic</option>
-										<option value="manual" data-i18n="manualTrigger">Manual</option>
-									</select>
-								</div>
-								<div class="field span-2">
-									<label for="inlineCompletionBaseUrlInput" data-i18n="baseUrl">Base URL</label>
-									<input id="inlineCompletionBaseUrlInput" type="text" placeholder="http://127.0.0.1:8004/v1" />
-								</div>
-								<div class="field span-2">
-									<label for="inlineCompletionModelInput" data-i18n="model">Model</label>
-									<input id="inlineCompletionModelInput" type="text" placeholder="deepseek-coder-6.7b-instruct" />
-								</div>
-								<div class="field">
-									<label for="inlineCompletionDebounceInput" data-i18n="debounceMs">Debounce (ms)</label>
-									<input id="inlineCompletionDebounceInput" type="number" min="250" max="5000" step="50" />
-								</div>
-								<div class="field">
-									<label for="inlineCompletionMaxTokensInput" data-i18n="maxTokens">Max tokens</label>
-									<input id="inlineCompletionMaxTokensInput" type="number" min="32" max="512" step="1" />
-								</div>
-							</div>
-							<div class="action-row">
-								<button class="btn" id="saveInlineCompletionBtn" type="button" data-i18n="saveInlineCompletion">Save inline settings</button>
-								<span class="hint" id="inlineCompletionStatus"></span>
-							</div>
-						</div>
-						<div class="field">
-							<div class="mini-heading" data-i18n="pythonInterpreter">Python Interpreter</div>
-							<div class="runtime-value" id="pythonInterpreterValue">Auto-detect Python</div>
-							<div class="field-hint" data-i18n="pythonInterpreterHint">Choose the Python environment used to start AdaAssist's local backend.</div>
-							<button class="btn secondary" id="selectPythonInterpreterBtn" type="button" data-i18n="selectPythonInterpreter">Select Python Interpreter</button>
-						</div>
-						<div class="environment-status checking" id="environmentStatus" aria-live="polite">
-							<div class="environment-status-head">
-								<div>
-									<div class="mini-heading" data-i18n="environmentStatus">Environment Status</div>
-									<div class="hint" id="environmentStatusSummary" data-i18n="checkingEnvironment">Checking environment...</div>
-								</div>
-								<button class="btn subtle setup-inline-btn" id="checkEnvironmentBtn" type="button" data-i18n="checkEnvironment">Check Environment</button>
-							</div>
-							<ul class="environment-check-list" id="environmentCheckList"></ul>
-						</div>
-					</section>
-				</section>
-		</main>
+    <section class="settings-tab-panel hidden" id="completionSettingsTab" data-settings-panel="completion" role="tabpanel" aria-labelledby="completionSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="completionSettingsTitle">Inline completion</div>
+        <div class="settings-intro-detail" data-i18n="inlineCompletionHint">Configure the inline Python suggestions separately from the main workflow model.</div>
+      </div>
+      <div class="settings-group">
+        <label class="checkbox-chip settings-switch-row" for="inlineCompletionEnabledInput">
+          <input id="inlineCompletionEnabledInput" type="checkbox" />
+          <span>
+            <span class="settings-switch-title" data-i18n="inlineCompletionEnabled">Enable inline completion</span>
+            <span class="settings-switch-desc" data-i18n="completionEnableHint">Suggest code as you type in Python files.</span>
+          </span>
+        </label>
+      </div>
+      <div class="settings-group" id="completionServiceGroup">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="completionModelSection">Completion model</div>
+          <div class="settings-group-desc" data-i18n="completionModelHint">This endpoint may differ from your main workflow model.</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="inlineCompletionProviderSelect" data-i18n="provider">Provider</label>
+            <select id="inlineCompletionProviderSelect">
+              <option value="vllm">vLLM</option>
+              <option value="other">OpenAI-Compatible</option>
+              <option value="openai">OpenAI</option>
+              <option value="ollama">Ollama</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="inlineCompletionBaseUrlInput" data-i18n="baseUrl">Base URL</label>
+            <input id="inlineCompletionBaseUrlInput" type="text" placeholder="http://127.0.0.1:8004/v1" />
+          </div>
+          <div class="field span-2">
+            <label for="inlineCompletionModelInput" data-i18n="model">Model</label>
+            <input id="inlineCompletionModelInput" type="text" placeholder="deepseek-coder-6.7b-instruct" />
+          </div>
+        </div>
+      </div>
+      <div class="settings-group" id="completionBehaviorGroup">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="completionBehaviorSection">Trigger and limits</div>
+        </div>
+        <div class="form-grid settings-form-grid">
+          <div class="field">
+            <label for="inlineCompletionTriggerModeSelect" data-i18n="triggerMode">Trigger</label>
+            <select id="inlineCompletionTriggerModeSelect">
+              <option value="automatic" data-i18n="automaticTrigger">Automatic</option>
+              <option value="manual" data-i18n="manualTrigger">Manual</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="inlineCompletionDebounceInput" data-i18n="debounceMs">Debounce (ms)</label>
+            <input id="inlineCompletionDebounceInput" type="number" min="250" max="5000" step="50" />
+          </div>
+          <div class="field">
+            <label for="inlineCompletionMaxTokensInput" data-i18n="maxTokens">Max tokens</label>
+            <input id="inlineCompletionMaxTokensInput" type="number" min="32" max="512" step="1" />
+          </div>
+        </div>
+        <div class="settings-range-caption" data-i18n="completionLimitHint">Debounce applies only in automatic mode. Token limit affects suggestions only.</div>
+      </div>
+      <div class="settings-save-bar">
+        <button class="btn" id="saveInlineCompletionBtn" type="button" data-i18n="saveInlineCompletion">Save inline settings</button>
+        <span class="hint" id="inlineCompletionStatus"></span>
+      </div>
+    </section>
+
+    <section class="settings-tab-panel hidden" id="environmentSettingsTab" data-settings-panel="environment" role="tabpanel" aria-labelledby="environmentSettingsTabBtn">
+      <div class="settings-intro">
+        <div class="settings-intro-title" data-i18n="environmentSettingsTitle">Python runtime</div>
+        <div class="settings-intro-detail" data-i18n="environmentSettingsDescription">Select the Python interpreter used to start the AdaAssist backend and inspect its dependencies.</div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-head">
+          <div class="settings-group-title" data-i18n="pythonInterpreter">Python Interpreter</div>
+          <div class="settings-group-desc" data-i18n="pythonInterpreterHint">Select the environment used to start the local backend.</div>
+        </div>
+        <div class="runtime-value" id="pythonInterpreterValue">Auto-detect Python</div>
+        <button class="btn secondary settings-inline-action" id="selectPythonInterpreterBtn" type="button" data-i18n="selectPythonInterpreter">Select Python Interpreter</button>
+      </div>
+      <div class="settings-group">
+        <div class="environment-status checking" id="environmentStatus" aria-live="polite">
+          <div class="environment-status-head">
+            <div>
+              <div class="settings-group-title" data-i18n="environmentStatus">Environment Status</div>
+              <div class="hint" id="environmentStatusSummary" data-i18n="checkingEnvironment">Checking environment...</div>
+            </div>
+            <button class="btn subtle setup-inline-btn" id="checkEnvironmentBtn" type="button" data-i18n="checkEnvironment">Check Environment</button>
+          </div>
+          <ul class="environment-check-list" id="environmentCheckList"></ul>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
 	</div>
 
 		<script nonce="${nonce}" src="${markdownItUri}"></script>

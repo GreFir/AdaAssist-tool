@@ -349,6 +349,7 @@ class WorkflowSession:
         test_mode: TestMode | None = None,
         context_enabled: bool | None = None,
         max_rounds: int | None = None,
+        max_tokens: int | None = None,
         prompt_language: PromptLanguage | None = None,
         plan: str | None = None,
         resolved_test_code: str | None = None,
@@ -357,6 +358,19 @@ class WorkflowSession:
         if prompt_language is not None and prompt_language != self.prompt_language:
             self.prompt_language = prompt_language
             self.engine = Adacoder(self.llm_config, prompt_language=self.prompt_language)
+
+        if max_tokens is not None and max_tokens != self.llm_config.max_tokens:
+            if not 128 <= max_tokens <= 32768:
+                raise ValueError("max_tokens must be between 128 and 32768.")
+            previous = self.llm_config.max_tokens
+            self.llm_config.max_tokens = max_tokens
+            self.engine = Adacoder(self.llm_config, prompt_language=self.prompt_language)
+            # Preserve the in-progress workflow stage, plan and candidate code.
+            # Record the configuration change without adding a workflow stage.
+            self.record_study_event(
+                event_type="output_budget_updated",
+                data={"previous_max_tokens": previous, "max_tokens": max_tokens},
+            )
 
         if context_enabled is not None and context_enabled != self.context_enabled:
             self.context_enabled = context_enabled
@@ -1067,6 +1081,7 @@ class WorkflowSession:
                 "provider": self.llm_config.provider,
                 "base_url": self.llm_config.base_url or "",
                 "model": self.llm_config.model,
+                "max_tokens": self.llm_config.max_tokens,
             },
             "context_enabled": self.context_enabled,
             "max_rounds": self.max_rounds,
@@ -1135,6 +1150,46 @@ class SessionStore:
         with self._lock:
             self._sessions[session.session_id] = session
         return session
+
+    def restore_session(self, snapshot: dict[str, Any], llm_config: LLMConfig) -> WorkflowSession:
+        """Rebuild a saved session with the same identity and execution state."""
+        session_id = str(snapshot.get("session_id", "")).strip()
+        problem = str(snapshot.get("problem_statement", "")).strip()
+        if not session_id or not problem:
+            raise ValueError("A valid session ID and original requirement are required.")
+        with self._lock:
+            existing = self._sessions.get(session_id)
+            if existing is not None:
+                return existing
+            session = WorkflowSession(
+                problem_statement=problem,
+                test_text=str(snapshot.get("test_text", "")),
+                llm_config=llm_config,
+                test_mode="generate" if snapshot.get("test_mode") == "generate" else "manual",
+                context_enabled=bool(snapshot.get("context_enabled", False)),
+                max_rounds=max(1, min(10, int(snapshot.get("max_rounds", 3)))),
+                prompt_language="zh-CN" if snapshot.get("prompt_language") == "zh-CN" else "en",
+                test_description=str(snapshot.get("test_description", "")),
+                additional_instruction=str(snapshot.get("additional_instruction", "")),
+                session_id=session_id,
+            )
+            for field_name in ("status", "current_stage", "current_code", "current_plan",
+                               "resolved_test_code", "created_at", "updated_at"):
+                value = snapshot.get(field_name)
+                if isinstance(value, str):
+                    setattr(session, field_name, value)
+            for field_name in ("passed", "plan_user_edited", "resolved_tests_confirmed"):
+                setattr(session, field_name, bool(snapshot.get(field_name, False)))
+            for field_name in ("attempt_count", "regeneration_count"):
+                setattr(session, field_name, max(0, int(snapshot.get(field_name, 0))))
+            session.latest_evaluation = snapshot.get("latest_evaluation")
+            for field_name in ("events", "study_events", "context_entries"):
+                value = snapshot.get(field_name)
+                if isinstance(value, list):
+                    setattr(session, field_name, value)
+            session.interrupt_requested = False
+            self._sessions[session_id] = session
+            return session
 
     def get_session(self, session_id: str) -> WorkflowSession:
         with self._lock:

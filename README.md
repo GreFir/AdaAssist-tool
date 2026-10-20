@@ -89,13 +89,24 @@ python main.py --host 127.0.0.1 --port 8765
 
 Then keep the same host and port in VS Code settings.
 
+## Settings organization
+
+The Settings view is divided into four focused sections:
+
+- **Workflow** — choose interactive/automatic execution and per-task context reuse; the model summary links to its configuration.
+- **Models** — manage the workflow model connection, API credentials, and output Token budget in distinct groups. Save changes explicitly; unsaved drafts are protected when switching Profiles. Less frequently used file-management actions live under **Advanced profile actions**.
+- **Completion** — independently configure Python inline suggestions, triggering, debounce, and output length. The debounce control is disabled when using manual triggering.
+- **Environment** — select the local Python interpreter and inspect backend dependency checks.
+
+Profile and inline-completion settings provide separate save feedback; both keep unsaved drafts during unrelated UI updates. The next-task workflow mode and context preference are retained with the Webview state. Model budget changes to a matching idle Session retain its existing code/tests/plan; changing model or provider still requires a new Session. Workflow mode is locked while its task is running.
+
 ## LLM Profile Configuration
 
 LLM profiles can be configured from the AdaAssist UI:
 
 1. Click `Profiles`.
 2. Create or edit a profile.
-3. Set provider, base URL, model, and API key.
+3. Set provider, base URL, model, **Max Output Tokens**, and API key.
 4. Click `Save Profile`.
 
 Profiles are stored in `.vscode/adaassist-profiles.json` by default. You can open this file with `AdaAssist: Open Profile Config File` or the `Open Config` button.
@@ -114,7 +125,8 @@ Example:
       "name": "Ollama Local",
       "provider": "ollama",
       "baseUrl": "http://localhost:11434/v1",
-      "model": "qwen2.5-coder:7b"
+      "model": "qwen2.5-coder:7b",
+      "maxTokens": 4096
     },
     {
       "id": "openai",
@@ -130,6 +142,9 @@ Example:
 
 Notes:
 
+- `maxTokens` is the **maximum output tokens for workflow code generation**, accepted range 128–32768; old profiles without this field default to **1024**.
+- The configured limit now applies to **all model output stages**: code generation, test generation, and repair planning. The inline completion model has its own independent maximum in Settings → Runtime.
+- Saving the profile also updates a matching **idle** active workflow session without clearing its code, tests, or plan. A request already running retains its original budget; model/endpoint changes still require a new session.
 - `provider` supports `other`, `openai`, `claude`, `ollama`, and `vllm`.
 - `other`, `ollama`, and `vllm` require an OpenAI-compatible `baseUrl`.
 - OpenAI and Claude can use their default official endpoints when `baseUrl` is empty.
@@ -244,6 +259,34 @@ When the open workspace is a prepared participant folder such as `AdaAssist-P01`
 `New Task` writes a final `task_end` event and session snapshot before deleting the in-memory backend session. If `记录表.csv` contains `Auto` or `Interactive` in its condition column, the assigned condition is also recorded and a mismatch produces a `protocol_deviation` event.
 
 The header `Logs` button opens a separate visual diagnostic history. It keeps a redacted, workspace-scoped record of workflow stages, model timing and token totals, evaluation summaries, extension messages, and interaction event names across sessions. The history retains up to 1,000 entries for 30 days and never replaces or deletes the complete `adaassist-study-logs` research records. Use `Open VS Code Output` from that page for raw runtime output.
+
+## Restoring Historical Sessions
+
+The **Logs** page lists sessions by ID. Use the small **restore** icon at the right
+of a session heading to return to that workflow, including its requirement,
+candidate code, tests, repair plan, evaluation, and recorded context.
+
+AdaAssist resolves recovery data in this order:
+
+1. The session already in the running local backend.
+2. The complete session JSON saved automatically in VS Code workspace storage
+   (under `session-snapshots-v1/`). Every active task writes a checkpoint as
+   its state changes, whether or not the workspace is part of a study.
+3. Existing `adaassist-study-logs/sessions/*.json` records from prepared
+   research workspaces, plus archived conversation snapshots.
+
+The original research JSON and event logs are **not rewritten** during recovery.
+New checkpoints also save the extension-side workflow mode, interactive stage,
+and pending Continue state. For earlier study JSON that did not include this
+frontend state, AdaAssist infers basic test-review and code-review checkpoints.
+
+If the current task is still active, AdaAssist asks before archiving it.
+Recovering a completed Auto task opens it in Interactive mode for follow-up
+testing/guidance, without changing the original recorded experiment.
+A historical Logs entry containing only redacted diagnostic summaries cannot
+recreate code or tests if there is neither a live backend session nor a full
+snapshot; the restore attempt explains that limitation instead of silently
+inventing a session.
 
 ## Development Commands
 
