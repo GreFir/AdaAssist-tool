@@ -3047,6 +3047,25 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			};
 			this.interactiveState = 'await_code_review';
 		}
+		if (!this.resumeState && this.workflowMode === 'auto' && !restored.passed) {
+			// The legacy study JSON records the backend's auto progress but not
+			// the Extension Host resume button. Recreate its auto-resume request.
+			this.resumeState = {
+				kind: 'auto',
+				request: {
+					problem: restored.problem_statement,
+					testText: restored.test_text,
+					testMode: restored.test_mode,
+					contextEnabled: restored.context_enabled,
+					maxRounds: restored.max_rounds,
+					executionMode: 'auto',
+					resolvedTestCode: restored.resolved_test_code,
+					testDescription: restored.test_description,
+					additionalInstruction: restored.additional_instruction
+				}
+			};
+			this.interactiveState = 'await_auto_test_edit';
+		}
 		if (!this.resumeState && this.interactiveState === 'await_code_review') {
 			// Do not display an unusable Continue button.
 			this.interactiveState = 'idle';
