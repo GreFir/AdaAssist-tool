@@ -2580,3 +2580,23 @@ body.vscode-high-contrast-light .workflow-progress-popover {
   border-color: var(--vscode-focusBorder);
   background: var(--vscode-toolbar-hoverBackground);
 }
+
+/* The Logs session heading keeps its original stacked title/meta at left,
+   with a discreet session restore action at right. */
+.visual-log-session-summary {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.visual-log-session-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.visual-log-restore {
+  align-self: center;
+  flex: none;
+}
+.visual-log-restore:disabled {
+  opacity: .28;
+  cursor: not-allowed;
+}
