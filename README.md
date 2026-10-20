@@ -245,6 +245,34 @@ When the open workspace is a prepared participant folder such as `AdaAssist-P01`
 
 The header `Logs` button opens a separate visual diagnostic history. It keeps a redacted, workspace-scoped record of workflow stages, model timing and token totals, evaluation summaries, extension messages, and interaction event names across sessions. The history retains up to 1,000 entries for 30 days and never replaces or deletes the complete `adaassist-study-logs` research records. Use `Open VS Code Output` from that page for raw runtime output.
 
+## Restoring Historical Sessions
+
+The **Logs** page lists sessions by ID. Use the small **restore** icon at the right
+of a session heading to return to that workflow, including its requirement,
+candidate code, tests, repair plan, evaluation, and recorded context.
+
+AdaAssist resolves recovery data in this order:
+
+1. The session already in the running local backend.
+2. The complete session JSON saved automatically in VS Code workspace storage
+   (under `session-snapshots-v1/`). Every active task writes a checkpoint as
+   its state changes, whether or not the workspace is part of a study.
+3. Existing `adaassist-study-logs/sessions/*.json` records from prepared
+   research workspaces, plus archived conversation snapshots.
+
+The original research JSON and event logs are **not rewritten** during recovery.
+New checkpoints also save the extension-side workflow mode, interactive stage,
+and pending Continue state. For earlier study JSON that did not include this
+frontend state, AdaAssist infers basic test-review and code-review checkpoints.
+
+If the current task is still active, AdaAssist asks before archiving it.
+Recovering a completed Auto task opens it in Interactive mode for follow-up
+testing/guidance, without changing the original recorded experiment.
+A historical Logs entry containing only redacted diagnostic summaries cannot
+recreate code or tests if there is neither a live backend session nor a full
+snapshot; the restore attempt explains that limitation instead of silently
+inventing a session.
+
 ## Development Commands
 
 ```bash
