@@ -330,7 +330,7 @@ class BackendServerManager {
 				}
 			});
 		} catch (error) {
-			if (!allowRestart) {
+			if (!allowRestart || init?.signal?.aborted) {
 				throw error;
 			}
 			this.outputChannel.appendLine(`[backend] request failed, restarting server: ${String(error)}`);
@@ -3181,9 +3181,11 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 
 class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Disposable {
 	private readonly backendServer: BackendServerManager;
-	private readonly completionCache = new Map<string, string>();
+	private readonly completionCache = new Map<string, { text: string; expiresAt: number }>();
 	private readonly pendingCompletions = new Map<string, Promise<string | undefined>>();
-	private lastAutomaticRequestAt = 0;
+	private readonly lastEdits = new Map<string, number>();
+	private readonly inFlightControllers = new Map<string, AbortController>();
+	private readonly failureCooldown = new Map<string, number>();
 	private lastError = '';
 	private readonly statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 90);
 
@@ -3192,12 +3194,22 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 		private readonly outputChannel: vscode.OutputChannel
 	) {
 		this.backendServer = new BackendServerManager(context, outputChannel);
+		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
+			if (event.document.languageId !== 'python' || event.contentChanges.length === 0) { return; }
+			const uri = event.document.uri.toString();
+			this.lastEdits.set(uri, Date.now());
+			for (const [key, controller] of this.inFlightControllers) {
+				if (key.startsWith(uri + ':')) { controller.abort(); }
+			}
+		}));
 	}
 
 	public dispose(): void {
 		this.backendServer.stop();
 		this.completionCache.clear();
 		this.pendingCompletions.clear();
+		for (const controller of this.inFlightControllers.values()) { controller.abort(); }
+		this.inFlightControllers.clear();
 		this.statusBar.dispose();
 	}
 
@@ -3210,57 +3222,98 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 		if (!getConfigurationValue<boolean>('inlineCompletion.enabled', true) || document.languageId !== 'python') {
 			return undefined;
 		}
-		const triggerMode = getConfigurationValue<string>('inlineCompletion.triggerMode', 'automatic');
-		if (completionContext.triggerKind === vscode.InlineCompletionTriggerKind.Automatic) {
-			if (triggerMode !== 'automatic') {
-				return undefined;
-			}
-			const now = Date.now();
-			const debounceMs = Math.max(250, Math.min(5000, getConfigurationValue<number>('inlineCompletion.debounceMs', 700)));
-			if (now - this.lastAutomaticRequestAt < debounceMs || document.lineAt(position.line).text.trim().length < 2) {
-				return undefined;
-			}
-			this.lastAutomaticRequestAt = now;
-		}
-
-		const functionContext = getPythonFunctionContext(document, position);
-		if (!functionContext || functionContext.offset < 1) {
+		const automatic = completionContext.triggerKind === vscode.InlineCompletionTriggerKind.Automatic;
+		if (automatic && getConfigurationValue<string>('inlineCompletion.triggerMode', 'automatic') !== 'automatic') {
 			return undefined;
 		}
-		const maxLines = Math.max(20, Math.min(200, getConfigurationValue<number>('inlineCompletion.maxContextLines', 80)));
-		const completionInput = buildInlineCompletionInput(functionContext, maxLines);
-		if (!completionInput) {
+		if (automatic && document.lineAt(position.line).text.trim().length < 2) {
 			return undefined;
 		}
-
-		const cacheKey = `${document.uri.toString()}:${document.version}:${position.line}:${position.character}`;
 		const requestedVersion = document.version;
 		const requestedPosition = position;
-		let completion = this.completionCache.get(cacheKey);
-		if (!completion) {
+		const uri = document.uri.toString();
+		if (automatic) {
+			const idleMs = Math.max(250, Math.min(5000, getConfigurationValue<number>('inlineCompletion.debounceMs', 700)));
+			// Use the most recent edit event rather than the last model request as the debounce source.
+			// VS Code may invoke the provider repeatedly while the user is idle; cache prevents re-generation.
+			const elapsed = Date.now() - (this.lastEdits.get(uri) ?? 0);
+			const remaining = Math.max(0, idleMs - elapsed);
+			if (remaining > 0) {
+				await Promise.race([
+					delay(remaining),
+					new Promise<void>(resolve => {
+						if (token.isCancellationRequested) { resolve(); return; }
+						const subscription = token.onCancellationRequested(() => { subscription.dispose(); resolve(); });
+						void delay(remaining).then(() => subscription.dispose());
+					})
+				]);
+			}
+			if (token.isCancellationRequested || document.version !== requestedVersion
+				|| Date.now() - (this.lastEdits.get(uri) ?? 0) < idleMs) {
+				return undefined;
+			}
+		}
+		const functionContext = getPythonFunctionContext(document, position);
+		const maxLines = Math.max(20, Math.min(200, getConfigurationValue<number>('inlineCompletion.maxContextLines', 80)));
+		let completionInput = functionContext && functionContext.offset >= 1
+			? buildInlineCompletionInput(functionContext, maxLines) : undefined;
+		if (!completionInput) {
+			// General Python completion outside a function, using bounded nearby lines.
+			const offset = document.offsetAt(position);
+			const before = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
+			const after = document.getText().slice(offset);
+			const prefix = before.split('\\n').slice(-maxLines).join('\\n');
+			const suffix = after.split('\\n').slice(0, 24).join('\\n');
+			if (!prefix.trim()) { return undefined; }
+			completionInput = { prefix: prefix.slice(-12000), suffix: suffix.slice(0, 4000) };
+		}
+		const profile = await getInlineCompletionProfile(this.context, this.outputChannel).catch(() => undefined);
+		if (!profile || token.isCancellationRequested || document.version !== requestedVersion) { return undefined; }
+		const maxTokens = Math.max(32, Math.min(512, getConfigurationValue<number>('inlineCompletion.maxTokens', 192)));
+		const cacheKey = createHash('sha256').update(JSON.stringify({
+			prefix: completionInput.prefix, suffix: completionInput.suffix,
+			model: profile.model, provider: profile.provider, baseUrl: profile.baseUrl,
+			maxTokens
+		})).digest('hex');
+		const now = Date.now();
+		const cached = this.completionCache.get(cacheKey);
+		let completion: string | undefined;
+		if (cached && cached.expiresAt > now && automatic) {
+			completion = cached.text;
+		} else if (automatic && (this.failureCooldown.get(cacheKey) ?? 0) > now) {
+			return undefined;
+		} else {
 			let request = this.pendingCompletions.get(cacheKey);
 			if (!request) {
-				request = this.requestCompletion(completionInput.prefix, completionInput.suffix, completionContext.triggerKind === vscode.InlineCompletionTriggerKind.Invoke);
+				const controller = new AbortController();
+				const requestKey = uri + ':' + cacheKey;
+				this.inFlightControllers.set(requestKey, controller);
+				request = this.requestCompletion(completionInput.prefix, completionInput.suffix, !automatic, profile, controller.signal)
+					.then(value => {
+						if (!controller.signal.aborted) {
+							// Cache even empty completions to avoid repeated inference at an idle cursor.
+							this.completionCache.delete(cacheKey);
+							this.completionCache.set(cacheKey, {
+								text: value ?? '',
+								expiresAt: Date.now() + (value ? 5 * 60_000 : 30_000)
+							});
+							while (this.completionCache.size > 80) {
+								const oldest = this.completionCache.keys().next().value;
+								if (oldest) { this.completionCache.delete(oldest); }
+							}
+						}
+						return value;
+					}).finally(() => {
+						this.pendingCompletions.delete(cacheKey);
+						this.inFlightControllers.delete(requestKey);
+					});
 				this.pendingCompletions.set(cacheKey, request);
 			}
 			completion = await request;
-			this.pendingCompletions.delete(cacheKey);
-			if (completion) {
-				this.completionCache.set(cacheKey, completion);
-				if (this.completionCache.size > 40) {
-					const oldestKey = this.completionCache.keys().next().value;
-					if (typeof oldestKey === 'string') {
-						this.completionCache.delete(oldestKey);
-					}
-				}
-			}
 		}
-		if (
-			token.isCancellationRequested
-			|| !completion
-			|| document.version !== requestedVersion
+		if (token.isCancellationRequested || !completion || document.version !== requestedVersion
 			|| !position.isEqual(requestedPosition)
-		) {
+			|| !vscode.window.activeTextEditor?.selection.active.isEqual(position)) {
 			return undefined;
 		}
 
@@ -3348,11 +3401,11 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 		}
 	}
 
-	private async requestCompletion(prefix: string, suffix: string, manual: boolean): Promise<string | undefined> {
+	private async requestCompletion(prefix: string, suffix: string, manual: boolean, profile: Profile, signal: AbortSignal): Promise<string | undefined> {
 		this.setCompletionProgress(true, manual ? '正在手动生成补全...' : '正在生成补全...');
 		try {
-			const profile = await getInlineCompletionProfile(this.context, this.outputChannel);
 			const payload = await this.backendServer.request<InlineCompletionResponse>('/api/editor/completions', {
+				signal,
 				method: 'POST',
 				body: JSON.stringify({
 					prefix,
@@ -3372,7 +3425,10 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 			this.setCompletionProgress(false, feedback);
 			return completion;
 		} catch (error) {
+			if (signal.aborted) { return undefined; }
 			const detail = error instanceof Error ? error.message : String(error);
+			const cooldownKey = createHash('sha256').update(JSON.stringify({ prefix, suffix, model: profile.model, provider: profile.provider, baseUrl: profile.baseUrl, maxTokens: Math.max(32, Math.min(512, getConfigurationValue<number>('inlineCompletion.maxTokens', 192))) })).digest('hex');
+			this.failureCooldown.set(cooldownKey, Date.now() + 10_000);
 			if (detail !== this.lastError) {
 				this.lastError = detail;
 				this.outputChannel.appendLine(`[inline completion] ${detail}`);
