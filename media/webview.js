@@ -1436,8 +1436,28 @@
         groupEntries.length + ' ' + t('logEvents'),
         logTimestamp(latestTimestamp)
       ].filter(Boolean).join(' · ');
-      groupSummary.appendChild(identity);
-      groupSummary.appendChild(summaryMeta);
+      const summaryContent = document.createElement('span');
+      summaryContent.className = 'visual-log-session-identity';
+      summaryContent.append(identity, summaryMeta);
+      groupSummary.appendChild(summaryContent);
+      const archived = (state.archivedSessions || []).find(item => item.session_id === sessionId);
+      if (sessionId && !isCurrent) {
+        const restore = document.createElement('button');
+        restore.type = 'button';
+        restore.className = 'ada-restore-session visual-log-restore';
+        restore.textContent = '↩';
+        restore.disabled = !archived;
+        restore.title = !archived
+          ? (uiLanguage === 'zh-CN' ? '此日志没有可恢复的 Session 快照' : 'No restorable session snapshot')
+          : (uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore this session');
+        restore.setAttribute('aria-label', restore.title);
+        restore.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (archived) vscode.postMessage({ type: 'restoreArchivedSession', sessionId });
+        });
+        groupSummary.appendChild(restore);
+      }
       group.appendChild(groupSummary);
 
       const groupBody = document.createElement('div');
