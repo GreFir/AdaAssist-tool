@@ -308,9 +308,7 @@
   const modelSummary = document.getElementById('modelSummary');
   const testsSummary = document.getElementById('testsSummary');
   const executionModeSelect = document.getElementById('executionModeSelect');
-  const composerModeRow = document.getElementById('composerModeRow');
-  const composerInteractiveModeBtn = document.getElementById('composerInteractiveModeBtn');
-  const composerAutoModeBtn = document.getElementById('composerAutoModeBtn');
+  const composerModeSelect = document.getElementById('composerModeSelect');
   const workflowModeHint = document.getElementById('workflowModeHint');
   const contextEnabledInput = document.getElementById('contextEnabledInput');
   const profileNotice = document.getElementById('profileNotice');
@@ -3214,19 +3212,12 @@
   }
 
   function syncComposerMode() {
+    if (!composerModeSelect) return;
     const locked = state.running || Boolean(state.session);
-    const currentMode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
-    if (composerModeRow) composerModeRow.classList.toggle('is-locked', locked);
-    [[composerInteractiveModeBtn, 'continue', 'interactiveHint'],
-      [composerAutoModeBtn, 'auto', 'autoHint']].forEach(function (setting) {
-      const button = setting[0];
-      if (!button) return;
-      const active = currentMode === setting[1];
-      button.classList.toggle('active', active);
-      button.setAttribute('aria-pressed', String(active));
-      button.disabled = locked;
-      button.title = locked ? t('composerModeLocked') : t(setting[2]);
-    });
+    const mode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
+    composerModeSelect.value = mode;
+    composerModeSelect.disabled = locked;
+    composerModeSelect.title = locked ? t('composerModeLocked') : t(mode === 'auto' ? 'autoHint' : 'interactiveHint');
   }
 
   function syncActionButtons() {
@@ -3596,19 +3587,15 @@
     });
   });
 
-  [[composerInteractiveModeBtn, 'continue'], [composerAutoModeBtn, 'auto']].forEach(function (item) {
-    const button = item[0];
-    if (!button) return;
-    button.addEventListener('click', function () {
-      if (state.running || state.session) return;
-      if (executionModeSelect.value !== item[1]) {
-        executionModeSelect.value = item[1];
-        // The Settings selector is the single source of truth for persisted
-        // preferences and the actual runWorkflow request.
-        executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      problemInput.focus();
-    });
+  composerModeSelect.addEventListener('change', function () {
+    if (state.running || state.session) {
+      syncComposerMode();
+      return;
+    }
+    // Settings remains the single source of truth; the existing change
+    // handler persists the preference and updates the actual request.
+    executionModeSelect.value = composerModeSelect.value === 'auto' ? 'auto' : 'continue';
+    executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
   executionModeSelect.addEventListener('change', function () {
