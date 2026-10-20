@@ -297,6 +297,7 @@
     editingProfileId: '',
     session: null,
     archivedSessions: [],
+    restorableSessionIds: [],
     archiveTransitionPending: false,
     pendingNewRequirement: '',
     passDecisionShownFor: '',
@@ -831,6 +832,7 @@
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
+    if (Array.isArray(data.restorableSessionIds)) state.restorableSessionIds = data.restorableSessionIds;
     if (state.session && state.session.session_id === data.restoredSessionId) {
       state.passedTaskConfirmedContinue = state.session.session_id;
     }
@@ -1440,21 +1442,23 @@
       summaryContent.className = 'visual-log-session-identity';
       summaryContent.append(identity, summaryMeta);
       groupSummary.appendChild(summaryContent);
-      const archived = (state.archivedSessions || []).find(item => item.session_id === sessionId);
+      const hasSnapshot = Boolean((state.archivedSessions || []).some(item => item.session_id === sessionId))
+        || (state.restorableSessionIds || []).includes(sessionId);
       if (sessionId && !isCurrent) {
         const restore = document.createElement('button');
         restore.type = 'button';
         restore.className = 'ada-restore-session visual-log-restore';
         restore.textContent = '↩';
-        restore.disabled = !archived;
-        restore.title = !archived
-          ? (uiLanguage === 'zh-CN' ? '此日志没有可恢复的 Session 快照' : 'No restorable session snapshot')
-          : (uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore this session');
+        restore.title = hasSnapshot
+          ? (uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore session')
+          : (uiLanguage === 'zh-CN'
+            ? '尝试从后端恢复（仅有诊断日志的会话可能无法恢复）'
+            : 'Try restoring from backend (diagnostic-only logs may not be recoverable)');
         restore.setAttribute('aria-label', restore.title);
         restore.addEventListener('click', function (event) {
           event.preventDefault();
           event.stopPropagation();
-          if (archived) vscode.postMessage({ type: 'restoreArchivedSession', sessionId });
+          vscode.postMessage({ type: 'restoreArchivedSession', sessionId });
         });
         groupSummary.appendChild(restore);
       }
@@ -2244,17 +2248,6 @@
     heading.textContent = (uiLanguage === 'zh-CN' ? '任务 ' : 'Task ') + (index + 1)
       + (session.passed ? ' ✓' : '');
     divider.appendChild(heading);
-    divider.style.justifyContent = 'space-between';
-    const restore = document.createElement('button');
-    restore.type = 'button';
-    restore.className = 'ada-restore-session';
-    restore.title = uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore this session';
-    restore.setAttribute('aria-label', restore.title);
-    restore.textContent = '↩';
-    restore.addEventListener('click', function () {
-      vscode.postMessage({ type: 'restoreArchivedSession', sessionId: session.session_id });
-    });
-    divider.appendChild(restore);
     group.appendChild(divider);
 
     // Reuse exactly the live conversation renderer, with a read-only snapshot of its state.
@@ -3403,6 +3396,7 @@
 
         state.profiles = Array.isArray(data.profiles) ? data.profiles : [];
         if (Array.isArray(data.archivedSessions)) state.archivedSessions = data.archivedSessions;
+        if (Array.isArray(data.restorableSessionIds)) state.restorableSessionIds = data.restorableSessionIds;
         state.activeProfileId = typeof data.activeProfileId === 'string' ? data.activeProfileId : '';
 		state.environmentCheck = data.environmentCheck && typeof data.environmentCheck === 'object'
 			? data.environmentCheck
