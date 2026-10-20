@@ -119,7 +119,7 @@
       profileKeyRequired: '请填写 API Key 或在配置文件中设置密钥环境变量。',
       profileSaveError: '模型配置未保存。',
       closeTests: '关闭测试', testsCompactEmpty: '留空可自动生成测试。', testsCompactDirty: '有未保存修改 · 保存或继续以应用。', testsCompactReady: '编辑后保存，或继续工作流。',
-      workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '配置工作流行为、模型连接和本地运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
+      workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
       workflowSetup: '工作流设置', runSetup: '运行设置', mode: '模式', workflowMode: '工作流模式', interactiveContinue: '交互式继续', autoFullWorkflow: '自动完整工作流',
       environmentStatus: '环境状态', checkingEnvironment: '正在检查环境...', environmentReady: '环境已就绪', environmentWarning: '环境需要注意', environmentFailed: '环境不可用', checkEnvironment: '检查环境',
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
@@ -2518,7 +2518,7 @@
   }
 
   function requireCleanProfile() {
-    if (!state.profileDirty || state.profileSaving === false && !state.profileDirty) return true;
+    if (!state.profileDirty && !state.profileSaving) return true;
     state.profileStatusOverride = 'profileChangesBlocked';
     renderProfileEditStatus();
     return false;
@@ -3315,8 +3315,12 @@
   }
 
   function openProfileSettingsFromSetup() {
-    state.editingProfileId = taskProfileSelect.value || state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || '';
-    loadProfileEditor();
+    if (!state.profileDirty && !state.profileSaving) {
+      state.editingProfileId = taskProfileSelect.value || state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || '';
+      loadProfileEditor();
+    } else {
+      requireCleanProfile();
+    }
     switchPage('settings');
 		switchSettingsTab('profiles');
     renderAll();
