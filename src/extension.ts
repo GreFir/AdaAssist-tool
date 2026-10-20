@@ -4,6 +4,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import { discoverPythonEnvironments, getActiveWorkspacePythonEnvironment, getSelectedPythonEnvironment, getPythonEnvironmentsApi } from './pythonEnvironments';
 
 interface LlmRequestConfig {
 	base_url: string;
@@ -19,7 +20,7 @@ interface PythonCommand {
 
 interface PythonInterpreterPickItem extends vscode.QuickPickItem {
 	value?: string;
-	action?: 'auto' | 'browse';
+	action?: 'auto' | 'browse' | 'refresh';
 }
 
 interface ProcessResult {
@@ -900,6 +901,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			operation: this.activeOperation,
 			environmentCheck: this.environmentCheck,
 			pythonPath: getConfiguredPythonPath(this.context),
+			pythonEnvironmentLabel: await getPythonEnvironmentDisplayLabel(this.context),
 			inlineCompletion: getInlineCompletionSettings(),
 			studyTasks: this.studyTasks,
 			logEntries: this.visualLogStore.latest()
@@ -4131,111 +4133,146 @@ function resolveConfiguredPythonPath(value: string, context: vscode.ExtensionCon
 
 function getConfiguredPythonPath(context: vscode.ExtensionContext): string {
 	const configured = (getConfigurationValue<string>('pythonPath', 'auto') || 'auto').trim();
-	return configured.toLowerCase() === 'auto' ? 'auto' : resolveConfiguredPythonPath(configured, context);
+	return configured.toLowerCase() === 'auto' || configured.startsWith('env:') ? configured : resolveConfiguredPythonPath(configured, context);
+}
+
+async function getPythonEnvironmentDisplayLabel(context: vscode.ExtensionContext): Promise<string> {
+	const configured = getConfiguredPythonPath(context);
+	if (configured.startsWith('env:')) {
+		try {
+			const env = await getSelectedPythonEnvironment(configured.slice(4));
+			return env ? `${env.name} (${env.manager}) · ${env.executable}` : '已选环境不可用，请重新选择';
+		} catch { return '无法加载已选环境'; }
+	}
+	if (configured === 'auto') {
+		const active = await getPythonExtensionInterpreterPath();
+		return active ? `自动跟随 VS Code · ${active}` : '自动检测本机 Python';
+	}
+	return configured;
 }
 
 async function getPythonExtensionInterpreterPath(): Promise<string | undefined> {
+	const active = await getActiveWorkspacePythonEnvironment();
+	if (active) { return active.executable; }
 	try {
 		const result = await vscode.commands.executeCommand<unknown>('python.getActiveEnvironmentPath');
-		if (typeof result === 'string' && result.trim()) {
-			return result.trim();
-		}
+		if (typeof result === 'string') { return result; }
 		if (isRecord(result)) {
-			if (typeof result.fsPath === 'string' && result.fsPath.trim()) {
-				return result.fsPath.trim();
-			}
-			if (typeof result.path === 'string' && result.path.trim()) {
-				return result.path.trim();
-			}
+			if (typeof result.fsPath === 'string') { return result.fsPath; }
+			if (typeof result.path === 'string') { return result.path; }
 		}
-	} catch {
-		// The Python extension is optional; its command is unavailable when it is not installed.
-	}
+	} catch { /* Python extension may be unavailable. */ }
 	return undefined;
 }
 
 async function choosePythonInterpreter(context: vscode.ExtensionContext): Promise<string | undefined> {
-	const configured = getConfiguredPythonPath(context);
-	const items: PythonInterpreterPickItem[] = [
-		{
-			label: '$(sync) 自动检测 Python',
-			description: '优先使用工作区环境，其次使用 python/python3（Windows 上也会尝试 py -3）。',
+	for (;;) {
+		const configured = getConfiguredPythonPath(context);
+		const items: PythonInterpreterPickItem[] = [{
+			label: '$(sync) 自动跟随 VS Code 工作区 Python',
+			description: '优先使用当前工作区解释器；没有时回退到已有环境或系统 Python。',
 			value: 'auto',
-			action: 'auto'
+			action: 'auto',
+			picked: configured === 'auto'
+		}];
+		const paths = new Set<string>();
+		if (configured !== 'auto' && !configured.startsWith('env:')) { paths.add(configured); }
+		const active = await getPythonExtensionInterpreterPath();
+		if (active) { paths.add(active); }
+		let discovered: Awaited<ReturnType<typeof discoverPythonEnvironments>> = [];
+		let discoveryError = '';
+		try {
+			discovered = await discoverPythonEnvironments();
+		} catch (error) {
+			discoveryError = String(error);
 		}
-	];
-	const paths = new Set<string>();
-	if (configured !== 'auto') {
-		paths.add(configured);
-	}
-	const pythonExtensionPath = await getPythonExtensionInterpreterPath();
-	if (pythonExtensionPath) {
-		paths.add(pythonExtensionPath);
-	}
-	for (const candidate of knownPythonPaths(context)) {
-		if (fs.existsSync(candidate)) {
-			paths.add(candidate);
+		const explicitEnvironment = configured.startsWith('env:') ? configured.slice(4) : '';
+		for (const env of discovered) {
+			const runnable = await isRunnablePython({ executable: env.executable, args: env.args });
+			items.push({
+				label: `$(symbol-method) ${env.name}`,
+				description: `${env.manager}${env.version ? ' · Python ' + env.version : ''}`,
+				detail: `${env.path} · ${env.executable}${runnable ? '' : ' (不可运行)'}`,
+				value: `env:${env.id}`,
+				picked: env.id === explicitEnvironment
+			});
+			paths.delete(env.executable);
 		}
-	}
-
-	for (const candidate of paths) {
-		const runnable = await isRunnablePython({ executable: candidate, args: [] });
+		for (const candidate of knownPythonPaths(context)) {
+			if (fs.existsSync(candidate)) { paths.add(candidate); }
+		}
+		for (const candidate of paths) {
+			const runnable = await isRunnablePython({ executable: candidate, args: [] });
+			items.push({
+				label: path.basename(candidate) || candidate,
+				description: candidate,
+				detail: candidate === active ? 'VS Code 当前解释器' : runnable ? '本地 Python 解释器' : '当前不可运行',
+				value: candidate,
+				picked: candidate === configured
+			});
+		}
 		items.push({
-			label: path.basename(candidate) || candidate,
-			description: candidate,
-			detail: candidate === pythonExtensionPath
-				? 'Python 扩展当前使用的解释器'
-				: runnable ? '可用的 Python 解释器' : '当前不可运行',
-			value: candidate,
-			picked: candidate === configured
+			label: '$(refresh) 刷新本机 Python 环境',
+			description: discoveryError || '重新扫描 Conda、venv、系统 Python 等环境',
+			action: 'refresh'
 		});
-	}
-	items.push({
-		label: '$(folder-opened) 浏览并选择 Python 可执行文件...',
-		description: '手动选择 python.exe 或 python。',
-		action: 'browse'
-	});
-
-	const choice = await vscode.window.showQuickPick(items, {
-		title: '选择 AdaAssist Python 解释器',
-		placeHolder: '选择用于启动 AdaAssist 本地后端的 Python 环境'
-	});
-	if (!choice) {
-		return undefined;
-	}
-	if (choice.action === 'auto') {
-		return 'auto';
-	}
-	if (choice.action === 'browse') {
-		const selected = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: '选择 Python 解释器'
+		items.push({
+			label: '$(folder-opened) 浏览并选择 Python 可执行文件...',
+			description: '手动选择 python.exe 或 python',
+			action: 'browse'
 		});
-		if (!selected?.[0]) {
-			return undefined;
+		const choice = await vscode.window.showQuickPick(items, {
+			title: '选择 AdaAssist 后端 Python 解释器',
+			placeHolder: '支持 Conda、venv、系统 Python；请选择已安装后端依赖的环境'
+		});
+		if (!choice) { return undefined; }
+		if (choice.action === 'auto') { return 'auto'; }
+		if (choice.action === 'refresh') {
+			try {
+				const api = await getPythonEnvironmentsApi();
+				if (api) {
+					await api.refreshEnvironments(undefined);
+				} else {
+					void vscode.window.showWarningMessage('安装并启用 Python Environments 扩展以扫描 Conda 等本机环境。');
+				}
+			} catch (error) {
+				void vscode.window.showWarningMessage(`Python 环境刷新失败：${String(error)}`);
+			}
+			continue;
 		}
-		const executable = selected[0].fsPath;
-		if (!await isRunnablePython({ executable, args: [] })) {
-			void vscode.window.showErrorMessage(`所选文件不是可运行的 Python 解释器：${executable}`);
-			return undefined;
+		if (choice.action === 'browse') {
+			const picked = await vscode.window.showOpenDialog({
+				canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+				openLabel: '选择 Python 解释器'
+			});
+			if (!picked?.[0]) { return undefined; }
+			const executable = picked[0].fsPath;
+			if (!await isRunnablePython({ executable, args: [] })) {
+				void vscode.window.showErrorMessage(`解释器不可运行：${executable}`);
+				continue;
+			}
+			return executable;
 		}
-		return executable;
+		if (!choice.value) { continue; }
+		let command: PythonCommand;
+		if (choice.value.startsWith('env:')) {
+			const env = discovered.find(item => `env:${item.id}` === choice.value);
+			if (!env) { continue; }
+			command = { executable: env.executable, args: env.args };
+		} else {
+			command = { executable: choice.value, args: [] };
+		}
+		if (!await isRunnablePython(command)) {
+			void vscode.window.showErrorMessage(`Python 环境不可运行：${formatPythonCommand(command)}`);
+			continue;
+		}
+		return choice.value;
 	}
-	if (!choice.value) {
-		return undefined;
-	}
-	if (!await isRunnablePython({ executable: choice.value, args: [] })) {
-		void vscode.window.showErrorMessage(`所选 Python 解释器不可运行：${choice.value}`);
-		return undefined;
-	}
-	return choice.value;
 }
 
 function pythonCommandCandidates(context: vscode.ExtensionContext): PythonCommand[] {
 	const configured = (getConfigurationValue<string>('pythonPath', 'auto') || 'auto').trim();
-	if (configured && configured.toLowerCase() !== 'auto') {
+	if (configured && configured.toLowerCase() !== 'auto' && !configured.startsWith('env:')) {
 		return [{ executable: resolveConfiguredPythonPath(configured, context), args: [] }];
 	}
 
@@ -4307,15 +4344,27 @@ async function runCommand(command: PythonCommand, args: string[], timeoutMs = 80
 }
 
 async function resolvePythonCommand(context: vscode.ExtensionContext): Promise<PythonCommand> {
-	const candidates = pythonCommandCandidates(context);
-	for (const candidate of candidates) {
-		if (await isRunnablePython(candidate)) {
-			return candidate;
+	const configured = getConfiguredPythonPath(context);
+	if (configured.startsWith('env:')) {
+		const env = await getSelectedPythonEnvironment(configured.slice(4));
+		if (!env) {
+			throw new Error('所选 Python 环境已删除或不可用，请重新选择解释器。');
 		}
+		const command = { executable: env.executable, args: env.args };
+		if (await isRunnablePython(command)) { return command; }
+		throw new Error(`所选 Python 环境不可运行：${formatPythonCommand(command)}`);
+	}
+	const candidates = pythonCommandCandidates(context);
+	if (configured === 'auto') {
+		const active = await getPythonExtensionInterpreterPath();
+		if (active) { candidates.unshift({ executable: active, args: [] }); }
+	}
+	for (const candidate of candidates) {
+		if (await isRunnablePython(candidate)) { return candidate; }
 	}
 	throw new Error(
-		`No usable Python interpreter was found (tried: ${candidates.map(formatPythonCommand).join(', ')}). `
-		+ 'Install Python 3.12+ or set adaassist.pythonPath to its executable.'
+		`No usable Python interpreter found (tried: ${candidates.map(formatPythonCommand).join(', ')}). `
+		+ 'Install Python 3.12+ or choose a Python environment in AdaAssist settings.'
 	);
 }
 

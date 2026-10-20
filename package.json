@@ -14,7 +14,7 @@
     "onCommand:adaassist.openChat",
     "onCommand:adaassist.openSettings",
     "onCommand:adaassist.openProfileConfig",
-		"onCommand:adaassist.selectPythonInterpreter",
+    "onCommand:adaassist.selectPythonInterpreter",
     "onCommand:adaassist.runWorkflow",
     "onCommand:adaassist.runFromSelection",
     "onCommand:adaassist.generateTestsForCurrentFunction",
@@ -37,10 +37,10 @@
         "command": "adaassist.openProfileConfig",
         "title": "AdaAssist: Open Profile Config File"
       },
-			{
-				"command": "adaassist.selectPythonInterpreter",
-				"title": "AdaAssist: 选择 Python 解释器"
-			},
+      {
+        "command": "adaassist.selectPythonInterpreter",
+        "title": "AdaAssist: 选择 Python 解释器"
+      },
       {
         "command": "adaassist.runWorkflow",
         "title": "AdaAssist: Open Chat"
@@ -115,7 +115,7 @@
         "adaassist.pythonPath": {
           "type": "string",
           "default": "auto",
-          "description": "Python executable, or auto to detect a local environment then python/python3. Supports absolute path, relative path, ${workspaceFolder} and ${extensionPath}."
+          "description": "Python executable, 'auto' to follow VS Code's current workspace interpreter, or an environment ID chosen via AdaAssist. Discovers Conda, venv and global interpreters using Python Environments."
         },
         "adaassist.backendPath": {
           "type": "string",
@@ -166,7 +166,10 @@
         },
         "adaassist.inlineCompletion.triggerMode": {
           "type": "string",
-          "enum": ["automatic", "manual"],
+          "enum": [
+            "automatic",
+            "manual"
+          ],
           "default": "automatic",
           "description": "Request inline completions automatically while typing, or only through the trigger command."
         },
@@ -182,7 +185,12 @@
         },
         "adaassist.inlineCompletion.provider": {
           "type": "string",
-          "enum": ["vllm", "other", "openai", "ollama"],
+          "enum": [
+            "vllm",
+            "other",
+            "openai",
+            "ollama"
+          ],
           "default": "vllm",
           "description": "Provider for the dedicated inline completion endpoint."
         },
@@ -224,5 +232,8 @@
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.11.1",
     "markdown-it": "^14.1.1"
-  }
+  },
+  "extensionDependencies": [
+    "ms-python.vscode-python-envs"
+  ]
 }
