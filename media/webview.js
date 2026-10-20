@@ -300,6 +300,7 @@
     pendingNewRequirement: '',
     passDecisionShownFor: '',
     passDecisionScheduled: false,
+    passedTaskConfirmedContinue: '',
     running: false,
     runningLabel: '',
     localLogs: [],
@@ -782,25 +783,46 @@
     renderLogsPage();
   }
 
-  function promptForPassedTask() {
-    const session = state.session;
-    if (!session || !session.passed || state.running || state.passDecisionScheduled) return;
-    const events = Array.isArray(session.events) ? session.events : [];
-    const latestEvaluation = events.filter(event => event.stage === 'evaluate' && event.status === 'completed').slice(-1)[0];
-    const decisionKey = session.session_id + ':' + (latestEvaluation?.id || session.updated_at || 'passed');
-    if (decisionKey === state.passDecisionShownFor) return;
-    state.passDecisionShownFor = decisionKey;
-    state.passDecisionScheduled = true;
-    setTimeout(function () {
-      state.passDecisionScheduled = false;
-      if (!state.session || !state.session.passed || state.session.session_id !== session.session_id || state.running) return;
-      const finish = window.confirm(uiLanguage === 'zh-CN'
-        ? '当前代码已通过全部公开测试。是否确认结束当前任务？\\n确定：归档当前任务，下一条输入将开启独立的新 Session。\\n取消：继续完善当前任务（输入作为 Guidance）。'
-        : 'All public tests passed. Finish this task?\\nOK: archive it; the next input starts a new session.\\nCancel: continue refining this task.');
-      if (finish) {
-        vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
-      }
-    }, 0);
+  function awaitingTaskConfirmation() {
+    return Boolean(state.session && state.session.passed
+      && state.passedTaskConfirmedContinue !== state.session.session_id);
+  }
+
+  function renderPassedTaskDecision() {
+    if (!awaitingTaskConfirmation()) return;
+    const card = document.createElement('section');
+    card.className = 'ada-task-confirmation';
+    card.style.cssText = 'margin:12px 0;padding:14px;border:1px solid var(--vscode-focusBorder);border-radius:10px;';
+    const title = document.createElement('strong');
+    title.textContent = uiLanguage === 'zh-CN' ? '公开测试全部通过，是否结束当前任务？' : 'Public tests passed. Finish this task?';
+    const description = document.createElement('p');
+    description.textContent = uiLanguage === 'zh-CN'
+      ? '确认结束将归档当前 Session，保留上方历史。下一条输入是全新任务，不会作为 Guidance。'
+      : 'Finishing archives this session without deleting its history; your next input starts a new task.';
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+    const finish = document.createElement('button');
+    finish.type = 'button';
+    finish.className = 'btn primary';
+    finish.textContent = uiLanguage === 'zh-CN' ? '确认结束 · 新任务' : 'Finish · New task';
+    finish.disabled = state.running;
+    finish.addEventListener('click', function () {
+      finish.disabled = true;
+      vscode.postMessage({ type: 'clearWorkflowSession', reason: 'user_confirmed' });
+    });
+    const continueButton = document.createElement('button');
+    continueButton.type = 'button';
+    continueButton.className = 'btn';
+    continueButton.textContent = uiLanguage === 'zh-CN' ? '继续完善当前任务' : 'Continue refining';
+    continueButton.disabled = state.running;
+    continueButton.addEventListener('click', function () {
+      state.passedTaskConfirmedContinue = state.session.session_id;
+      renderAll();
+      problemInput.focus();
+    });
+    actions.append(finish, continueButton);
+    card.append(title, description, actions);
+    timeline.appendChild(card);
   }
 
   function applyWorkflowSessionData(data) {
@@ -829,7 +851,6 @@
       testModeSelect.value = state.session.test_mode === 'generate' ? 'generate' : 'manual';
       contextEnabledInput.checked = Boolean(state.session.context_enabled);
       completePendingOperations();
-      promptForPassedTask();
       return;
     }
 
@@ -2276,6 +2297,7 @@
     if (shouldStickToBottom) {
       requestConversationAutoScroll();
     }
+    renderPassedTaskDecision();
   }
 
   function renderProfileOptions() {
@@ -2461,7 +2483,7 @@
     submitWorkflowBtn.setAttribute('aria-label', accessibleLabel);
     submitWorkflowIcon.src = actionMeta.icon;
     submitWorkflowLabel.textContent = actionMeta.label;
-    submitWorkflowBtn.disabled = lockedInteractive
+    submitWorkflowBtn.disabled = awaitingTaskConfirmation() || lockedInteractive
       || (action === 'stop'
         ? Boolean(state.interruptRequested)
         : action === 'continue'
@@ -2799,7 +2821,7 @@
     const hasProblemDraft = Boolean(problemInput.value.trim());
     const hasResolvedTestsDraft = Boolean(configuredTestCode().trim());
     const interactiveSession = hasSession && isInteractiveSelected();
-    const guidanceEditable = !state.running && (!hasSession || interactiveSession || taskPassed);
+    const guidanceEditable = !state.running && (!hasSession || interactiveSession || taskPassed) && !awaitingTaskConfirmation();
     const testsEditable = !state.running && (!hasSession || interactiveSession);
     const testsBusy = state.testOperationStatus === 'running';
 
@@ -2859,6 +2881,7 @@
     state.testDrafts = {};
     state.lastTimelineSignature = '';
     state.session = null;
+    state.passedTaskConfirmedContinue = '';
     state.lastSessionId = '';
     state.problemDraftDirty = false;
     state.additionalInstructionPending = false;
@@ -3211,6 +3234,10 @@
   }
 
   submitWorkflowBtn.addEventListener('click', function () {
+    if (awaitingTaskConfirmation()) {
+      renderTimeline();
+      return;
+    }
     if (state.running) {
       vscode.postMessage({ type: 'interruptWorkflow' });
       return;
@@ -3379,7 +3406,6 @@
         break;
       case 'runState':
         state.running = Boolean(data.running);
-        if (!state.running) promptForPassedTask();
         state.runningLabel = typeof data.label === 'string' ? data.label : '';
         renderComposerStatus();
         renderOperationFeedback();
