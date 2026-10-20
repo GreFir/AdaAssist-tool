@@ -3395,6 +3395,16 @@
   });
 
   saveProfileBtn.addEventListener('click', function () {
+    if (!profileMaxTokensInput.value.trim() || !profileMaxTokensInput.checkValidity()) {
+      profileMaxTokensInput.setCustomValidity(profileMaxTokensInput.value.trim()
+        ? '' : (uiLanguage === 'zh-CN' ? '请输入最大输出 Tokens' : 'Enter maximum output tokens'));
+      profileMaxTokensInput.reportValidity();
+      profileMaxTokensInput.addEventListener('input', function clearError() {
+        profileMaxTokensInput.setCustomValidity('');
+        profileMaxTokensInput.removeEventListener('input', clearError);
+      });
+      return;
+    }
     const profileId = state.editingProfileId === NEW_PROFILE_DRAFT_ID ? '' : state.editingProfileId;
     vscode.postMessage({
       type: 'saveProfile',
