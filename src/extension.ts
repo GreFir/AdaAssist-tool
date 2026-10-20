@@ -1627,12 +1627,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			problem: request.problem.trim(),
 			test_text: request.testText.trim(),
 			test_mode: request.testMode,
-			llm: {
-				base_url: profile.baseUrl,
-				api_key: profile.apiKey,
-				model: profile.model,
-				provider: profile.provider
-			},
+			llm: profileToRequestConfig(profile),
 			context_enabled: request.contextEnabled,
 			max_rounds: request.maxRounds,
 			resolved_test_code: request.testMode === 'generate' ? request.resolvedTestCode?.trim() : undefined,
