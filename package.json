@@ -214,7 +214,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "package:vsix": "npm run compile && npx --yes @vscode/vsce@3 package --no-prepublish",
+    "package:vsix": "npx --yes @vscode/vsce@3 package",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
