@@ -5,6 +5,9 @@
 
   const translations = {
     en: {
+      inlineSettingsUnsaved: 'Unsaved changes — save to apply.',
+      inlineSettingsSaved: 'Inline completion settings saved.',
+      inlineSettingsFailed: 'Unable to save inline settings.',
       modelTab: 'Models', completionTab: 'Completion',
       profileEndpointRequired: 'This provider requires a Base URL.',
       keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
@@ -80,6 +83,9 @@
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
+      inlineSettingsUnsaved: '修改尚未保存，请点击保存应用。',
+      inlineSettingsSaved: '行内补全设置已保存。',
+      inlineSettingsFailed: '行内补全设置保存失败。',
       modelTab: '模型', completionTab: '补全',
       profileEndpointRequired: '当前服务类型需要填写 Base URL。',
       keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
@@ -3420,6 +3426,17 @@
 
 	if (saveInlineCompletionBtn) {
 		saveInlineCompletionBtn.addEventListener('click', function () {
+			if (state.inlineSettingsSaving) return;
+			const model = inlineCompletionModelInput?.value.trim() || '';
+			const debounceValid = inlineCompletionDebounceInput?.checkValidity() !== false;
+			const tokensValid = inlineCompletionMaxTokensInput?.checkValidity() !== false;
+			if (!model) { inlineCompletionModelInput?.focus(); return; }
+			if (!debounceValid || !tokensValid) {
+				(!debounceValid ? inlineCompletionDebounceInput : inlineCompletionMaxTokensInput)?.reportValidity();
+				return;
+			}
+			state.inlineSettingsSaving = true;
+			renderInlineCompletionSettings();
 			vscode.postMessage({
 				type: 'saveInlineCompletionSettings',
 				enabled: Boolean(inlineCompletionEnabledInput && inlineCompletionEnabledInput.checked),
@@ -3433,11 +3450,6 @@
 		});
 	}
 
-	settingsTabButtons.forEach(function (button) {
-		button.addEventListener('click', function () {
-			switchSettingsTab(button.dataset.settingsTab || 'workflow');
-		});
-	});
 
   if (backFromTestsBtn) {
     backFromTestsBtn.addEventListener('click', function () {
@@ -3836,6 +3848,16 @@
         renderProfileEditStatus();
         renderProfileOptions();
         renderWorkflowModelSummary();
+        break;
+      }
+      case 'inlineSettingsSaveResult': {
+        state.inlineSettingsSaving = false;
+        state.inlineSettingsDirty = !data.ok;
+        state.inlineSaveStatus = data.ok ? 'inlineSettingsSaved' : 'inlineSettingsFailed';
+        if (!data.ok && typeof data.message === 'string') {
+          addLocalLog('Inline completion', data.message, 'failed');
+        }
+        renderInlineCompletionSettings();
         break;
       }
       case 'workflowSession':
