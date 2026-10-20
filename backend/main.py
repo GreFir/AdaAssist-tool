@@ -44,6 +44,7 @@ class UpdateSessionRequest(BaseModel):
     resolved_test_code: str | None = None
     context_enabled: bool | None = None
     max_rounds: int | None = Field(default=None, ge=1, le=10)
+    max_tokens: int | None = Field(default=None, ge=128, le=32768)
     prompt_language: Literal["en", "zh-CN"] | None = None
 
 
@@ -283,6 +284,7 @@ def update_session(session_id: str, request: UpdateSessionRequest) -> dict[str, 
             resolved_test_code=request.resolved_test_code,
             context_enabled=request.context_enabled,
             max_rounds=request.max_rounds,
+            max_tokens=request.max_tokens,
             prompt_language=request.prompt_language,
             plan=request.plan,
             announce_resolved_tests=request.resolved_test_code is not None,
