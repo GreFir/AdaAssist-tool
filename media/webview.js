@@ -297,6 +297,7 @@
     editingProfileId: '',
     session: null,
     archivedSessions: [],
+    archiveTransitionPending: false,
     pendingNewRequirement: '',
     passDecisionShownFor: '',
     passDecisionScheduled: false,
@@ -830,7 +831,14 @@
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
-    if (Array.isArray(data.archivedSessions)) state.archivedSessions = data.archivedSessions;
+    if (Array.isArray(data.archivedSessions)) {
+      const previousCount = state.archivedSessions.length;
+      state.archivedSessions = data.archivedSessions;
+      if (state.archivedSessions.length > previousCount) {
+        state.archiveTransitionPending = true;
+        state.autoScrollPinned = true;
+      }
+    }
     state.workflowMode = data.workflowMode === 'auto' ? 'auto' : 'continue';
     state.interactiveState = typeof data.interactiveState === 'string' ? data.interactiveState : 'idle';
     state.canResume = Boolean(data.canResume);
@@ -2252,6 +2260,34 @@
     });
   }
 
+  function animateToNewTask() {
+    if (!conversationScroll || !state.archiveTransitionPending) return;
+    state.archiveTransitionPending = false;
+    const anchor = timeline.querySelector('.ada-new-task-anchor');
+    if (!anchor) return;
+    const target = Math.max(0, anchor.getBoundingClientRect().top
+      - conversationScroll.getBoundingClientRect().top + conversationScroll.scrollTop - 12);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(function () {
+      conversationScroll.scrollTo({ top: target, behavior: reduced ? 'instant' : 'smooth' });
+    });
+  }
+
+  function appendNewTaskAnchor() {
+    if (!(state.archivedSessions || []).length) return;
+    const anchor = document.createElement('div');
+    anchor.className = 'ada-new-task-anchor';
+    anchor.textContent = uiLanguage === 'zh-CN'
+      ? '新任务 · 输入需求以开始'
+      : 'New task · Enter a requirement to begin';
+    timeline.appendChild(anchor);
+    // Provide enough room to scroll old history above the visible viewport
+    // even before the new task contains its first message.
+    if (!state.session) {
+      anchor.style.minHeight = Math.max(0, conversationScroll.clientHeight - 28) + 'px';
+    }
+  }
+
   function renderTimeline() {
     syncEditablePlanDraft();
     const entries = conversationEntries();
@@ -2263,9 +2299,10 @@
 
     timeline.innerHTML = '';
     renderArchivedHistory();
+    appendNewTaskAnchor();
     state.lastTimelineSignature = timelineSignature;
 
-    if (entries.length === 0) {
+    if (entries.length === 0 && !(state.archivedSessions || []).length) {
 			const guide = renderStudyGuideCard();
 			if (guide) {
 				timeline.appendChild(guide);
@@ -2288,7 +2325,9 @@
     });
 
     renderPassedTaskDecision();
-    if (shouldStickToBottom || awaitingTaskConfirmation()) {
+    if (state.archiveTransitionPending) {
+      animateToNewTask();
+    } else if (shouldStickToBottom || awaitingTaskConfirmation()) {
       requestConversationAutoScroll();
     }
   }
