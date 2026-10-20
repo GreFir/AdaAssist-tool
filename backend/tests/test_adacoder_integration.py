@@ -60,6 +60,22 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIn("max((score, name))", planner.system_prompt)
         self.assertIn("Test only behavior explicitly required", tester.system_prompt)
 
+    def test_workflow_max_output_tokens_controls_generation_without_inflating_short_stages(self) -> None:
+        for budget, expected_planner, expected_tester in (
+            (256, 256, 256),
+            (4096, 768, 768),
+        ):
+            with self.subTest(budget=budget):
+                RecordingExecutor.instances = []
+                config = LLMConfig(provider="vllm", model="test", max_tokens=budget)
+                with patch("src.Adacoder.AdacoderExecutor", RecordingExecutor):
+                    engine = Adacoder(config)
+                coder, planner, tester = RecordingExecutor.instances
+                self.assertEqual(coder.config.max_tokens, budget)
+                self.assertEqual(planner.config.max_tokens, expected_planner)
+                self.assertEqual(tester.config.max_tokens, expected_tester)
+                self.assertEqual(engine.coder_config.max_tokens, budget)
+
     def test_explicit_planner_budget_is_preserved(self) -> None:
         config = LLMConfig(provider="vllm", model="test", max_tokens=1024)
         planner_config = LLMConfig(provider="vllm", model="test", max_tokens=3072, temperature=0.7)
