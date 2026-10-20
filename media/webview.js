@@ -2300,9 +2300,7 @@
 		if (!pythonInterpreterValue) {
 			return;
 		}
-		pythonInterpreterValue.textContent = state.pythonPath === 'auto'
-			? t('autoDetectPython')
-			: String(state.pythonPath || t('autoDetectPython'));
+		pythonInterpreterValue.textContent = String(state.pythonEnvironmentLabel || (state.pythonPath === 'auto' ? t('autoDetectPython') : state.pythonPath) || t('autoDetectPython'));
 	}
 
 	function renderInlineCompletionSettings() {
