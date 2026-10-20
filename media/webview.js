@@ -1923,8 +1923,11 @@
       focusTestSettings();
     }, state.running));
     row.appendChild(createButton(t('continue'), '', function () {
-      submitWorkflowBtn.click();
-    }, state.running || !configuredTestCode().trim()));
+      if (state.running || !state.canResume || !configuredTestCode().trim()) return;
+      const resumePayload = Object.assign({ type: 'resumeWorkflow' }, currentActionPayload());
+      state.additionalInstructionPending = Boolean(resumePayload.additionalInstruction);
+      postTrackedOperation('workflow', resumePayload);
+    }, state.running || !state.canResume || !configuredTestCode().trim()));
     card.appendChild(row);
     return card;
   }
@@ -3417,7 +3420,6 @@
         const scope = typeof data.scope === 'string' ? data.scope : 'workflow';
         state.running = Boolean(data.running);
         state.runningLabel = typeof data.label === 'string' ? data.label : '';
-        if (!state.running) promptForPassedTask();
         if (state.running) {
           state.operationStatus = 'running';
           state.operationMessage = state.runningLabel || t('running');
