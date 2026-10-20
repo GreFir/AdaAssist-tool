@@ -24,6 +24,17 @@ class WorkflowTokenBudgetTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(create.call_args.kwargs["llm_config"].max_tokens, 4096)
 
+    def test_patch_session_budget_uses_existing_session(self) -> None:
+        from main import UpdateSessionRequest, update_session
+        fake_session = Mock()
+        fake_session.lock.__enter__ = Mock(return_value=None)
+        fake_session.lock.__exit__ = Mock(return_value=None)
+        fake_session.to_dict.return_value = {"session_id": "test-existing-session"}
+        with patch("main.get_session_or_404", return_value=fake_session):
+            response = update_session("test-existing-session", UpdateSessionRequest(max_tokens=4096))
+        self.assertTrue(response["ok"])
+        self.assertEqual(fake_session.update_options.call_args.kwargs["max_tokens"], 4096)
+
     def test_profile_validation_rejects_out_of_range(self) -> None:
         from pydantic import ValidationError
         for bad_value in (127, 32769):
