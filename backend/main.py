@@ -18,6 +18,7 @@ class LLMSettingsRequest(BaseModel):
     base_url: str = ""
     api_key: str = ""
     model: str = Field(min_length=1)
+    max_tokens: int = Field(default=1024, ge=128, le=32768)
 
 
 class CreateSessionRequest(BaseModel):
@@ -120,6 +121,7 @@ def make_llm_config(settings: LLMSettingsRequest) -> LLMConfig:
         base_url=settings.base_url,
         api_key=settings.api_key,
         model=settings.model,
+        max_tokens=settings.max_tokens,
     )
 
 
