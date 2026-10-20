@@ -2933,7 +2933,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 
 		if (!restored && !stored) {
 			void vscode.window.showWarningMessage(
-				`Session ${sessionId.slice(0, 8)} 只有诊断日志，当前后端也没有该会话，未找到完整 JSON 快照，无法恢复。`
+				`Session ${sessionId.slice(0, 8)}：当前工作区未找到完整 JSON 快照，也无法从后端读取会话。请检查是否打开了原实验工作区，以及后端是否可用；仅凭诊断日志无法重建代码和测试。`
 			);
 			this.outputChannel.appendLine(`[session restore] ${sessionId}: no snapshot; backend=${backendLookupError}`);
 			return;
