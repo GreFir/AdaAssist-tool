@@ -222,6 +222,12 @@ Basic usage:
 5. In Interactive mode, review or generate the tests in the inline drawer, then continue.
 6. In Auto mode, AdaAssist proceeds through the complete backend workflow without a review pause.
 
+The task composer displays an **Interactive / Auto** mode switch directly above the
+requirement input. It is synchronized with Settings → Workflow, persists as the
+next-task preference, and becomes read-only after a Session starts. Choose
+**New Task** to select a different execution mode without modifying the old
+Session's history.
+
 ## Workflow Behavior
 
 The selected mode is locked after a session starts to keep workflow behavior consistent throughout the task.
