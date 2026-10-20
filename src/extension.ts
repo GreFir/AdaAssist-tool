@@ -3239,14 +3239,16 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 			const elapsed = Date.now() - (this.lastEdits.get(uri) ?? 0);
 			const remaining = Math.max(0, idleMs - elapsed);
 			if (remaining > 0) {
-				await Promise.race([
-					delay(remaining),
-					new Promise<void>(resolve => {
-						if (token.isCancellationRequested) { resolve(); return; }
-						const subscription = token.onCancellationRequested(() => { subscription.dispose(); resolve(); });
-						void delay(remaining).then(() => subscription.dispose());
-					})
-				]);
+				await new Promise<void>(resolve => {
+					if (token.isCancellationRequested) { resolve(); return; }
+					let subscription: vscode.Disposable | undefined;
+					const timer = setTimeout(() => { subscription?.dispose(); resolve(); }, remaining);
+					subscription = token.onCancellationRequested(() => {
+						clearTimeout(timer);
+						subscription?.dispose();
+						resolve();
+					});
+				});
 			}
 			if (token.isCancellationRequested || document.version !== requestedVersion
 				|| Date.now() - (this.lastEdits.get(uri) ?? 0) < idleMs) {
@@ -3309,7 +3311,10 @@ class EditorAssistant implements vscode.InlineCompletionItemProvider, vscode.Dis
 					});
 				this.pendingCompletions.set(cacheKey, request);
 			}
-			completion = await request;
+			// A superseded VS Code request should not keep occupying the model server.
+			const controller = this.inFlightControllers.get(uri + ':' + cacheKey);
+			const cancellation = token.onCancellationRequested(() => controller?.abort());
+			try { completion = await request; } finally { cancellation.dispose(); }
 		}
 		if (token.isCancellationRequested || !completion || document.version !== requestedVersion
 			|| !position.isEqual(requestedPosition)
