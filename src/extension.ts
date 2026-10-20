@@ -1565,6 +1565,35 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 
 		await this.persistProfiles(context);
+		// Applying the user's new output limit should not require discarding
+		// the current code, tests or plan. Never change the model/endpoint
+		// of an already-running session implicitly.
+		const active = this.activeSession;
+		const matchingSession = active?.session_id
+			&& active.llm?.model === model
+			&& active.llm?.provider === provider
+			&& (active.llm?.base_url ?? '') === baseUrl;
+		if (matchingSession && !this.running
+			&& active?.llm?.max_tokens !== maxTokens) {
+			try {
+				const response = await this.backendServer.request<BackendResponse>(
+					`/api/sessions/${encodeURIComponent(active.session_id)}`, {
+						method: 'PATCH',
+						body: JSON.stringify({ max_tokens: maxTokens })
+					}
+				);
+				if (response.session) {
+					this.activeSession = response.session;
+					this.appendUiLog('info', `Updated active session output budget to ${maxTokens} tokens.`);
+				}
+			} catch (error) {
+				const detail = error instanceof Error ? error.message : String(error);
+				this.appendUiLog('error', `Profile saved, but current session token limit was not updated: ${detail}`);
+				void vscode.window.showWarningMessage(
+					'Profile 已保存，但当前 Session 的输出上限未更新；新建任务可使用新设置。'
+				);
+			}
+		}
 		await this.postState();
 		await this.checkEnvironment();
 		this.appendUiLog('info', `Profile saved: ${name}`);
