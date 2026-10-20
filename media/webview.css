@@ -2558,3 +2558,25 @@ body.vscode-high-contrast-light .workflow-progress-popover {
     scroll-behavior: auto;
   }
 }
+
+/* Compact resume control for archived task headings. */
+.ada-restore-session {
+  margin-left: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--vscode-descriptionForeground);
+  font-size: 18px;
+  cursor: pointer;
+}
+.ada-restore-session:hover,
+.ada-restore-session:focus-visible {
+  color: var(--vscode-foreground);
+  border-color: var(--vscode-focusBorder);
+  background: var(--vscode-toolbar-hoverBackground);
+}
