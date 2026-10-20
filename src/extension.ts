@@ -4926,8 +4926,8 @@ async function insertGeneratedCode(code: string): Promise<void> {
     </div>
     <div class="settings-tabs" role="tablist" aria-label="Settings">
       <button class="settings-tab active" id="workflowSettingsTabBtn" type="button" role="tab" data-settings-tab="workflow" aria-controls="workflowSettingsTab" data-i18n="workflow">Workflow</button>
-      <button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" aria-controls="profilesSettingsTab" data-i18n="profiles">Models</button>
-      <button class="settings-tab" id="completionSettingsTabBtn" type="button" role="tab" data-settings-tab="completion" aria-controls="completionSettingsTab" data-i18n="inlineCompletion">Completion</button>
+      <button class="settings-tab" id="profilesSettingsTabBtn" type="button" role="tab" data-settings-tab="profiles" aria-controls="profilesSettingsTab" data-i18n="modelTab">Models</button>
+      <button class="settings-tab" id="completionSettingsTabBtn" type="button" role="tab" data-settings-tab="completion" aria-controls="completionSettingsTab" data-i18n="completionTab">Completion</button>
       <button class="settings-tab" id="environmentSettingsTabBtn" type="button" role="tab" data-settings-tab="environment" aria-controls="environmentSettingsTab" data-i18n="environmentTab">Environment</button>
     </div>
 
