@@ -1,0 +1,99 @@
+name: Package and release VSIX
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Build and verify extension
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Lint TypeScript
+        run: npm run lint
+      - name: Create installable VSIX
+        run: npm run package:vsix
+      - name: Verify VSIX contents
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import glob
+          import json
+          from zipfile import ZipFile
+
+          packages = glob.glob("adaassist-*.vsix")
+          if len(packages) != 1:
+              raise SystemExit(f"Expected one VSIX, found: {packages}")
+          with ZipFile(packages[0]) as archive:
+              files = set(archive.namelist())
+              required = {
+                  "extension/package.json",
+                  "extension/out/extension.js",
+                  "extension/backend/main.py",
+                  "extension/backend/requirements.txt",
+                  "extension/backend/src/session_service.py",
+                  "extension/media/webview.js",
+                  "extension/media/webview.css",
+                  "extension/node_modules/markdown-it/dist/markdown-it.min.js",
+                  "extension/node_modules/@highlightjs/cdn-assets/highlight.min.js",
+              }
+              missing = sorted(required - files)
+              if missing:
+                  raise SystemExit(f"VSIX is missing runtime assets: {missing}")
+              package = json.loads(archive.read("extension/package.json"))
+              print(f"Verified {package['name']} {package['version']}: {len(files)} assets")
+          PY
+          sha256sum adaassist-*.vsix > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: adaassist-vsix
+          path: |
+            adaassist-*.vsix
+            SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  github-release:
+    name: Attach VSIX to GitHub Release
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: adaassist-vsix
+      - name: Check tag matches package version
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} must equal v${VERSION} from package.json"
+            exit 1
+          fi
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: AdaAssist ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            adaassist-*.vsix
+            SHA256SUMS.txt
