@@ -135,6 +135,28 @@ Notes:
 - For file-based configuration, prefer `apiKeyEnv` instead of writing real API keys into JSON.
 - 用户研究服务器默认使用 vLLM 的 OpenAI 兼容接口 `http://127.0.0.1:8003/v1`，模型名为 `deepseek-coder-33b-instruct`。如服务器地址不同，请在 profile 中替换；不要把 API key 写入仓库。
 
+## Python Environment Discovery
+
+AdaAssist's **Select Python Interpreter** command now lists local environments discovered
+by the Microsoft **Python Environments** VS Code extension (including Conda,
+virtual environments and installed Python versions). Use **Refresh Python
+Environments** in the picker after installing a new interpreter. A manual
+executable chooser remains available for environments not found by the provider.
+
+- **Auto** follows the active interpreter selected in the VS Code workspace.
+  If VS Code has none selected, AdaAssist falls back to local `.venv`
+  candidates and then Python on `PATH`.
+- Choosing an environment from the list saves its environment identity in
+  `adaassist.pythonPath` so that reopening VS Code resolves it again.
+- A manually selected executable path overrides automatic discovery.
+- Selected interpreters must be able to import AdaAssist's backend requirements:
+  `fastapi`, `uvicorn`, and `openai`. The settings **Check Environment**
+  action reports missing packages and backend startup errors.
+
+**Note:** The selected Python is currently used to launch AdaAssist's own
+FastAPI backend. The selection does not change VS Code's Python interpreter,
+and it is not yet a separate code-execution environment setting.
+
 ## VS Code Settings
 
 Important settings:
