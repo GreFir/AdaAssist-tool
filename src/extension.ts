@@ -1301,7 +1301,13 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 						break;
 					}
 					case 'saveProfile': {
-						await this.saveProfile(context, message);
+						try {
+							await this.saveProfile(context, message);
+						} catch (error) {
+							this.postMessage({ type: 'profileSaveResult', ok: false,
+								message: error instanceof Error ? error.message : String(error) });
+							throw error;
+						}
 						break;
 					}
 					case 'deleteProfile': {
@@ -1522,11 +1528,13 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		if (typeof maxTokens !== 'number' || !Number.isInteger(maxTokens)
 			|| maxTokens < 128 || maxTokens > MAX_WORKFLOW_OUTPUT_TOKENS) {
 			void vscode.window.showErrorMessage('最大输出 Tokens 必须为 128–32768 之间的整数。');
+			this.postMessage({ type: 'profileSaveResult', ok: false, message: '无效的最大输出 Tokens。' });
 			return;
 		}
 
 		if (!name) {
 			this.appendUiLog('error', 'Profile name is required.');
+			this.postMessage({ type: 'profileSaveResult', ok: false, message: 'Profile name is required.' });
 			return;
 		}
 
@@ -1597,6 +1605,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		await this.postState();
 		await this.checkEnvironment();
 		this.appendUiLog('info', `Profile saved: ${name}`);
+		this.postMessage({ type: 'profileSaveResult', ok: true, profileId: this.activeProfileId });
 	}
 
 	private async deleteProfile(context: vscode.ExtensionContext, message: Record<string, unknown>): Promise<void> {
