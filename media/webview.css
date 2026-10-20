@@ -2540,3 +2540,21 @@ body.vscode-high-contrast-light .workflow-progress-popover {
 #testsDrawer .tests-editor-shell:focus-within {
   box-shadow: inset 2px 0 var(--vscode-focusBorder);
 }
+
+/* Archived sessions remain in the same scroll stream; a new task starts below them. */
+.ada-new-task-anchor {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 0 12px;
+  margin-top: 10px;
+  border-top: 1px solid var(--vscode-panel-border);
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+  scroll-margin-top: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-scroll {
+    scroll-behavior: auto;
+  }
+}
