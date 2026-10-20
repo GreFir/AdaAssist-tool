@@ -1067,6 +1067,7 @@ class WorkflowSession:
                 "provider": self.llm_config.provider,
                 "base_url": self.llm_config.base_url or "",
                 "model": self.llm_config.model,
+                "max_tokens": self.llm_config.max_tokens,
             },
             "context_enabled": self.context_enabled,
             "max_rounds": self.max_rounds,
