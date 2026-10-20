@@ -80,6 +80,11 @@ assert unique_sorted([-1, -1, 0]) == [-1, 0]
 
 Tests are **ordinary Python assertions**, not `pytest` or `unittest` test files. Generated tests are reviewable and should be checked before relying on their results.
 
+
+### Task composer controls
+
+The composer uses a single input frame, with icon-only **Use Selection** and **New Task** controls. The compact **Interactive / Auto** menu beside **Send** stays synchronized with **Settings → Workflow**. The selected mode is locked during an active task; choose **New Task** to change it without altering prior session history.
+
 ## ✨ Features
 
 | Capability | Description |

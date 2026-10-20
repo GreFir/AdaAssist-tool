@@ -4889,13 +4889,23 @@ async function insertGeneratedCode(code: string): Promise<void> {
 						<textarea id="problemInput" placeholder="Describe the coding task, constraints, expected behavior, and anything the model must preserve." data-i18n-placeholder="problemPlaceholder"></textarea>
 						<div class="composer-input-toolbar">
 							<div class="composer-input-actions">
-								<button class="btn secondary" id="useSelectionForProblemBtn" type="button" data-i18n="selectionToPrompt">Selection To Prompt</button>
-								<button class="btn subtle" id="clearSessionBtn" type="button" data-i18n="newTask">New Task</button>
+								<button class="composer-icon-action" id="useSelectionForProblemBtn" type="button" title="Use Selection" aria-label="Use Selection" data-i18n-title="selectionToPrompt" data-i18n-aria-label="selectionToPrompt">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M4 9h8M4 13h5M15 14v7M11.5 17.5h7"/></svg>
+								</button>
+								<button class="composer-icon-action" id="clearSessionBtn" type="button" title="New Task" aria-label="New Task" data-i18n-title="newTask" data-i18n-aria-label="newTask">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M13 3l7 7M13 3v7h7"/><path d="M17 3v6M14 6h6"/></svg>
+								</button>
 							</div>
-							<button class="composer-submit-button" id="submitWorkflowBtn" type="button" title="Send workflow" aria-label="Send workflow" data-i18n-title="sendWorkflow" data-i18n-aria-label="sendWorkflow">
-								<img class="composer-submit-icon" id="submitWorkflowIcon" src="${sendIconUri}" alt="" />
-								<span class="visually-hidden" id="submitWorkflowLabel" data-i18n="send">Send</span>
-							</button>
+							<div class="composer-send-actions">
+								<button class="composer-mode-trigger" id="composerModeButton" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="composerModeMenu" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode">
+									<span id="composerModeValue">Interactive</span>
+									<svg class="composer-mode-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
+								</button>
+								<button class="composer-submit-button" id="submitWorkflowBtn" type="button" title="Send workflow" aria-label="Send workflow" data-i18n-title="sendWorkflow" data-i18n-aria-label="sendWorkflow">
+									<img class="composer-submit-icon" id="submitWorkflowIcon" src="${sendIconUri}" alt="" />
+									<span class="visually-hidden" id="submitWorkflowLabel" data-i18n="send">Send</span>
+								</button>
+							</div>
 						</div>
 					</div>
 					<div class="inline-operation-status" id="operationState" aria-live="polite"></div>
@@ -5168,6 +5178,7 @@ async function insertGeneratedCode(code: string): Promise<void> {
 </main>
 	</div>
 
+		<div class="composer-mode-menu" id="composerModeMenu" role="menu" aria-label="Workflow Mode" data-i18n-aria-label="workflowMode" hidden></div>
 		<script nonce="${nonce}" src="${markdownItUri}"></script>
 		<script nonce="${nonce}" src="${highlightScriptUri}"></script>
 		<script nonce="${nonce}" src="${highlightPythonUri}"></script>

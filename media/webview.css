@@ -695,18 +695,7 @@ textarea {
   background: color-mix(in srgb, var(--surface) 96%, var(--bg));
 }
 
-.composer-shell::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 16px;
-  border-radius: 8px 8px 0 0;
-  background: color-mix(in srgb, var(--surface) 96%, var(--bg));
-  pointer-events: none;
-}
+.composer-shell::before { display: none; }
 
 .composer-shell > .composer-input-shell,
 .composer-shell > .workflow-error,
@@ -718,6 +707,17 @@ textarea {
 .composer-shell textarea {
   min-height: 84px;
 }
+
+/* Composer uses the input surface as its only frame. */
+.composer-shell {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  gap: 5px;
+}
+.composer-shell > .composer-footer { padding: 0 3px; }
 
 .composer-input-shell {
   position: relative;
@@ -800,7 +800,134 @@ textarea {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 2px;
+  gap: 4px;
+}
+.composer-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--vscode-descriptionForeground, var(--muted));
+  cursor: pointer;
+}
+.composer-icon-action svg { width: 17px; height: 17px; }
+.composer-icon-action:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--vscode-toolbar-hoverBackground, color-mix(in srgb, var(--fg) 8%, transparent));
+}
+.composer-icon-action:focus-visible,
+.composer-mode-select:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--accent));
+  outline-offset: 1px;
+}
+.composer-icon-action:disabled { opacity: 0.35; cursor: default; }
+.composer-send-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin-left: auto;
+}
+/* Custom mode menu stays consistent with VS Code theme: unlike a native
+   <select> popup it has the same hover, radius, and selected styling. */
+.composer-mode-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 7px 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--vscode-descriptionForeground, var(--fg));
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.composer-mode-trigger:hover:not(:disabled),
+.composer-mode-trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  color: var(--fg);
+  background: var(--vscode-toolbar-hoverBackground, var(--surface-soft));
+}
+.composer-mode-trigger:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--accent));
+  outline-offset: 1px;
+}
+.composer-mode-trigger:disabled { opacity: .65; cursor: default; }
+.composer-mode-chevron {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  transition: transform 150ms ease;
+}
+.composer-mode-trigger[aria-expanded="true"] .composer-mode-chevron {
+  transform: rotate(180deg);
+}
+/* Portaled to body: does not get clipped by the input's overflow:hidden. */
+.composer-mode-menu {
+  position: fixed;
+  z-index: 1000;
+  box-sizing: border-box;
+  min-width: 148px;
+  padding: 5px;
+  border: 1px solid var(--vscode-menu-border, var(--border));
+  border-radius: 10px;
+  background: var(--vscode-menu-background, var(--vscode-editorWidget-background, var(--surface-strong)));
+  color: var(--vscode-menu-foreground, var(--fg));
+  box-shadow: 0 7px 22px var(--vscode-widget-shadow, #0004);
+}
+.composer-mode-menu[hidden] { display: none !important; }
+.composer-mode-choice {
+  display: flex;
+  width: 100%;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.composer-mode-choice:hover,
+.composer-mode-choice:focus-visible {
+  outline: none;
+  color: var(--vscode-menu-selectionForeground, var(--fg));
+  background: var(--vscode-menu-selectionBackground, var(--vscode-list-hoverBackground, var(--surface-soft)));
+}
+.composer-mode-choice[aria-checked="true"] {
+  font-weight: 600;
+}
+.composer-mode-choice-check {
+  width: 13px;
+  flex: 0 0 13px;
+  color: var(--vscode-charts-blue, var(--accent));
+  text-align: right;
+}
+@media (max-width: 285px) {
+  .composer-input-toolbar { gap: 3px; }
+  .composer-send-actions { gap: 3px; }
+  .composer-mode-trigger { gap: 4px; padding: 4px 4px 4px 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer-mode-chevron { transition: none; }
 }
 
 .composer-input-toolbar .btn {
