@@ -3,6 +3,9 @@
   "publisher": "adaassist-study",
   "displayName": "AdaAssist",
   "description": "Programming assistant for code workflows in VS Code.",
+  "repository": {"type": "git", "url": "https://github.com/GreFir/AdaAssist-tool.git"},
+  "homepage": "https://github.com/GreFir/AdaAssist-tool#readme",
+  "bugs": {"url": "https://github.com/GreFir/AdaAssist-tool/issues"},
   "version": "0.0.14",
   "engines": {
     "vscode": "^1.110.0"
@@ -214,6 +217,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
+    "package:vsix": "npx --yes @vscode/vsce@3 package",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
