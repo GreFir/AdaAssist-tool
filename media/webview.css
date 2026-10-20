@@ -732,6 +732,79 @@ textarea {
   transition: border-color 120ms ease, background 120ms ease;
 }
 
+/* Task execution mode lives immediately above the prompt, so it is
+   discoverable before the user submits their first requirement. */
+.composer-mode-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+  padding: 9px 10px 7px 13px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  background: color-mix(in srgb, var(--surface-strong) 38%, var(--input-bg));
+}
+.composer-mode-label {
+  color: var(--vscode-descriptionForeground, var(--muted));
+  font-size: 11px;
+  font-weight: 600;
+}
+.composer-mode-switch {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 2px;
+  min-width: 0;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  background: color-mix(in srgb, var(--surface-strong) 74%, var(--input-bg));
+}
+.composer-mode-option {
+  flex: 1 1 auto;
+  min-width: 74px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.composer-mode-option:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--vscode-toolbar-hoverBackground, var(--surface-soft));
+}
+.composer-mode-option.active {
+  color: var(--fg);
+  background: var(--vscode-input-background, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 1px 4px color-mix(in srgb, #000 9%, transparent);
+  font-weight: 650;
+}
+.composer-mode-option:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--accent));
+  outline-offset: 1px;
+}
+.composer-mode-option:disabled {
+  opacity: .72;
+  cursor: default;
+}
+.composer-mode-row.is-locked .composer-mode-label {
+  color: var(--muted);
+}
+@media (max-width: 285px) {
+  .composer-mode-row { align-items: stretch; }
+  .composer-mode-switch { width: 100%; }
+  .composer-mode-option { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer-mode-option { transition: none; }
+}
+
 .composer-input-shell:hover {
   border-color: var(--border-strong);
 }
