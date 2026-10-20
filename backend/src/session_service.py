@@ -349,6 +349,7 @@ class WorkflowSession:
         test_mode: TestMode | None = None,
         context_enabled: bool | None = None,
         max_rounds: int | None = None,
+        max_tokens: int | None = None,
         prompt_language: PromptLanguage | None = None,
         plan: str | None = None,
         resolved_test_code: str | None = None,
@@ -357,6 +358,19 @@ class WorkflowSession:
         if prompt_language is not None and prompt_language != self.prompt_language:
             self.prompt_language = prompt_language
             self.engine = Adacoder(self.llm_config, prompt_language=self.prompt_language)
+
+        if max_tokens is not None and max_tokens != self.llm_config.max_tokens:
+            if not 128 <= max_tokens <= 32768:
+                raise ValueError("max_tokens must be between 128 and 32768.")
+            previous = self.llm_config.max_tokens
+            self.llm_config.max_tokens = max_tokens
+            self.engine = Adacoder(self.llm_config, prompt_language=self.prompt_language)
+            # Preserve the in-progress workflow stage, plan and candidate code.
+            # Record the configuration change without adding a workflow stage.
+            self.record_study_event(
+                event_type="output_budget_updated",
+                data={"previous_max_tokens": previous, "max_tokens": max_tokens},
+            )
 
         if context_enabled is not None and context_enabled != self.context_enabled:
             self.context_enabled = context_enabled
