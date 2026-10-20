@@ -831,6 +831,11 @@
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
+    if (state.session && state.passedTaskConfirmedContinue !== state.session.session_id) {
+      // A restored passed task is ready for follow-up Guidance rather than a new-task prompt.
+      const restoredInArchive = (state.archivedSessions || []).some(item => item.session_id === state.session.session_id);
+      if (restoredInArchive) state.passedTaskConfirmedContinue = state.session.session_id;
+    }
     if (Array.isArray(data.archivedSessions)) {
       const previousCount = state.archivedSessions.length;
       state.archivedSessions = data.archivedSessions;
@@ -2221,6 +2226,17 @@
     heading.textContent = (uiLanguage === 'zh-CN' ? '任务 ' : 'Task ') + (index + 1)
       + (session.passed ? ' ✓' : '');
     divider.appendChild(heading);
+    divider.style.justifyContent = 'space-between';
+    const restore = document.createElement('button');
+    restore.type = 'button';
+    restore.className = 'ada-restore-session';
+    restore.title = uiLanguage === 'zh-CN' ? '恢复此会话' : 'Restore this session';
+    restore.setAttribute('aria-label', restore.title);
+    restore.textContent = '↩';
+    restore.addEventListener('click', function () {
+      vscode.postMessage({ type: 'restoreArchivedSession', sessionId: session.session_id });
+    });
+    divider.appendChild(restore);
     group.appendChild(divider);
 
     // Reuse exactly the live conversation renderer, with a read-only snapshot of its state.
