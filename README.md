@@ -89,6 +89,17 @@ python main.py --host 127.0.0.1 --port 8765
 
 Then keep the same host and port in VS Code settings.
 
+## Settings organization
+
+The Settings view is divided into four focused sections:
+
+- **Workflow** — choose interactive/automatic execution and per-task context reuse; the model summary links to its configuration.
+- **Models** — manage the workflow model connection, API credentials, and output Token budget in distinct groups. Save changes explicitly; unsaved drafts are protected when switching Profiles. Less frequently used file-management actions live under **Advanced profile actions**.
+- **Completion** — independently configure Python inline suggestions, triggering, debounce, and output length. The debounce control is disabled when using manual triggering.
+- **Environment** — select the local Python interpreter and inspect backend dependency checks.
+
+Profile and inline-completion settings provide separate save feedback. Model budget changes to a matching idle Session retain its existing code/tests/plan; changing model or provider still requires a new Session. Workflow mode is locked while its task is running.
+
 ## LLM Profile Configuration
 
 LLM profiles can be configured from the AdaAssist UI:
