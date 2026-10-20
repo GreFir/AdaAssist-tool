@@ -5,6 +5,41 @@
 
   const translations = {
     en: {
+      environmentTab: 'Environment',
+      settingsHint: 'Clear, separate controls for workflows, models, completion, and Python.',
+      workflowSettingsTitle: 'Task execution',
+      workflowSettingsDescription: 'Set the next task’s behavior. A running task keeps its existing mode.',
+      workflowModeDescription: 'Choose whether to pause for review or run automatically.',
+      contextSettingDescription: 'Reuse prior generation and test feedback within the current task.',
+      workflowModelGroup: 'Model used for tasks',
+      workflowModelDescription: 'Connection details and output limits are managed in Models.',
+      configureModel: 'Configure model',
+      modelSettingsTitle: 'Model profiles',
+      modelSettingsDescription: 'Connections, credentials, and output budgets saved for each model.',
+      chooseProfile: 'Choose a profile',
+      connectionSection: 'Connection',
+      connectionSectionHint: 'Specify the model endpoint and credentials for workflow requests.',
+      endpointOptionalHint: 'Optional for OpenAI and Claude official endpoints.',
+      generationSection: 'Generation budget',
+      discardChanges: 'Discard changes',
+      advancedProfileActions: 'Advanced profile actions',
+      completionSettingsTitle: 'Inline completion',
+      completionEnableHint: 'Suggest code while editing Python files.',
+      completionModelSection: 'Completion model',
+      completionModelHint: 'Independent from the model selected for coding tasks.',
+      completionBehaviorSection: 'Trigger and limits',
+      completionLimitHint: 'Debounce applies only to automatic requests. This budget only affects inline suggestions.',
+      environmentSettingsTitle: 'Python runtime',
+      environmentSettingsDescription: 'Interpreter and dependency checks for the local AdaAssist backend.',
+      profileUnsaved: 'Unsaved profile changes — save or discard before switching profiles.',
+      profileReady: 'Changes apply when you save. Credentials remain in VS Code Secret Storage.',
+      profileSavedStatus: 'Profile saved successfully.',
+      profileSavingStatus: 'Saving profile…',
+      profileChangesBlocked: 'Save or discard the current changes before switching profiles.',
+      profileRequired: 'Profile name and model ID are required.',
+      profileEndpointRequired: 'This provider needs a Base URL.',
+      profileKeyRequired: 'Enter an API key or configure the associated environment variable.',
+      profileSaveError: 'Profile was not saved.',
       workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Configure workflow behavior, model access, and the local runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
       workflowSetup: 'Workflow setup', runSetup: 'Run Setup', mode: 'Mode', workflowMode: 'Workflow Mode', interactiveContinue: 'Interactive Continue', autoFullWorkflow: 'Auto Full Workflow',
       environmentStatus: 'Environment Status', checkingEnvironment: 'Checking environment...', environmentReady: 'Environment ready', environmentWarning: 'Environment needs attention', environmentFailed: 'Environment unavailable', checkEnvironment: 'Check Environment',
@@ -42,6 +77,41 @@
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
+      environmentTab: '运行环境',
+      settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。',
+      workflowSettingsTitle: '任务执行',
+      workflowSettingsDescription: '这些选项用于下一个任务；运行中的任务保留原有执行模式。',
+      workflowModeDescription: '选择需要人工审查的交互模式，或自动完成整个工作流。',
+      contextSettingDescription: '在当前任务内部复用生成与测试反馈，不跨独立任务传递。',
+      workflowModelGroup: '任务使用的模型',
+      workflowModelDescription: '模型连接、凭据和输出长度统一在“模型”中管理。',
+      configureModel: '配置模型',
+      modelSettingsTitle: '模型配置',
+      modelSettingsDescription: '每个模型独立保存连接信息、凭据与生成预算。',
+      chooseProfile: '选择配置',
+      connectionSection: '模型连接',
+      connectionSectionHint: '用于生成代码、测试和修复计划的模型连接。',
+      endpointOptionalHint: 'OpenAI 和 Claude 使用官方接口时可留空。',
+      generationSection: '生成预算',
+      discardChanges: '放弃修改',
+      advancedProfileActions: '高级管理',
+      completionSettingsTitle: '行内代码补全',
+      completionEnableHint: '在编辑 Python 代码时生成行内建议。',
+      completionModelSection: '补全模型',
+      completionModelHint: '与主工作流使用的模型独立配置。',
+      completionBehaviorSection: '触发方式与限制',
+      completionLimitHint: '防抖仅在自动触发时生效，此处 Token 上限只影响行内补全。',
+      environmentSettingsTitle: 'Python 运行环境',
+      environmentSettingsDescription: '管理 AdaAssist 本地后端的 Python 解释器与依赖检查。',
+      profileUnsaved: '配置有未保存的修改，请先保存或放弃修改后再切换。',
+      profileReady: '点击保存后才会应用修改，密钥保存在 VS Code 安全存储中。',
+      profileSavedStatus: '模型配置已保存。',
+      profileSavingStatus: '正在保存配置…',
+      profileChangesBlocked: '请先保存或放弃当前配置的修改，再切换其他模型。',
+      profileRequired: '请输入配置名称和模型 ID。',
+      profileEndpointRequired: '当前服务类型必须配置 Base URL。',
+      profileKeyRequired: '请填写 API Key 或在配置文件中设置密钥环境变量。',
+      profileSaveError: '模型配置未保存。',
       closeTests: '关闭测试', testsCompactEmpty: '留空可自动生成测试。', testsCompactDirty: '有未保存修改 · 保存或继续以应用。', testsCompactReady: '编辑后保存，或继续工作流。',
       workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '配置工作流行为、模型连接和本地运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
       workflowSetup: '工作流设置', runSetup: '运行设置', mode: '模式', workflowMode: '工作流模式', interactiveContinue: '交互式继续', autoFullWorkflow: '自动完整工作流',
@@ -281,6 +351,13 @@
   const profileNameInput = document.getElementById('profileNameInput');
   const profileBaseUrlInput = document.getElementById('profileBaseUrlInput');
   const profileModelInput = document.getElementById('profileModelInput');
+  const workflowModelSummary = document.getElementById('workflowModelSummary');
+  const profileEditStatus = document.getElementById('profileEditStatus');
+  const discardProfileChangesBtn = document.getElementById('discardProfileChangesBtn');
+  const profileEndpointHint = document.getElementById('profileEndpointHint');
+  const profileKeyHint = document.getElementById('profileKeyHint');
+  const completionServiceGroup = document.getElementById('completionServiceGroup');
+  const completionBehaviorGroup = document.getElementById('completionBehaviorGroup');
   const profileMaxTokensInput = document.getElementById('profileMaxTokensInput');
   const profileProviderSelect = document.getElementById('profileProviderSelect');
   const profileApiKeyInput = document.getElementById('profileApiKeyInput');
@@ -296,6 +373,9 @@
     profiles: [],
     activeProfileId: '',
     editingProfileId: '',
+    profileDirty: false,
+    profileSaving: false,
+    profileStatusOverride: '',
     session: null,
     archivedSessions: [],
     restorableSessionIds: [],
@@ -491,18 +571,22 @@
     }
   }
 
-	function switchSettingsTab(tab) {
-		const selected = tab === 'profiles' || tab === 'runtime' ? tab : 'workflow';
-		state.settingsTab = selected;
-		settingsTabButtons.forEach(function (button) {
-			const active = button.dataset.settingsTab === selected;
-			button.classList.toggle('active', active);
-			button.setAttribute('aria-selected', active ? 'true' : 'false');
-		});
-		settingsTabPanels.forEach(function (panel) {
-			panel.classList.toggle('hidden', panel.dataset.settingsPanel !== selected);
-		});
-	}
+  function switchSettingsTab(tab, focusTab) {
+    const requested = tab === 'runtime' ? 'completion' : tab;
+    const selected = ['workflow', 'profiles', 'completion', 'environment'].includes(requested)
+      ? requested : 'workflow';
+    state.settingsTab = selected;
+    settingsTabButtons.forEach(function (button) {
+      const active = button.dataset.settingsTab === selected;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+      if (active && focusTab) button.focus();
+    });
+    settingsTabPanels.forEach(function (panel) {
+      panel.classList.toggle('hidden', panel.dataset.settingsPanel !== selected);
+    });
+  }
 
   function updateTestInputPlaceholder() {
     if (testInput) {
