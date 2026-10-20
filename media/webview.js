@@ -297,6 +297,7 @@
     editingProfileId: '',
     session: null,
     archivedSessions: [],
+    pendingNewRequirement: '',
     running: false,
     runningLabel: '',
     localLogs: [],
@@ -812,6 +813,14 @@
     state.lastTimelineSignature = '';
     state.lastProblemSessionId = '';
     state.lastSyncedProblem = '';
+    if (state.pendingNewRequirement) {
+      const newRequirement = state.pendingNewRequirement;
+      state.pendingNewRequirement = '';
+      resetTaskDraft();
+      problemInput.value = newRequirement;
+      state.problemDraftDirty = true;
+      postTrackedOperation('workflow', Object.assign({ type: 'runWorkflow' }, currentRequestPayload()));
+    }
   }
 
   function findProfile(id) {
@@ -3198,6 +3207,7 @@
     if (state.session && state.session.passed) {
       const chosen = awaitPassedTaskChoice();
       if (chosen === 'new') {
+        state.pendingNewRequirement = problemInput.value.trim();
         vscode.postMessage({ type: 'clearWorkflowSession', reason: 'new_task' });
         return;
       }
