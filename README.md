@@ -1,10 +1,6 @@
 # AdaAssist
 
 <p align="center">
-  <img src="media/adaassist.svg" width="78" alt="AdaAssist logo">
-</p>
-
-<p align="center">
   <strong>Interactive code generation, visible tests, and guided repair — inside VS Code.</strong>
 </p>
 
