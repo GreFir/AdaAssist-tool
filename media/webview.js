@@ -381,6 +381,9 @@
     editingProfileId: '',
     profileDirty: false,
     profileSaving: false,
+    inlineSettingsDirty: false,
+    inlineSettingsSaving: false,
+    inlineSaveStatus: '',
     profileStatusOverride: '',
     session: null,
     archivedSessions: [],
@@ -2777,25 +2780,29 @@
 		pythonInterpreterValue.textContent = String(state.pythonEnvironmentLabel || (state.pythonPath === 'auto' ? t('autoDetectPython') : state.pythonPath) || t('autoDetectPython'));
 	}
 
-	function renderInlineCompletionSettings() {
-		const settings = state.inlineCompletion;
-		if (!settings) {
-			return;
-		}
-		if (inlineCompletionEnabledInput) inlineCompletionEnabledInput.checked = settings.enabled !== false;
-		if (inlineCompletionProviderSelect) inlineCompletionProviderSelect.value = settings.provider || 'vllm';
-		if (inlineCompletionTriggerModeSelect) inlineCompletionTriggerModeSelect.value = settings.triggerMode === 'manual' ? 'manual' : 'automatic';
-		if (inlineCompletionBaseUrlInput) inlineCompletionBaseUrlInput.value = settings.baseUrl || '';
-		if (inlineCompletionModelInput) inlineCompletionModelInput.value = settings.model || '';
-		if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.value = String(settings.debounceMs || 700);
-		if (inlineCompletionMaxTokensInput) inlineCompletionMaxTokensInput.value = String(settings.maxTokens || 192);
-		updateCompletionFieldsState();
-		if (inlineCompletionStatus) {
-			inlineCompletionStatus.textContent = settings.enabled === false
-				? 'Disabled'
-				: `${settings.model || 'unknown'} @ ${settings.baseUrl || 'unknown'}`;
-		}
-	}
+  function renderInlineCompletionSettings() {
+    const settings = state.inlineCompletion;
+    if (!settings) return;
+    if (!state.inlineSettingsDirty && !state.inlineSettingsSaving) {
+      if (inlineCompletionEnabledInput) inlineCompletionEnabledInput.checked = settings.enabled !== false;
+      if (inlineCompletionProviderSelect) inlineCompletionProviderSelect.value = settings.provider || 'vllm';
+      if (inlineCompletionTriggerModeSelect) inlineCompletionTriggerModeSelect.value =
+        settings.triggerMode === 'manual' ? 'manual' : 'automatic';
+      if (inlineCompletionBaseUrlInput) inlineCompletionBaseUrlInput.value = settings.baseUrl || '';
+      if (inlineCompletionModelInput) inlineCompletionModelInput.value = settings.model || '';
+      if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.value = String(settings.debounceMs || 700);
+      if (inlineCompletionMaxTokensInput) inlineCompletionMaxTokensInput.value = String(settings.maxTokens || 192);
+    }
+    updateCompletionFieldsState();
+    if (saveInlineCompletionBtn) saveInlineCompletionBtn.disabled = state.inlineSettingsSaving;
+    if (inlineCompletionStatus) {
+      inlineCompletionStatus.textContent = state.inlineSettingsSaving ? t('profileSavingStatus')
+        : state.inlineSettingsDirty ? t('inlineSettingsUnsaved')
+        : state.inlineSaveStatus ? t(state.inlineSaveStatus)
+        : settings.enabled === false ? t('disabled')
+        : `${settings.model || 'unknown'} @ ${settings.baseUrl || 'unknown'}`;
+    }
+  }
 
   function renderComposerStatus() {
     let text = '';
@@ -3505,8 +3512,24 @@
     updateProviderFieldHints();
   });
   if (discardProfileChangesBtn) discardProfileChangesBtn.addEventListener('click', loadProfileEditor);
-  [inlineCompletionEnabledInput, inlineCompletionTriggerModeSelect].forEach(function (element) {
-    if (element) element.addEventListener('change', updateCompletionFieldsState);
+  [inlineCompletionEnabledInput, inlineCompletionTriggerModeSelect,
+    inlineCompletionProviderSelect].forEach(function (element) {
+    if (!element) return;
+    element.addEventListener('change', function () {
+      state.inlineSettingsDirty = true;
+      state.inlineSaveStatus = '';
+      updateCompletionFieldsState();
+      renderInlineCompletionSettings();
+    });
+  });
+  [inlineCompletionBaseUrlInput, inlineCompletionModelInput,
+    inlineCompletionDebounceInput, inlineCompletionMaxTokensInput].forEach(function (element) {
+    if (!element) return;
+    element.addEventListener('input', function () {
+      state.inlineSettingsDirty = true;
+      state.inlineSaveStatus = '';
+      renderInlineCompletionSettings();
+    });
   });
   settingsTabButtons.forEach(function (button, index) {
     button.addEventListener('click', function () { switchSettingsTab(button.dataset.settingsTab); });
