@@ -1920,7 +1920,13 @@
     }
     const card = createCardFrame('code', displayEvent);
     const draft = codeDraftFor(entry.event, entry.code);
-    const codeEditable = Boolean(entry.resultEvent) && !state.running;
+    const newestCodeEvent = [...sortedSessionEvents()].reverse().find(function (event) {
+      return ['generate', 'regenerate', 'debug_fix'].includes(event.stage) && event.status === 'completed';
+    });
+    const pausedCodeReview = state.workflowMode === 'continue'
+      && state.interactiveState === 'await_code_review'
+      && newestCodeEvent && newestCodeEvent.id === entry.event.id;
+    const codeEditable = (Boolean(entry.resultEvent) || pausedCodeReview) && !state.running;
 
     const codeActions = [
       {
