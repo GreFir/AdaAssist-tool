@@ -8,7 +8,7 @@
       inlineSettingsUnsaved: 'Unsaved changes — save to apply.',
       inlineSettingsSaved: 'Inline completion settings saved.',
       inlineSettingsFailed: 'Unable to save inline settings.',
-      composerMode: 'Task mode', composerModeLocked: 'Mode is locked for this task. Choose New Task to change it.',
+      composerMode: 'Task mode', composerModeLocked: 'Mode is locked while running. Pause Auto to switch to Interactive.',
       modelTab: 'Models', completionTab: 'Completion',
       profileEndpointRequired: 'This provider requires a Base URL.',
       keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
@@ -86,7 +86,7 @@
       inlineSettingsUnsaved: '修改尚未保存，请点击保存应用。',
       inlineSettingsSaved: '行内补全设置已保存。',
       inlineSettingsFailed: '行内补全设置保存失败。',
-      composerMode: '任务模式', composerModeLocked: '当前任务的模式已锁定，创建新任务后可切换。',
+      composerMode: '任务模式', composerModeLocked: '运行中无法切换模式。暂停自动任务后可切换为交互模式。',
       modelTab: '模型', completionTab: '补全',
       profileEndpointRequired: '当前服务类型需要填写 Base URL。',
       keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
@@ -3233,9 +3233,20 @@
     if (restoreFocus) composerModeButton.focus();
   }
 
+  function canSwitchPausedAuto() {
+    return !state.running && state.canResume && state.session
+      && !state.session.passed && state.workflowMode === 'auto';
+  }
+
   function chooseComposerMode(mode) {
-    if (state.running || state.session) return;
+    if (state.running || (state.session && !canSwitchPausedAuto())) return;
     closeComposerModeMenu(false);
+    if (state.session) {
+      if (mode === 'continue' && canSwitchPausedAuto()) {
+        vscode.postMessage({ type: 'switchPausedAutoToInteractive' });
+      }
+      return;
+    }
     executionModeSelect.value = mode;
     // Keep Settings, saved mode preferences, and the outgoing request aligned.
     executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
@@ -3288,7 +3299,7 @@
   }
 
   function syncComposerMode() {
-    const locked = state.running || Boolean(state.session);
+    const locked = state.running || (Boolean(state.session) && !canSwitchPausedAuto());
     const mode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
     composerModeValue.textContent = composerModeText(mode);
     composerModeButton.disabled = locked;
@@ -3312,7 +3323,7 @@
     if (workflowModeHint) {
       workflowModeHint.textContent = isInteractiveSelected() ? t('interactiveHint') : t('autoHint');
     }
-    executionModeSelect.disabled = state.running || hasSession;
+    executionModeSelect.disabled = state.running || (hasSession && !canSwitchPausedAuto());
     syncComposerMode();
     taskProfileSelect.disabled = state.running || hasSession || !state.profiles.length;
     const currentProfile = selectedProfile();
@@ -3711,6 +3722,11 @@
   window.addEventListener('scroll', function () { closeComposerModeMenu(false); }, true);
 
   executionModeSelect.addEventListener('change', function () {
+    if (canSwitchPausedAuto()) {
+      if (executionModeSelect.value === 'continue') vscode.postMessage({ type: 'switchPausedAutoToInteractive' });
+      else renderAll();
+      return;
+    }
     if (!state.session) {
       state.preferredWorkflowMode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
       state.workflowMode = state.preferredWorkflowMode;
