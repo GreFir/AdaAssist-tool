@@ -4988,7 +4988,7 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<div class="field span-2">
 						<label for="profileMaxTokensInput" data-i18n="workflowMaxTokens">Max Output Tokens</label>
 						<input id="profileMaxTokensInput" type="number" min="128" max="32768" step="1" value="1024" />
-						<div class="field-hint" data-i18n="workflowMaxTokensHint">Maximum output tokens for code generation in this workflow profile. Planning and test generation retain their shorter stage-specific caps.</div>
+						<div class="field-hint" data-i18n="workflowMaxTokensHint">Maximum output tokens for all workflow model stages (code, tests, and repair plans). Saving also updates an idle session using the same model.</div>
 					</div>
 					<div class="field span-2">
 						<label for="profileApiKeyInput" data-i18n="apiKey">API Key</label>
