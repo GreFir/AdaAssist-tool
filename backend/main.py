@@ -253,6 +253,20 @@ def create_session(request: CreateSessionRequest) -> dict[str, Any]:
     return ok(session.to_dict())
 
 
+class RestoreSessionRequest(BaseModel):
+    snapshot: dict[str, Any]
+    llm: LLMSettingsRequest
+
+
+@app.post("/api/sessions/restore")
+def restore_session(request: RestoreSessionRequest) -> dict[str, Any]:
+    try:
+        session = store.restore_session(request.snapshot, make_llm_config(request.llm))
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return ok(session.to_dict())
+
+
 @app.get("/api/sessions/{session_id}")
 def get_session(session_id: str) -> dict[str, Any]:
     session = get_session_or_404(session_id)
