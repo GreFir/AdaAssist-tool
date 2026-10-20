@@ -996,6 +996,16 @@ class WorkflowSession:
     def run_auto(self, *, max_rounds: int | None = None, resume: bool = False) -> dict[str, Any]:
         rounds = max_rounds if max_rounds is not None else self.max_rounds
         self.clear_interrupt()
+        # The Auto status event is not an execution checkpoint. Recover the
+        # latest actual stage before adding it, including after manual edits.
+        resume_stage = self.current_stage
+        if resume:
+            last_stage = next((
+                event.get("stage") for event in reversed(self.events)
+                if event.get("stage") in {"generate", "regenerate", "restart", "debug_fix", "evaluate", "plan"}
+                and event.get("status") in {"completed", "failed"}
+            ), None)
+            resume_stage = last_stage or resume_stage
 
         if not resume:
             self.reset_progress(reset_context=True)
@@ -1024,14 +1034,18 @@ class WorkflowSession:
 
         if not self.current_code.strip():
             self.run_generate(use_plan=False)
+            resume_stage = self.current_stage
             if self.interrupt_requested:
                 return self._interrupt_auto(message="Auto workflow paused after code generation. Resume to continue with evaluation.")
-        elif self.current_stage == "plan" and self.current_plan.strip():
+        elif resume_stage == "plan" and self.current_plan.strip() and self.latest_evaluation is not None:
+            # Resume directly from the reviewed plan, rather than discarding it
+            # and generating a different one.
             self.run_generate(use_plan=True)
+            resume_stage = self.current_stage
             if self.interrupt_requested:
                 return self._interrupt_auto(message="Auto workflow paused after regenerating code from the current plan.")
 
-        if self.current_stage in {"generate", "restart", "regenerate", "debug_fix"} or not self.latest_evaluation:
+        if resume_stage in {"generate", "restart", "regenerate", "debug_fix"} or not self.latest_evaluation:
             evaluation_result = self.run_evaluate()
             if evaluation_result.get("evaluation", {}).get("passed"):
                 return self._complete_auto(message="The workflow completed successfully.")
