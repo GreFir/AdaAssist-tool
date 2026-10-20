@@ -683,6 +683,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private studyBuildHash = '';
 	private studyLogQueue: Promise<void> = Promise.resolve();
 	private lastStudySnapshot = '';
+	private archivedSessions: BackendSessionState[] = [];
 	private activeSession: BackendSessionState | undefined;
 	private workflowMode: RunRequest['executionMode'] = 'continue';
 	private interactiveState: InteractionState = 'idle';
@@ -865,6 +866,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	private async initialize(context: vscode.ExtensionContext): Promise<void> {
+		this.archivedSessions = context.workspaceState.get<BackendSessionState[]>('adaassist.archivedSessions.v1', []).filter(item => Boolean(item?.session_id));
 		await this.visualLogStore.initialize();
 		await this.loadProfiles(context);
 		this.loadUserStudyTasks();
@@ -900,6 +902,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			running: this.running,
 			operation: this.activeOperation,
 			environmentCheck: this.environmentCheck,
+			archivedSessions: this.archivedSessions,
 			pythonPath: getConfiguredPythonPath(this.context),
 			pythonEnvironmentLabel: await getPythonEnvironmentDisplayLabel(this.context),
 			inlineCompletion: getInlineCompletionSettings(),
@@ -1353,7 +1356,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					break;
 				}
 				case 'clearWorkflowSession': {
-					await this.clearWorkflowSession();
+					await this.clearWorkflowSession(message.reason === 'user_confirmed' ? 'user_confirmed' : 'new_task');
 					break;
 				}
 					case 'useEditorSelection': {
@@ -1586,6 +1589,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		this.postMessage({
 			type: 'workflowSession',
 			session: this.activeSession,
+			archivedSessions: this.archivedSessions,
 			stageResult,
 			workflowMode: this.workflowMode,
 			interactiveState: this.interactiveState,
@@ -2847,7 +2851,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 	}
 
-	private async clearWorkflowSession(): Promise<void> {
+	private async clearWorkflowSession(reason: 'new_task' | 'user_confirmed' = 'new_task'): Promise<void> {
 		this.stopSessionPolling();
 		if (!this.activeSession?.session_id) {
 			this.activeSession = undefined;
@@ -2868,7 +2872,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			await this.recordStudyEvent({
 				eventType: 'task_end',
 				metadata: {
-					reason: this.activeSession.passed ? 'completed' : 'new_task',
+					reason,
 					passed: this.activeSession.passed,
 					attempt_count: this.activeSession.attempt_count,
 					regeneration_count: this.activeSession.regeneration_count
@@ -2878,13 +2882,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 		await this.persistStudySnapshot('task_end', true);
 
-		try {
-			await this.backendServer.fetch(`/api/sessions/${this.activeSession.session_id}`, {
-				method: 'DELETE'
-			});
-		} catch {
-			// Ignore cleanup failures for stale sessions.
-		}
+		// Archive the complete session for the visible conversation before detaching it.
+		const archived = [...this.archivedSessions, structuredClone(this.activeSession)];
+		this.archivedSessions = archived.slice(-20);
+		await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
 
 		this.activeSession = undefined;
 		this.workflowMode = 'continue';
