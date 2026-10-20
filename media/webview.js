@@ -2494,7 +2494,69 @@
       : (state.profiles.some((item) => item.id === currentSettings) ? currentSettings : (active || NEW_PROFILE_DRAFT_ID));
   }
 
+  function renderProfileEditStatus() {
+    if (!profileEditStatus) return;
+    const key = state.profileSaving ? 'profileSavingStatus'
+      : state.profileStatusOverride || (state.profileDirty ? 'profileUnsaved' : 'profileReady');
+    profileEditStatus.textContent = t(key);
+    profileEditStatus.classList.toggle('is-dirty', state.profileDirty && !state.profileSaving);
+    profileEditStatus.classList.toggle('is-saving', state.profileSaving);
+    if (discardProfileChangesBtn) discardProfileChangesBtn.classList.toggle('hidden', !state.profileDirty);
+    if (saveProfileBtn) saveProfileBtn.disabled = state.profileSaving;
+  }
+
+  function markProfileDirty() {
+    state.profileDirty = true;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
+  }
+
+  function requireCleanProfile() {
+    if (!state.profileDirty || state.profileSaving === false && !state.profileDirty) return true;
+    state.profileStatusOverride = 'profileChangesBlocked';
+    renderProfileEditStatus();
+    return false;
+  }
+
+  function updateProviderFieldHints() {
+    const local = ['vllm', 'ollama', 'other'].includes(profileProviderSelect.value);
+    if (profileEndpointHint) {
+      profileEndpointHint.textContent = t(local ? 'profileEndpointRequired' : 'endpointOptionalHint');
+    }
+    if (profileKeyHint) {
+      profileKeyHint.textContent = t(local ? 'keyOptionalHint' : 'apiKeyHint');
+    }
+  }
+
+  function renderWorkflowModelSummary() {
+    if (!workflowModelSummary) return;
+    const profile = selectedProfile();
+    workflowModelSummary.textContent = profile
+      ? profile.name + ' · ' + profile.model + ' · '
+        + (profile.maxTokens || 1024).toLocaleString() + ' tokens'
+      : t('noProfile');
+  }
+
+  function updateCompletionFieldsState() {
+    const enabled = Boolean(inlineCompletionEnabledInput && inlineCompletionEnabledInput.checked);
+    const manual = inlineCompletionTriggerModeSelect
+      && inlineCompletionTriggerModeSelect.value === 'manual';
+    [inlineCompletionProviderSelect, inlineCompletionBaseUrlInput,
+      inlineCompletionModelInput, inlineCompletionTriggerModeSelect,
+      inlineCompletionMaxTokensInput].forEach(function (element) {
+        if (element) element.disabled = !enabled;
+    });
+    if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.disabled = !enabled || manual;
+    if (completionServiceGroup) completionServiceGroup.classList.toggle('is-inactive', !enabled);
+    if (completionBehaviorGroup) completionBehaviorGroup.classList.toggle('is-inactive', !enabled);
+  }
+
   function loadProfileEditor() {
+    state.profileDirty = false;
+    state.profileSaving = false;
+    state.profileStatusOverride = '';
+    renderProfileEditStatus();
+    updateProviderFieldHints();
     const isNewDraft = !state.editingProfileId || state.editingProfileId === NEW_PROFILE_DRAFT_ID;
     if (deleteProfileBtn) {
       deleteProfileBtn.disabled = isNewDraft;
@@ -2509,6 +2571,7 @@
       profileApiKeyInput.value = '';
       profileApiKeyInput.placeholder = 'sk-...';
       profileHint.textContent = t('newProfileHint');
+      updateProviderFieldHints();
       return;
     }
 
@@ -2525,6 +2588,7 @@
       profileApiKeyInput.value = '';
       profileApiKeyInput.placeholder = 'sk-...';
       profileHint.textContent = t('profileNotFound');
+      updateProviderFieldHints();
       return;
     }
 
@@ -2543,9 +2607,11 @@
     if (deleteProfileBtn) {
       deleteProfileBtn.disabled = false;
     }
+    updateProviderFieldHints();
   }
 
   function startNewProfile(returnToTask) {
+    if (!requireCleanProfile()) return;
     state.editingProfileId = NEW_PROFILE_DRAFT_ID;
     state.returnToTaskAfterSave = returnToTask;
     loadProfileEditor();
@@ -2717,6 +2783,7 @@
 		if (inlineCompletionModelInput) inlineCompletionModelInput.value = settings.model || '';
 		if (inlineCompletionDebounceInput) inlineCompletionDebounceInput.value = String(settings.debounceMs || 700);
 		if (inlineCompletionMaxTokensInput) inlineCompletionMaxTokensInput.value = String(settings.maxTokens || 192);
+		updateCompletionFieldsState();
 		if (inlineCompletionStatus) {
 			inlineCompletionStatus.textContent = settings.enabled === false
 				? 'Disabled'
@@ -3214,6 +3281,8 @@
     syncLayout();
     setTestsDrawerOpen(state.testsDrawerOpen);
     renderSetupSummaries();
+    renderWorkflowModelSummary();
+    renderProfileEditStatus();
 		renderProfileNotice();
 		renderEnvironmentStatus();
 		renderPythonInterpreter();
