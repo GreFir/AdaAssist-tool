@@ -465,6 +465,10 @@ class WorkflowSession:
             tests_changed = True
 
         if tests_changed:
+            # An evaluation of the previous suite cannot validate modified tests.
+            # Auto resume must re-evaluate the retained candidate before planning.
+            self.latest_evaluation = None
+            self.passed = False
             self.resolved_test_code = ""
             self.resolved_tests_confirmed = False
             if self.test_mode == "generate":
@@ -479,6 +483,9 @@ class WorkflowSession:
 
         if resolved_test_code is not None:
             tests_changed = self.set_resolved_test_code(resolved_test_code, confirmed=True)
+            if tests_changed:
+                self.latest_evaluation = None
+                self.passed = False
             if self.resolved_test_code and (tests_changed or announce_resolved_tests):
                 self.remove_context_kinds("tests", "test_prompt")
                 self.add_context(
