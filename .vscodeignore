@@ -21,3 +21,5 @@ test-results/**
 playwright-report/**
 backend/outputs/**
 backend/.pytest_cache/**
+AdaAssist用户研究Pilot执行说明.md
+AdaAssist用户研究改进方案-v2.md

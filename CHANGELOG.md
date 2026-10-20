@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.14]
+
+- Adapt code backgrounds and syntax highlighting to VS Code light, dark, and high-contrast themes, including generated code, Tests, and repair-plan Markdown.
+- Apply theme changes without rerendering the conversation or interrupting code edits.
+- Match native form controls to the VS Code theme instead of the operating system color preference.
+
 ## [0.0.10]
 
 - Replace the boxed timeline with a compact conversation stream.

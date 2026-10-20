@@ -1,0 +1,142 @@
+/* Highlight.js token colors based on its bundled GitHub light/dark palettes.
+ * VS Code updates the body theme class and --vscode-* variables in place.
+ * Keep code surfaces transparent so editable <code.hljs> elements inherit
+ * their themed container instead of introducing a fixed dark background.
+ */
+:root {
+  --syntax-keyword: #ff7b72;
+  --syntax-title: #d2a8ff;
+  --syntax-constant: #79c0ff;
+  --syntax-string: #a5d6ff;
+  --syntax-builtin: #ffa657;
+  --syntax-comment: #8b949e;
+  --syntax-tag: #7ee787;
+  --syntax-heading: #79c0ff;
+  --syntax-bullet: #f2cc60;
+  --syntax-addition: #aff5b4;
+  --syntax-addition-bg: #033a16;
+  --syntax-deletion: #ffdcd7;
+  --syntax-deletion-bg: #67060c;
+}
+
+body.vscode-light,
+body.vscode-high-contrast-light {
+  --syntax-keyword: #d73a49;
+  --syntax-title: #6f42c1;
+  --syntax-constant: #005cc5;
+  --syntax-string: #032f62;
+  --syntax-builtin: #953800;
+  --syntax-comment: #57606a;
+  --syntax-tag: #22863a;
+  --syntax-heading: #005cc5;
+  --syntax-bullet: #735c0f;
+  --syntax-addition: #22863a;
+  --syntax-addition-bg: #f0fff4;
+  --syntax-deletion: #b31d28;
+  --syntax-deletion-bg: #ffeef0;
+}
+
+/* High-contrast themes prioritize the user's foreground over fixed colors. */
+body.vscode-high-contrast,
+body.vscode-high-contrast-light {
+  --syntax-keyword: var(--vscode-editor-foreground);
+  --syntax-title: var(--vscode-editor-foreground);
+  --syntax-constant: var(--vscode-editor-foreground);
+  --syntax-string: var(--vscode-editor-foreground);
+  --syntax-builtin: var(--vscode-editor-foreground);
+  --syntax-comment: var(--vscode-editor-foreground);
+  --syntax-tag: var(--vscode-editor-foreground);
+  --syntax-heading: var(--vscode-editor-foreground);
+  --syntax-bullet: var(--vscode-editor-foreground);
+  --syntax-addition: var(--vscode-editor-foreground);
+  --syntax-addition-bg: transparent;
+  --syntax-deletion: var(--vscode-editor-foreground);
+  --syntax-deletion-bg: transparent;
+}
+
+.hljs {
+  color: var(--vscode-editor-foreground);
+  background: transparent;
+}
+
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: var(--syntax-keyword);
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: var(--syntax-title);
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: var(--syntax-constant);
+}
+
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: var(--syntax-string);
+}
+
+.hljs-built_in,
+.hljs-symbol {
+  color: var(--syntax-builtin);
+}
+
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  color: var(--syntax-comment);
+}
+
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  color: var(--syntax-tag);
+}
+
+.hljs-subst,
+.hljs-emphasis,
+.hljs-strong {
+  color: var(--vscode-editor-foreground);
+}
+
+.hljs-section {
+  color: var(--syntax-heading);
+  font-weight: bold;
+}
+
+.hljs-bullet {
+  color: var(--syntax-bullet);
+}
+
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: bold; }
+
+.hljs-addition {
+  color: var(--syntax-addition);
+  background-color: var(--syntax-addition-bg);
+}
+
+.hljs-deletion {
+  color: var(--syntax-deletion);
+  background-color: var(--syntax-deletion-bg);
+}

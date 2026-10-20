@@ -18,12 +18,13 @@ class Adacoder:
         prompt_language: str = "en",
     ):
         # Keep stage settings independent: mutating one stage must not silently
-        # change the others. Plans and tests also need far less output than a
-        # full implementation, which reduces runaway repetition on local models.
+        # change the others. Planning uses its validated sampling defaults;
+        # explicit planner settings still override them.
         self.coder_config = replace(config)
         self.planner_config = replace(
             planner_config or config,
-            max_tokens=min((planner_config or config).max_tokens, 512),
+            max_tokens=planner_config.max_tokens if planner_config is not None else 768,
+            temperature=planner_config.temperature if planner_config is not None else 0.5,
         )
         self.tester_config = replace(config, max_tokens=min(config.max_tokens, 768))
         self.prompt_language = "zh-CN" if prompt_language == "zh-CN" else "en"
@@ -35,7 +36,9 @@ class Adacoder:
     def _init_coder(self) -> AdacoderExecutor:
         if self.prompt_language == "zh-CN":
             system_prompt = (
-                "你是一名严谨的 Python 实现助手。将用户的原始任务视为最高优先级的契约。"
+                "你是一名严谨的 Python 实现助手。默认将用户的原始任务视为最高优先级的契约。"
+                "当请求明确标记计划为人工修改的执行要求时，必须逐项落实该计划；"
+                "计划明确修改的需求以该人工要求为准，其余需求保持不变。"
                 "严格实现该契约，保留指定的名称和函数签名，不要自行增加校验、异常、字段或行为。"
                 "当任务要求最大化某个分数且并列时选择字典序最小的名称，必须累计指定分数，并使用等价于 "
                 "min((-score, name)) 的比较；max((score, name)) 会错误地选择并列项中字典序最大的名称。"
@@ -44,7 +47,10 @@ class Adacoder:
         else:
             system_prompt = (
                 "You are a precise Python implementation assistant. "
-                "Treat the user's original task as the authoritative contract. "
+                "By default, treat the user's original task as the authoritative contract. "
+                "When the request explicitly identifies a user-edited plan as binding execution requirements, "
+                "implement every step. Explicit requirement revisions in that plan take precedence; "
+                "preserve all other requirements. "
                 "Implement exactly that contract, preserve requested names and signatures, "
                 "and do not invent validation, exceptions, fields, or behavior. "
                 "When maximizing a score with a lexicographically smallest tie-break, accumulate "
@@ -62,16 +68,19 @@ class Adacoder:
         if self.prompt_language == "zh-CN":
             system_prompt = (
                 "你是一名 Python 代码修复规划助手。请根据原始任务和公开测试诊断当前失败的实现。"
-                "原始任务是最高优先级的依据，不要自行增加需求。"
-                "只返回直接针对根因的修复计划，使用完成修复所需的最少步骤，最多 5 步，每步只写一个具体动作。"
+                "原始任务是最高优先级的依据，不要自行增加需求。若任务要求最大化分数且并列时选择字典序最小的名称，"
+                "必须明确排除会选择最大名称的 max((score, name))，并要求使用 min((-score, name)) 或等价写法。"
+                "只返回一份简洁的修复计划，包含 4 至 8 个互不重复且可以执行的步骤。"
             )
         else:
             system_prompt = (
                 "You are a Python repair-planning assistant. Diagnose the current failed "
                 "implementation against the original task and public tests. The original task "
-                "is authoritative: never invent requirements. Return only a repair plan that "
-                "directly addresses the supported root cause. Use the fewest steps needed, never "
-                "more than 5, and put one concrete action in each step."
+                "is authoritative: never invent requirements. For a maximum score with a "
+                "lexicographically smallest tie-break, explicitly reject max((score, name)), "
+                "which chooses the largest tied name, and require min((-score, name)) or its equivalent. "
+                "Return only a concise repair plan "
+                "with 4 to 8 distinct, actionable steps."
             )
         return AdacoderExecutor(
             system_prompt=system_prompt,
@@ -108,6 +117,7 @@ class Adacoder:
         problem_statement: str,
         *,
         plan: str = "",
+        plan_user_edited: bool = False,
         test_code: str = "",
         additional_instruction: str = "",
         context_entries: list[dict[str, Any]] | None = None,
@@ -118,6 +128,7 @@ class Adacoder:
         result = self.coder.execute_coder(
             problem_statement=problem_statement,
             plan=plan,
+            plan_user_edited=plan_user_edited,
             test_code=test_code,
             additional_instruction=additional_instruction,
             context_entries=context_entries,
@@ -234,8 +245,8 @@ class Adacoder:
                 "plan": "",
                 "error": error,
                 "used_error_feedback": use_error_feedback,
+                "generation": result.get("generation", {}),
                 "raw_response": result.get("raw_response", ""),
-                "plan_processing": result.get("plan_processing", ""),
             }
 
         return {
@@ -246,8 +257,8 @@ class Adacoder:
             "prompt": result.get("prompt", ""),
             "plan": plan,
             "used_error_feedback": use_error_feedback,
+            "generation": result.get("generation", {}),
             "raw_response": result.get("raw_response", ""),
-            "plan_processing": result.get("plan_processing", ""),
         }
 
     def apply_debug_fix(self, code: str, evaluation: dict[str, Any]) -> dict[str, Any]:

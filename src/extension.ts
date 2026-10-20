@@ -164,6 +164,9 @@ interface UserStudyTask {
 	title: string;
 	prompt: string;
 	public_tests: string;
+	difficulty?: string;
+	assigned_condition?: 'auto' | 'interactive';
+	sequence?: number;
 }
 
 interface TestSuggestionResponse extends BackendResponse {
@@ -290,7 +293,7 @@ const DEFAULT_LLM_BASE_URL = 'http://127.0.0.1:8003/v1';
 const DEFAULT_LLM_MODEL = 'deepseek-coder-33b-instruct';
 const DEFAULT_INLINE_BASE_URL = 'http://127.0.0.1:8004/v1';
 const DEFAULT_INLINE_MODEL = 'deepseek-coder-6.7b-instruct';
-const SESSION_POLL_INTERVAL_MS = 1500;
+const SESSION_POLL_INTERVAL_MS = 300;
 
 class BackendServerManager {
 	private process: ChildProcess | undefined;
@@ -953,8 +956,26 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				const title = typeof task.title === 'string' ? task.title.trim() : '';
 				const prompt = typeof task.prompt === 'string' ? task.prompt.trim() : '';
 				const publicTests = typeof task.public_tests === 'string' ? task.public_tests.trim() : '';
+				const difficulty = typeof task.difficulty === 'string' ? task.difficulty.trim() : '';
+				const assignedCondition = task.assigned_condition === 'auto' || task.assigned_condition === 'interactive'
+					? task.assigned_condition
+					: undefined;
+				const sequence = typeof task.sequence === 'number' && Number.isInteger(task.sequence)
+					? task.sequence
+					: undefined;
+				if (taskId && assignedCondition) {
+					this.studyAssignedConditions.set(taskId, assignedCondition === 'auto' ? 'auto' : 'continue');
+				}
 				return taskId && title && prompt && publicTests
-					? [{ task_id: taskId, title, prompt, public_tests: publicTests }]
+					? [{
+						task_id: taskId,
+						title,
+						prompt,
+						public_tests: publicTests,
+						...(difficulty ? { difficulty } : {}),
+						...(assignedCondition ? { assigned_condition: assignedCondition } : {}),
+						...(sequence !== undefined ? { sequence } : {})
+					}]
 					: [];
 			});
 		} catch {
@@ -1099,6 +1120,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		this.resumeState = undefined;
 	}
 
+
 	private sessionSnapshot(session: BackendSessionState | undefined): string {
 		if (!session) {
 			return '';
@@ -1143,7 +1165,9 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			const currentSessionId = this.activeSession.session_id;
 			const payload = await this.backendServer.request<BackendResponse>(`/api/sessions/${currentSessionId}`);
 			const session = payload.session;
-			if (!session || session.session_id !== currentSessionId) {
+			if (!session || session.session_id !== currentSessionId
+				|| this.activeSession?.session_id !== currentSessionId
+				|| session.events.length < this.activeSession.events.length) {
 				return;
 			}
 
@@ -4332,7 +4356,7 @@ async function insertGeneratedCode(code: string): Promise<void> {
 		`style-src ${webview.cspSource} 'unsafe-inline'`,
 		`script-src ${webview.cspSource} 'nonce-${nonce}'`
 		].join('; ');
-		const highlightStyleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@highlightjs', 'cdn-assets', 'styles', 'github-dark.min.css'));
+		const highlightStyleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'highlight.css'));
 		const markdownItUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', 'markdown-it', 'dist', 'markdown-it.min.js'));
 		const highlightScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@highlightjs', 'cdn-assets', 'highlight.min.js'));
 		const highlightPythonUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@highlightjs', 'cdn-assets', 'languages', 'python.min.js'));
@@ -4392,14 +4416,12 @@ async function insertGeneratedCode(code: string): Promise<void> {
 
 			<section class="tests-drawer hidden" id="testsDrawer" aria-hidden="true">
 				<section class="panel tests-panel">
-					<div class="panel-header">
+					<div class="panel-header tests-code-toolbar">
 						<div>
 							<div class="panel-title" data-i18n="tests">Tests</div>
-							<div class="panel-copy" data-i18n="testsHint">Keep one shared Python assert test suite for the current workflow.</div>
+
 						</div>
-						<div class="action-row">
-							<button class="btn subtle" id="closeTestsDrawerBtn" type="button" data-i18n="collapseTests">Collapse</button>
-						</div>
+						<div class="tests-icon-actions"><button class="tests-icon-button" id="useSelectionForTestsBtn" type="button" title="selectionToTests" aria-label="selectionToTests" data-i18n-title="selectionToTests" data-i18n-aria-label="selectionToTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7M3 6h7M3 9h4M11 8v6M8 11h6"/></svg></button><button class="tests-icon-button" id="replaceSelectionForTestsBtn" type="button" title="replaceWithSelection" aria-label="replaceWithSelection" data-i18n-title="replaceWithSelection" data-i18n-aria-label="replaceWithSelection"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h9M2 6h5M2 12h5M8 9h6m-3-3 3 3-3 3"/></svg></button><button class="tests-icon-button" id="generateTestsBtn" type="button" title="generateTests" aria-label="generateTests" data-i18n-title="generateTests" data-i18n-aria-label="generateTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 13 7-7m-8-4 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Zm9-1 1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" transform="translate(2 0) scale(.8)"/></svg></button><button class="tests-icon-button" id="testOptionsToggleBtn" type="button" aria-expanded="false" aria-controls="testGenerationOptions" title="testOptions" aria-label="testOptions" data-i18n-title="testOptions" data-i18n-aria-label="testOptions"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h12M2 12h12M5 2v4M11 10v4"/></svg></button><span class="tests-toolbar-divider" aria-hidden="true"></span><button class="tests-icon-button" id="saveResolvedTestsBtn" type="button" title="saveTests" aria-label="saveTests" data-i18n-title="saveTests" data-i18n-aria-label="saveTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2h8l2 2v10H3ZM5 2v4h5V2M5 14V9h6v5"/></svg></button><button class="tests-icon-button" id="closeTestsDrawerBtn" type="button" title="closeTests" aria-label="closeTests" data-i18n-title="closeTests" data-i18n-aria-label="closeTests"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
 					</div>
 
 					<details class="setup-details setup-card tests-editor-card" id="testSettingsDetails" open>
@@ -4416,24 +4438,17 @@ async function insertGeneratedCode(code: string): Promise<void> {
 								</select>
 							</div>
 							<div class="manual-tests-shell" id="manualTestsSection">
-								<div class="hint" id="resolvedTestsHint" data-i18n="manualTestsHint">This is the single current test suite. Leave it empty to generate tests before code generation.</div>
-								<details class="test-options-details">
-									<summary data-i18n="testOptions">Generation options</summary>
+								<div class="editable-code-shell tests-editor-shell">
+									<pre class="code-block hljs editable-code-block"><code id="testInput" role="textbox" aria-multiline="true" aria-label="Test Suite" data-i18n-aria-label="testSuite" class="language-python editable-code" contenteditable="true" spellcheck="false"></code></pre>
+								</div>
+								<details class="test-options-details" id="testGenerationOptions">
+									<summary class="visually-hidden" tabindex="-1" data-i18n="testOptions">Generation options</summary>
 									<div class="field">
 										<label for="testDescription" data-i18n="testGenerationGoal">Test generation goal</label>
 										<textarea id="testDescription" rows="3" data-i18n-placeholder="testDescriptionPlaceholder" placeholder="Optional: describe the cases, constraints, or testing goals the generated tests should cover."></textarea>
 									</div>
 								</details>
-								<div class="editable-code-shell tests-editor-shell">
-									<div class="code-toolbar"><div class="code-language">python</div></div>
-									<pre class="code-block hljs editable-code-block"><code id="testInput" class="language-python editable-code" contenteditable="true" spellcheck="false"></code></pre>
-								</div>
-								<div class="action-row">
-									<button class="btn secondary" id="useSelectionForTestsBtn" type="button" data-i18n="selectionToTests">Append Selection</button>
-									<button class="btn secondary" id="replaceSelectionForTestsBtn" type="button" data-i18n="replaceWithSelection">Replace with Selection</button>
-									<button class="btn secondary" id="generateTestsBtn" type="button" data-i18n="generateTests">Generate Tests</button>
-									<button class="btn secondary" id="saveResolvedTestsBtn" type="button" data-i18n="saveTests">Save Tests</button>
-								</div>
+								<div class="hint tests-editor-hint" id="resolvedTestsHint"></div>
 								<div class="inline-operation-status" id="testsSaveResult" aria-live="polite"></div>
 							</div>
 						</div>
@@ -4471,7 +4486,16 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<div class="inline-operation-status" id="operationState" aria-live="polite"></div>
 					<div class="workflow-error" id="workflowError" role="alert"></div>
 					<div class="composer-status" id="composerStatus" aria-live="polite"></div>
-					<div class="composer-note" data-i18n="composerNote">Press Ctrl/Cmd+Enter to use the main action button. New Task clears the current session.</div>
+					<div class="composer-footer">
+						<span class="composer-note" data-i18n="composerNote">Ctrl/Cmd+Enter to send.</span>
+						<div class="composer-model-picker" id="composerModelPicker">
+							<select id="taskProfileSelect" hidden aria-hidden="true" tabindex="-1"></select>
+							<button id="modelPickerButton" class="model-picker-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="modelPickerMenu">
+								<span id="modelPickerLabel"></span><span class="model-picker-chevron" aria-hidden="true"></span>
+							</button>
+							<div id="modelPickerMenu" class="model-picker-menu" role="menu" aria-label="Model" data-i18n-aria-label="model" hidden></div>
+						</div>
+					</div>
 				</section>
 		</main>
 
@@ -4516,9 +4540,8 @@ async function insertGeneratedCode(code: string): Promise<void> {
 							<div class="field-hint" id="workflowModeHint" data-i18n="interactiveHint">Interactive mode pauses at review points and accepts edits or additional directions.</div>
 						</div>
 						<div class="field">
-							<label for="taskProfileSelect" data-i18n="llmProfile">LLM Profile</label>
+							<span data-i18n="llmProfile">LLM Profile</span>
 							<div class="profile-picker-row">
-								<select id="taskProfileSelect"></select>
 								<button class="btn secondary setup-inline-btn" id="editProfileFromSetupBtn" type="button" data-i18n="configure">Configure</button>
 							</div>
 						</div>

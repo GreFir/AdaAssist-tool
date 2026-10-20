@@ -50,6 +50,7 @@ class WorkflowSession:
     current_stage: str = "session"
     current_code: str = ""
     current_plan: str = ""
+    plan_user_edited: bool = False
     latest_evaluation: dict[str, Any] | None = None
     passed: bool = False
     attempt_count: int = 0
@@ -69,6 +70,7 @@ class WorkflowSession:
             status="ready",
             title="Session Created",
             message="Workflow session initialized.",
+            data={"initial_problem": self.problem_statement},
         )
         self._seed_context_entries()
 
@@ -313,6 +315,7 @@ class WorkflowSession:
     def reset_progress(self, *, reset_context: bool, preserve_resolved_tests: bool = True) -> None:
         self.current_code = ""
         self.current_plan = ""
+        self.plan_user_edited = False
         self.latest_evaluation = None
         self.passed = False
         self.attempt_count = 0
@@ -379,6 +382,12 @@ class WorkflowSession:
                     content=self.problem_statement,
                 )
 
+                self.add_event(
+                    stage="user_input", status="ready", title="Requirement Updated",
+                    message="The requirement was updated.",
+                    data={"input_kind": "requirement", "content": self.problem_statement},
+                )
+
         if test_description is not None:
             cleaned_test_description = test_description.strip()
             if cleaned_test_description != self.test_description:
@@ -404,6 +413,7 @@ class WorkflowSession:
 
         if additional_instruction is not None:
             cleaned_instruction = additional_instruction.strip()
+            previous_instruction = self.additional_instruction.strip()
             merged_instruction = self._merge_additional_instruction(cleaned_instruction)
             if merged_instruction != self.additional_instruction:
                 self.additional_instruction = merged_instruction
@@ -420,7 +430,13 @@ class WorkflowSession:
                     status="ready",
                     title="Additional Instruction Updated",
                     message="Additional guidance will be used by future model calls.",
-                    data={"additional_instruction": self.additional_instruction},
+                    data={
+                        "additional_instruction": self.additional_instruction,
+                        "input_kind": "guidance",
+                        "content": merged_instruction[len(previous_instruction):].strip()
+                        if previous_instruction and merged_instruction.startswith(previous_instruction)
+                        else cleaned_instruction,
+                    },
                 )
 
         tests_changed = False
@@ -474,7 +490,15 @@ class WorkflowSession:
         if max_rounds is not None and max_rounds > 0:
             self.max_rounds = max_rounds
         if plan is not None:
+            previous_plan = self.current_plan
             self.current_plan = plan.strip()
+            if self.current_plan != previous_plan:
+                self.plan_user_edited = bool(self.current_plan)
+                self.add_event(
+                    stage="user_input", status="ready", title="Plan Edited",
+                    message="The edited plan was saved for subsequent code generation.",
+                    data={"input_kind": "plan", "content": self.current_plan},
+                )
             replaced_event = self.replace_latest_plan_event(plan=self.current_plan)
             replaced_context = self.replace_latest_context(
                 role="assistant",
@@ -698,6 +722,7 @@ class WorkflowSession:
         result = self.engine.generate_code(
             self.problem_statement,
             plan=self.current_plan if use_plan else "",
+            plan_user_edited=self.plan_user_edited if use_plan else False,
             test_code=self.resolved_test_code.strip() or self.test_text.strip(),
             current_code=self.current_code if use_plan else "",
             evaluation=self.latest_evaluation if use_plan else None,
@@ -820,13 +845,15 @@ class WorkflowSession:
                     **self.workflow_snapshot(),
                     "attempts": result.get("attempts", 0),
                     "error": error,
+                    "generation": result.get("generation", {}),
                     "raw_response": result.get("raw_response", ""),
-                    "plan_processing": result.get("plan_processing", ""),
+                    "prompt": result.get("prompt", ""),
                 },
             )
             raise RuntimeError(error)
 
         self.current_plan = str(result.get("plan", "")).strip()
+        self.plan_user_edited = False
         self.add_event(
             stage="plan",
             status="completed",
@@ -837,8 +864,9 @@ class WorkflowSession:
                 "attempts": result.get("attempts", 0),
                 "used_error_feedback": result.get("used_error_feedback", use_error_feedback),
                 "plan": self.current_plan,
+                "generation": result.get("generation", {}),
                 "raw_response": result.get("raw_response", ""),
-                "plan_processing": result.get("plan_processing", ""),
+                "prompt": result.get("prompt", ""),
             },
         )
         self.add_context(
@@ -1047,6 +1075,7 @@ class WorkflowSession:
             "current_stage": self.current_stage,
             "current_code": self.current_code,
             "current_plan": self.current_plan,
+            "plan_user_edited": self.plan_user_edited,
             "resolved_test_code": self.resolved_test_code,
             "resolved_tests_confirmed": self.resolved_tests_confirmed,
             "latest_evaluation": self.latest_evaluation,

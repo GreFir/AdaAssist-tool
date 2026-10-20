@@ -36,21 +36,24 @@ class RecordingEngine:
 
 
 class WorkflowSessionPromptStateTests(unittest.TestCase):
-    def test_full_plan_and_raw_response_survive_logging_and_regeneration(self) -> None:
+    def test_failed_plan_preserves_diagnostics_without_replacing_approved_plan(self) -> None:
         session = self.make_session()
-        raw = "##ĠPlanĊ1.ĠReplace `a+b` with `a-b`.Ċ2.ĠReplace `a-b` with `a+b`."
-        plan = "## Plan\n1. Replace `a+b` with `a-b`.\n2. Replace `a-b` with `a+b`."
-        with patch.object(session.engine, "create_plan", return_value={
-            "ok": True, "plan": plan, "raw_response": raw,
-            "plan_processing": "whitespace_only", "attempts": 1,
-        }):
-            session.run_plan(use_error_feedback=True)
-        event = session.events[-1]["data"]
-        self.assertEqual(event["raw_response"], raw)
-        self.assertEqual(event["plan"], plan)
-        self.assertEqual(event["plan_processing"], "whitespace_only")
-        session.run_generate(use_plan=True)
-        self.assertEqual(session.engine.code_calls[-1]["plan"], plan)
+        session.current_plan = "Previously approved plan"
+        failure = {
+            "ok": False, "plan": "", "attempts": 1,
+            "error": "OutputTokenLimitError: truncated",
+            "raw_response": "Repeated sentence. " * 10,
+            "prompt": "Exact planning input",
+            "generation": {"attempts": [{"finish_reason": "length", "truncated": True}]},
+        }
+        with patch.object(session.engine, "create_plan", return_value=failure):
+            with self.assertRaisesRegex(RuntimeError, "truncated"):
+                session.run_plan(use_error_feedback=True)
+        event = session.to_dict()["events"][-1]
+        self.assertEqual(event["status"], "failed")
+        for key in ("prompt", "raw_response", "generation"):
+            self.assertEqual(event["data"][key], failure[key])
+        self.assertEqual(session.current_plan, "Previously approved plan")
 
     def make_session(self, *, context_enabled: bool = False) -> WorkflowSession:
         with patch("src.session_service.Adacoder", RecordingEngine):
@@ -84,6 +87,47 @@ class WorkflowSessionPromptStateTests(unittest.TestCase):
         cumulative = f"{expected}\n\nHandle negative values."
         session.update_options(additional_instruction=cumulative)
         self.assertEqual(session.additional_instruction, cumulative)
+
+    def test_user_history_preserves_original_and_each_saved_edit(self) -> None:
+        session = self.make_session()
+        initial = session.problem_statement
+        session.update_options(problem_statement="Updated requirement")
+        session.update_options(plan="First edited plan")
+        session.update_options(plan="Second edited plan")
+        session.update_options(plan="Second edited plan")
+        edits = [event["data"] for event in session.events if event["stage"] == "user_input"]
+        self.assertEqual(session.events[0]["data"]["initial_problem"], initial)
+        self.assertEqual([edit["content"] for edit in edits], [
+            "Updated requirement", "First edited plan", "Second edited plan",
+        ])
+        self.assertEqual([edit["input_kind"] for edit in edits], ["requirement", "plan", "plan"])
+
+    def test_guidance_history_records_only_new_text_without_replay_duplicates(self) -> None:
+        session = self.make_session()
+        session.update_options(additional_instruction="Use iteration.")
+        cumulative = session.additional_instruction + "\n\nHandle empty input."
+        session.update_options(additional_instruction=cumulative)
+        session.update_options(additional_instruction=cumulative)
+        edits = [event["data"]["content"] for event in session.events
+                 if event["stage"] == "guidance" and "content" in event["data"]]
+        self.assertEqual(edits, ["Use iteration.", "Handle empty input."])
+
+    def test_edited_plan_is_binding_until_replaced_or_reset(self) -> None:
+        session = self.make_session()
+        session.current_plan = "Generated plan"
+        session.update_options(plan="Generated plan")
+        self.assertFalse(session.plan_user_edited)
+        session.update_options(plan="Use an iterative algorithm")
+        session.update_options(plan="Use an iterative algorithm")
+        self.assertTrue(session.to_dict()["plan_user_edited"])
+        session.run_generate(use_plan=True)
+        self.assertTrue(session.engine.code_calls[-1]["plan_user_edited"])
+        self.assertEqual(session.engine.code_calls[-1]["plan"], "Use an iterative algorithm")
+        session.run_plan(use_error_feedback=False)
+        self.assertFalse(session.plan_user_edited)
+        session.update_options(plan="Another human edit")
+        session.reset_progress(reset_context=True)
+        self.assertFalse(session.plan_user_edited)
 
     def test_prompt_language_rebuilds_engine_for_future_calls(self) -> None:
         session = self.make_session()

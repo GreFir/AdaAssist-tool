@@ -11,8 +11,8 @@
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
       llmSetupRequired: 'LLM Setup Required', configureProfileBeforeStart: 'Configure an LLM profile before starting the workflow.', conversation: 'Conversation',
       conversationHint: 'Requirements, code, run results, and plans appear here in order.', problemPlaceholder: 'Describe the coding task, constraints, expected behavior, and anything the model must preserve.',
-      selectionToPrompt: 'Use Selection', send: 'Send', sendWorkflow: 'Send workflow', newTask: 'New Task', composerNote: 'Ctrl/Cmd+Enter to send.',
-      testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
+      selectionToPrompt: 'Use Selection', send: 'Send', sendWorkflow: 'Send workflow', newTask: 'New Task', composerNote: 'Ctrl/Cmd+Enter to send.', modelSelectHint: 'Choose a model from your profile config.', modelLockedHint: 'Click New Task to switch models.',
+      closeTests: 'Close tests', testsCompactEmpty: 'Leave empty to generate tests.', testsCompactDirty: 'Unsaved changes · save or continue to apply.', testsCompactReady: 'Edit the tests, then save or continue.', testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
       manualTestsHint: 'This is the single current test suite. Leave it empty to generate tests before code generation.', selectionToTests: 'Selection To Tests', saveTests: 'Save Tests',
       generatedTestSuite: 'Generated Test Suite', generatedTestsHint: 'Switch to generated tests mode to work with a separate editable test suite.', profileSettings: 'Profile Settings',
       profileSettingsHint: 'Manage OpenAI-compatible, Claude, Ollama, or vLLM profiles. Use the selector to edit an existing profile or start a new draft; the workflow page keeps using the active profile until you save.',
@@ -20,7 +20,7 @@
       profileEditorHint: 'Create a new profile draft or edit an existing profile.', newProfile: 'New Profile', openConfig: 'Open Config', reloadProfiles: 'Reload Profiles', deleteProfile: 'Delete Profile', saveProfile: 'Save Profile',
       pythonInterpreter: 'Python Interpreter', pythonInterpreterHint: 'Choose the Python environment used to start AdaAssist\'s local backend.', selectPythonInterpreter: 'Select Python Interpreter', autoDetectPython: 'Auto-detect Python',
       inlineCompletion: 'Inline Completion', inlineCompletionHint: 'These settings control gray Python suggestions and are separate from the workflow profile.', inlineCompletionEnabled: 'Enable inline completion', triggerMode: 'Trigger', automaticTrigger: 'Automatic', manualTrigger: 'Manual', debounceMs: 'Debounce (ms)', maxTokens: 'Max tokens', saveInlineCompletion: 'Save inline settings',
-      testInputPlaceholder: 'Paste runnable Python assert tests here. Leave empty to generate tests before code generation.', resolvedTestsPlaceholder: 'Generated assert tests appear here. Edit directly in this Python block.',
+      testInputPlaceholder: 'Type or paste Python assert tests…', resolvedTestsPlaceholder: 'Generated assert tests appear here. Edit directly in this Python block.',
       noProfile: 'No profile', interactive: 'interactive', auto: 'auto', setupNeeded: 'setup needed', contextOn: 'context on', contextOff: 'context off', testsConfigured: 'Tests configured', autoGenerateTests: 'Auto-generate tests',
       continue: 'Continue', stop: 'Stop', stopping: 'Stopping', continueWorkflow: 'Continue workflow', stopWorkflow: 'Stop workflow',
       running: 'Running...', stoppingAfterStage: 'Stopping after the current stage...', workflowPaused: 'Workflow paused. Use Continue to proceed.', runPassed: 'Run passed. Review the latest result in the conversation or insert the generated code.',
@@ -33,7 +33,7 @@
       keyEmpty: 'API key is empty for this profile. You can save one here, or set apiKeyEnv in the profile config file.', requirement: 'Requirement', code: 'Code', runResult: 'Run Result', plan: 'Plan', session: 'Session', note: 'Note', noPlan: 'No plan content yet.', openCode: 'Open code', editTests: 'Edit tests', insertCode: 'Insert code', retestCode: 'Run tests again',
       sessionInitialized: 'Session Initialized', context: 'Context', enabled: 'enabled', disabled: 'disabled', editRequirement: 'Edit the requirement before code generation. This draft syncs with the prompt box below.',
       nextStep: 'Next Step', restartFromPrompt: 'Restart From Prompt', restartAction: 'Restart', endHere: 'End Here', doneAction: 'Done', insertLatestCode: 'Insert Latest Code', languageToggleTitle: 'Switch to Chinese',
-      additionalInstructionPlaceholder: 'Add a constraint, correction, or direction for the next generated plan, tests, or code.', autoLockedPlaceholder: 'Auto mode runs without mid-workflow guidance. Start a new task to change the requirement.', addInstruction: 'Send update', autoModeLocked: 'Auto',
+      additionalInstructionPlaceholder: 'Add guidance for future plan, test, and code generation. This does not replace the original requirement.', runningInputPlaceholder: 'A request is running. You can add guidance after it finishes.', testsInputPlaceholder: 'Add guidance for future tests and code. Edit test cases in the test editor; this does not replace the requirement.', planInputPlaceholder: 'Add guidance for the next code generation using this plan. To change the plan itself, edit its card; this does not replace the requirement.', failureInputPlaceholder: 'Describe the correction or direction for the next repair plan and code generation; this does not replace the requirement.', codeInputPlaceholder: 'Add constraints or corrections for future generation. This does not directly edit the current code or replace the requirement.', savedGuidance: 'Guidance saved · applies to future generation', savedRequirement: 'Requirement updated', savedPlan: 'Plan saved · required for subsequent code generation', savedTestGoals: 'Test generation goals saved', autoLockedPlaceholder: 'Auto mode runs without mid-workflow guidance. Start a new task to change the requirement.', addInstruction: 'Send update', autoModeLocked: 'Auto',
       testDescriptionPlaceholder: 'Optional: describe the cases, constraints, or testing goals the generated tests should cover.',
       selectionAppended: 'Editor selection appended.', selectionReplaced: 'Tests replaced from editor selection.',
       generatingTestsStatus: 'Generating tests…', generatedTestsStatus: 'Tests generated. Review and save them before continuing.',
@@ -42,13 +42,14 @@
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
+      closeTests: '关闭测试', testsCompactEmpty: '留空可自动生成测试。', testsCompactDirty: '有未保存修改 · 保存或继续以应用。', testsCompactReady: '编辑后保存，或继续工作流。',
       workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '配置工作流行为、模型连接和本地运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
       workflowSetup: '工作流设置', runSetup: '运行设置', mode: '模式', workflowMode: '工作流模式', interactiveContinue: '交互式继续', autoFullWorkflow: '自动完整工作流',
       environmentStatus: '环境状态', checkingEnvironment: '正在检查环境...', environmentReady: '环境已就绪', environmentWarning: '环境需要注意', environmentFailed: '环境不可用', checkEnvironment: '检查环境',
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
       llmSetupRequired: '需要配置 LLM', configureProfileBeforeStart: '请先配置一个 LLM 配置，再启动工作流。', conversation: '对话',
       conversationHint: '需求、代码、运行结果和计划会按顺序显示在这里。', problemPlaceholder: '描述编程任务、约束条件、预期行为，以及模型必须保留的内容。',
-      selectionToPrompt: '使用选区', send: '发送', sendWorkflow: '发送工作流', newTask: '新任务', composerNote: '按 Ctrl/Cmd+Enter 发送。',
+      selectionToPrompt: '使用选区', send: '发送', sendWorkflow: '发送工作流', newTask: '新任务', composerNote: '按 Ctrl/Cmd+Enter 发送。', modelSelectHint: '从配置文件列表中选择模型。', modelLockedHint: '点击“新任务”后可切换模型。',
       testsHint: '为当前工作流维护一套共享的 Python assert 测试。', back: '返回', testSuite: '测试集', testMode: '测试模式', manualTests: '手动测试', generateTests: '生成测试', testOptions: '生成选项', testGenerationGoal: '测试生成目标', replaceWithSelection: '用选区替换', collapseTests: '完成',
       manualTestsHint: '这是当前唯一的测试集。留空可在生成代码前自动生成测试。', selectionToTests: '选区写入测试', saveTests: '保存测试',
       generatedTestSuite: '已生成的测试集', generatedTestsHint: '切换到生成测试模式，可使用独立且可编辑的测试集。', profileSettings: '配置设置',
@@ -57,7 +58,7 @@
       profileEditorHint: '新建配置草稿，或编辑已有配置。', newProfile: '新建配置', openConfig: '打开配置文件', reloadProfiles: '重新加载配置', deleteProfile: '删除配置', saveProfile: '保存配置',
       pythonInterpreter: 'Python 解释器', pythonInterpreterHint: '选择用于启动 AdaAssist 本地后端的 Python 环境。', selectPythonInterpreter: '选择 Python 解释器', autoDetectPython: '自动检测 Python',
       inlineCompletion: '行内代码补全', inlineCompletionHint: '这里的配置控制 Python 编辑器中的灰色补全，与工作流 LLM 配置相互独立。', inlineCompletionEnabled: '启用行内代码补全', triggerMode: '触发方式', automaticTrigger: '自动触发', manualTrigger: '手动触发', debounceMs: '防抖延迟（毫秒）', maxTokens: '最大生成 token', saveInlineCompletion: '保存行内配置',
-      testInputPlaceholder: '在此粘贴可运行的 Python assert 测试。留空可在生成代码前生成测试。', resolvedTestsPlaceholder: '生成的 assert 测试会显示在这里。可直接在此 Python 代码块中编辑。',
+      testInputPlaceholder: '输入或粘贴 Python assert 测试…', resolvedTestsPlaceholder: '生成的 assert 测试会显示在这里。可直接在此 Python 代码块中编辑。',
       noProfile: '未选择配置', interactive: '交互', auto: '自动', setupNeeded: '需要设置', contextOn: '上下文开启', contextOff: '上下文关闭', testsConfigured: '已配置测试', autoGenerateTests: '自动生成测试',
       continue: '继续', stop: '停止', stopping: '正在停止', continueWorkflow: '继续工作流', stopWorkflow: '停止工作流',
       running: '正在运行...', stoppingAfterStage: '将在当前阶段结束后停止...', workflowPaused: '工作流已暂停。点击“继续”以推进。', runPassed: '运行已通过。请在对话中查看最新结果，或插入生成的代码。',
@@ -70,7 +71,7 @@
       keyEmpty: '此配置没有 API 密钥。可在这里保存密钥，或在配置文件中设置 apiKeyEnv。', requirement: '需求', code: '代码', runResult: '运行结果', plan: '计划', session: '会话', note: '说明', noPlan: '暂无计划内容。', openCode: '打开代码', editTests: '编辑测试', insertCode: '插入代码', retestCode: '重新运行测试',
       sessionInitialized: '会话已初始化', context: '上下文', enabled: '开启', disabled: '关闭', editRequirement: '可在生成代码前编辑需求。此草稿会同步到下方的需求输入框。',
       nextStep: '下一步', restartFromPrompt: '从需求重新开始', restartAction: '重新开始', endHere: '在此结束', doneAction: '结束', insertLatestCode: '插入最新代码', languageToggleTitle: '切换为英文',
-      additionalInstructionPlaceholder: '补充约束、纠正结果，或说明下一次生成计划、测试或代码的方向。', autoLockedPlaceholder: 'Auto 模式不接受中途指导；如需修改需求，请新建任务。', addInstruction: '发送补充要求', autoModeLocked: 'Auto',
+      additionalInstructionPlaceholder: '补充后续计划、测试和代码生成的约束或方向；不会替换原始需求。', runningInputPlaceholder: '正在处理请求，完成后可补充指导。', testsInputPlaceholder: '补充后续测试和代码生成的指导；测试用例请在测试编辑器中修改，不会替换原始需求。', planInputPlaceholder: '补充按当前计划生成代码的方向；要修改计划正文，请编辑计划卡片，不会替换原始需求。', failureInputPlaceholder: '说明下一次修复计划和代码生成的纠正方向或约束；不会替换原始需求。', codeInputPlaceholder: '补充后续生成的约束或纠正方向；不会直接修改当前代码，也不会替换原始需求。', savedGuidance: '补充指导已保存 · 用于后续生成', savedRequirement: '需求已更新', savedPlan: '计划已保存 · 后续代码生成将按此执行', savedTestGoals: '测试生成目标已保存', autoLockedPlaceholder: 'Auto 模式不接受中途指导；如需修改需求，请新建任务。', addInstruction: '发送补充要求', autoModeLocked: 'Auto',
       testDescriptionPlaceholder: '可选：说明自动测试需要覆盖的场景、约束或测试目标。',
       selectionAppended: '已追加编辑器选区。', selectionReplaced: '已用编辑器选区替换测试。',
       generatingTestsStatus: '正在生成测试…', generatedTestsStatus: '测试已生成，请检查并保存后继续。',
@@ -129,6 +130,95 @@
   const stopIconSrc = document.body ? String(document.body.dataset.stopIcon || '') : '';
 
   const taskProfileSelect = document.getElementById('taskProfileSelect');
+  const modelPicker = document.getElementById('composerModelPicker');
+  const modelPickerButton = document.getElementById('modelPickerButton');
+  const modelPickerLabel = document.getElementById('modelPickerLabel');
+  const modelPickerMenu = document.getElementById('modelPickerMenu');
+
+  function closeModelPicker(restoreFocus) {
+    modelPickerMenu.hidden = true;
+    modelPickerButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) modelPickerButton.focus();
+  }
+
+  function openModelPicker(last) {
+    if (modelPickerButton.disabled) return;
+    modelPickerMenu.hidden = false;
+    modelPickerButton.setAttribute('aria-expanded', 'true');
+    const items = Array.from(modelPickerMenu.children);
+    const selected = items.find(item => item.getAttribute('aria-checked') === 'true');
+    const target = last ? items[items.length - 1] : selected || items[0];
+    if (target) target.focus();
+  }
+
+  function renderModelPicker() {
+    const focusedId = modelPickerMenu.contains(document.activeElement) ? document.activeElement.dataset.profileId : '';
+    modelPickerMenu.replaceChildren();
+    state.profiles.forEach(profile => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'model-picker-option';
+      item.setAttribute('role', 'menuitemradio');
+      item.setAttribute('aria-checked', String(profile.id === taskProfileSelect.value));
+      item.tabIndex = -1;
+      item.dataset.profileId = profile.id;
+      const name = document.createElement('span');
+      name.className = 'model-picker-option-name';
+      name.textContent = profile.name;
+      item.title = profile.name;
+      const check = document.createElement('span');
+      check.className = 'model-picker-check';
+      check.setAttribute('aria-hidden', 'true');
+      check.textContent = profile.id === taskProfileSelect.value ? '✓' : '';
+      item.append(name, check);
+      item.addEventListener('click', () => {
+        if (modelPickerButton.disabled) return;
+        taskProfileSelect.value = profile.id;
+        taskProfileSelect.dispatchEvent(new Event('change'));
+        closeModelPicker(true);
+      });
+      modelPickerMenu.appendChild(item);
+      if (focusedId === profile.id && !modelPickerMenu.hidden) item.focus();
+    });
+    modelPickerLabel.textContent = selectedProfile()?.name || t('noProfile');
+    modelPickerButton.setAttribute('aria-label', t('model') + ': ' + modelPickerLabel.textContent);
+  }
+
+  modelPickerButton.addEventListener('click', () => {
+    if (modelPickerMenu.hidden) openModelPicker(false);
+    else closeModelPicker(false);
+  });
+  modelPickerButton.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      openModelPicker(event.key === 'ArrowUp');
+    }
+  });
+  modelPickerMenu.addEventListener('keydown', event => {
+    const items = Array.from(modelPickerMenu.children);
+    const index = items.indexOf(document.activeElement);
+    let next;
+    if (event.key === 'ArrowDown') next = (index + 1) % items.length;
+    if (event.key === 'ArrowUp') next = (index - 1 + items.length) % items.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = items.length - 1;
+    if (next !== undefined) {
+      event.preventDefault();
+      items[next]?.focus();
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      closeModelPicker(true);
+    }
+    if (event.key === 'Tab') closeModelPicker(true);
+  });
+  document.addEventListener('pointerdown', event => {
+    if (!modelPicker.contains(event.target)) closeModelPicker(false);
+  });
+  modelPicker.addEventListener('focusout', event => {
+    if (!modelPicker.contains(event.relatedTarget)) closeModelPicker(false);
+  });
   const settingsProfileSelect = document.getElementById('settingsProfileSelect');
   const problemInput = document.getElementById('problemInput');
   const testInput = document.getElementById('testInput');
@@ -248,6 +338,7 @@
 		pythonPath: 'auto',
 		inlineCompletion: null,
 		settingsTab: 'workflow',
+		selectedStudyTaskId: '',
 		studyTasks: []
   };
 
@@ -416,7 +507,7 @@
       testDescription.placeholder = t('testDescriptionPlaceholder');
     }
     if (problemInput) {
-      problemInput.placeholder = state.session ? t('additionalInstructionPlaceholder') : t('problemPlaceholder');
+      problemInput.placeholder = composerPlaceholder();
     }
   }
 
@@ -1229,6 +1320,7 @@
     if (!visualLogList) {
       return;
     }
+    const previousScrollTop = visualLogList.scrollTop;
     visualLogList.innerHTML = '';
     const entries = Array.isArray(state.logEntries) ? state.logEntries : [];
     if (entries.length === 0) {
@@ -1324,6 +1416,7 @@
       group.appendChild(groupBody);
       visualLogList.appendChild(group);
     });
+    visualLogList.scrollTop = previousScrollTop;
   }
 
   function getPlanText(event, fallback) {
@@ -1383,7 +1476,8 @@
       created_at: state.session.created_at
     });
     card.classList.add('user-card');
-    card.appendChild(renderMarkdown(state.session.problem_statement));
+    const initial = sortedSessionEvents().find(event => event.data && typeof event.data.initial_problem === 'string');
+    card.appendChild(renderMarkdown(initial ? initial.data.initial_problem : state.session.problem_statement));
 
     return card;
   }
@@ -1834,8 +1928,16 @@
 		state.studyTasks.forEach(function (task) {
 			const option = document.createElement('option');
 			option.value = task.task_id;
-			option.textContent = task.task_id + '：' + task.title;
+			const order = Number.isInteger(task.sequence) ? (uiLanguage === 'zh-CN' ? '第 ' + task.sequence + ' 题 · ' : '#' + task.sequence + ' · ') : '';
+			const condition = task.assigned_condition ? ' [' + (task.assigned_condition === 'auto' ? 'Auto' : 'Interactive') + ']' : '';
+			option.textContent = order + task.task_id + condition + '：' + task.title;
 			select.appendChild(option);
+		});
+		const selectedTaskExists = state.studyTasks.some(task => task.task_id === state.selectedStudyTaskId);
+		state.selectedStudyTaskId = selectedTaskExists ? state.selectedStudyTaskId : state.studyTasks[0].task_id;
+		select.value = state.selectedStudyTaskId;
+		select.addEventListener('change', function () {
+			state.selectedStudyTaskId = select.value;
 		});
 		card.appendChild(select);
 
@@ -1875,11 +1977,17 @@
 		const loadTask = function () {
 			const task = state.studyTasks.find(function (item) { return item.task_id === select.value; });
 			if (!task) return null;
+			state.selectedStudyTaskId = task.task_id;
+			if (task.assigned_condition === 'auto' || task.assigned_condition === 'interactive') {
+				state.workflowMode = task.assigned_condition === 'auto' ? 'auto' : 'continue';
+				executionModeSelect.value = state.workflowMode;
+			}
 			problemInput.value = task.prompt;
 			setEditableCodeText(testInput, task.public_tests);
 			setEditableCodeText(resolvedTestsEditor, task.public_tests);
 			testModeSelect.value = 'manual';
 			state.problemDraftDirty = true;
+			state.resolvedTestsDirty = true;
 			vscode.postMessage({ type: 'loadStudyTask', taskId: task.task_id });
 			renderAll();
 			return task;
@@ -1910,9 +2018,25 @@
     const latestEvaluate = latestEvaluateEvent(events);
     const attemptsById = new Map();
     let latestAttempt = null;
+    let previousGuidance = '';
 
     events.forEach((event) => {
       const data = event.data || {};
+      if ((event.stage === 'user_input' || event.stage === 'guidance') && event.status !== 'failed') {
+        let content = typeof data.content === 'string' ? data.content : '';
+        let inputKind = data.input_kind || 'guidance';
+        if (typeof data.additional_instruction === 'string') {
+          const cumulative = data.additional_instruction;
+          if (!content) content = cumulative.startsWith(previousGuidance)
+            ? cumulative.slice(previousGuidance.length).trim() : cumulative;
+          previousGuidance = cumulative;
+        } else if (typeof data.test_description === 'string') {
+          content = data.test_description;
+          inputKind = 'testGoals';
+        }
+        if (content.trim()) entries.push({kind: 'user-input', id: event.id, event, content, inputKind});
+        return;
+      }
       const code = typeof data.code === 'string' ? data.code : '';
       const plan = getPlanText(event, '');
       const isPlanEvent = event.stage === 'plan' && (event.status === 'completed' || event.status === 'ready') && Boolean(plan);
@@ -1998,13 +2122,13 @@
     return entries;
   }
 
+
   function renderTimeline() {
     syncEditablePlanDraft();
     const entries = conversationEntries();
     const timelineSignature = entries.map((entry) => entry.id).join('|');
     const hasTimelineChange = timelineSignature !== state.lastTimelineSignature;
-    const shouldStickToBottom = state.running
-      || state.autoScrollPinned
+    const shouldStickToBottom = state.autoScrollPinned
       || isNearConversationBottom()
       || hasTimelineChange;
 
@@ -2034,6 +2158,19 @@
         if (sessionCard) {
           timeline.appendChild(sessionCard);
         }
+        return;
+      }
+
+      if (entry.kind === 'user-input') {
+        const card = createCardFrame('session', entry.event);
+        card.classList.add('user-card');
+        const label = document.createElement('div');
+        label.className = 'user-input-receipt';
+        const key = {guidance: 'savedGuidance', requirement: 'savedRequirement', plan: 'savedPlan', testGoals: 'savedTestGoals'}[entry.inputKind] || 'savedGuidance';
+        label.textContent = t(key);
+        card.appendChild(label);
+        card.appendChild(renderMarkdown(entry.content));
+        timeline.appendChild(card);
         return;
       }
 
@@ -2079,7 +2216,8 @@
     state.profiles.forEach((profile) => {
       const taskOption = document.createElement('option');
       taskOption.value = profile.id;
-      taskOption.textContent = profile.name + ' (' + profile.provider + ')';
+      taskOption.textContent = profile.name;
+      taskOption.title = profile.model + ' · ' + profile.name + ' (' + profile.provider + ')';
       taskProfileSelect.appendChild(taskOption);
 
       const settingsOption = document.createElement('option');
@@ -2088,8 +2226,16 @@
       settingsProfileSelect.appendChild(settingsOption);
     });
 
+    if (!state.profiles.length) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = t('noProfile');
+      taskProfileSelect.appendChild(option);
+    }
+
     const active = state.activeProfileId || (state.profiles[0] && state.profiles[0].id) || '';
     taskProfileSelect.value = active;
+    renderModelPicker();
     settingsProfileSelect.value = currentSettings === NEW_PROFILE_DRAFT_ID
       ? NEW_PROFILE_DRAFT_ID
       : (state.profiles.some((item) => item.id === currentSettings) ? currentSettings : (active || NEW_PROFILE_DRAFT_ID));
@@ -2544,15 +2690,33 @@
 
   function renderResolvedTestsHint() {
     if (!state.session) {
-      resolvedTestsHint.textContent = t('leaveTestsEmpty');
+      resolvedTestsHint.textContent = t('testsCompactEmpty');
       syncResolvedTestsEditor(false);
       return;
     }
 
     resolvedTestsHint.textContent = state.resolvedTestsDirty
-      ? t('testsLocallyEdited')
-      : t('singleTestsEditor');
+      ? t('testsCompactDirty')
+      : t('testsCompactReady');
     syncResolvedTestsEditor(false);
+  }
+
+  function composerPlaceholder() {
+    if (state.running) return t('runningInputPlaceholder');
+    if (!state.session) return t('problemPlaceholder');
+    if (!isInteractiveSelected()) return t('autoLockedPlaceholder');
+    if (isTestSetupStage() || isGenerationTestStage()) return t('testsInputPlaceholder');
+    if (state.interactiveState === 'await_plan') return t('planInputPlaceholder');
+    if (state.interactiveState === 'await_failure_choice') return t('failureInputPlaceholder');
+    if (isCodeReviewStage()) return t('codeInputPlaceholder');
+    return t('additionalInstructionPlaceholder');
+  }
+
+  function updateTestsIconState(button, busy, labelKey, busyKey) {
+    const label = t(busy ? busyKey : labelKey);
+    button.title = label;
+    button.setAttribute('aria-label', label);
+    button.setAttribute('aria-busy', String(busy));
   }
 
   function syncActionButtons() {
@@ -2566,13 +2730,18 @@
 
     problemInput.readOnly = !guidanceEditable;
     problemInput.classList.toggle('locked-input', !guidanceEditable);
-    problemInput.placeholder = !hasSession
-      ? t('problemPlaceholder')
-      : interactiveSession ? t('additionalInstructionPlaceholder') : t('autoLockedPlaceholder');
+    problemInput.placeholder = composerPlaceholder();
     if (workflowModeHint) {
       workflowModeHint.textContent = isInteractiveSelected() ? t('interactiveHint') : t('autoHint');
     }
     executionModeSelect.disabled = state.running || hasSession;
+    taskProfileSelect.disabled = state.running || hasSession || !state.profiles.length;
+    const currentProfile = selectedProfile();
+    taskProfileSelect.title = (currentProfile ? currentProfile.name + '\n' : '')
+      + t(state.running || hasSession ? 'modelLockedHint' : 'modelSelectHint');
+    modelPickerButton.disabled = taskProfileSelect.disabled;
+    modelPickerButton.title = taskProfileSelect.title;
+    if (modelPickerButton.disabled) closeModelPicker(false);
     if (testInput) {
       testInput.setAttribute('contenteditable', testsEditable ? 'true' : 'false');
     }
@@ -2595,13 +2764,9 @@
     useSelectionForProblemBtn.disabled = !guidanceEditable;
     useSelectionForProblemBtn.classList.toggle('hidden', !guidanceEditable);
     generateTestsBtn.disabled = state.running || testsBusy || (hasSession && !interactiveSession) || (!hasSession && !hasProblemDraft);
-    generateTestsBtn.textContent = state.running && state.testOperation === 'generate'
-      ? t('generatingTestsStatus')
-      : t('generateTests');
+    updateTestsIconState(generateTestsBtn, testsBusy && state.testOperation === 'generate', 'generateTests', 'generatingTestsStatus');
     saveResolvedTestsBtn.disabled = state.running || testsBusy || !interactiveSession || !hasResolvedTestsDraft;
-    saveResolvedTestsBtn.textContent = state.testOperationStatus === 'running' && state.testOperation === 'save'
-      ? t('savingTestsStatus')
-      : t('saveTests');
+    updateTestsIconState(saveResolvedTestsBtn, testsBusy && state.testOperation === 'save', 'saveTests', 'savingTestsStatus');
     renderPrimaryActionButton(hasResolvedTestsDraft);
     submitWorkflowBtn.classList.toggle(
       'hidden',
@@ -2842,7 +3007,10 @@
   taskProfileSelect.addEventListener('change', function () {
     const profileId = taskProfileSelect.value;
     state.activeProfileId = profileId;
+    renderModelPicker();
     renderSetupSummaries();
+    renderProfileNotice();
+    syncActionButtons();
     vscode.postMessage({ type: 'switchProfile', profileId });
   });
 
@@ -3002,6 +3170,17 @@
   clearSessionBtn.addEventListener('click', function () {
     resetTaskDraft();
     vscode.postMessage({ type: 'clearWorkflowSession' });
+  });
+
+  const testOptionsToggleBtn = document.getElementById('testOptionsToggleBtn');
+  const testGenerationOptions = document.getElementById('testGenerationOptions');
+  testOptionsToggleBtn.addEventListener('click', function () {
+    testGenerationOptions.open = !testGenerationOptions.open;
+    testOptionsToggleBtn.setAttribute('aria-expanded', String(testGenerationOptions.open));
+    if (testGenerationOptions.open) testDescription.focus();
+  });
+  testGenerationOptions.addEventListener('toggle', function () {
+    testOptionsToggleBtn.setAttribute('aria-expanded', String(testGenerationOptions.open));
   });
 
   generateTestsBtn.addEventListener('click', function () {

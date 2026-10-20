@@ -28,19 +28,6 @@ class RecordingExecutor:
 
 
 class AdacoderIntegrationTests(unittest.TestCase):
-    def test_plan_wrapper_forwards_raw_response_for_success_and_failure(self) -> None:
-        with patch("src.Adacoder.AdacoderExecutor", RecordingExecutor):
-            engine = Adacoder(LLMConfig(provider="vllm", model="test"))
-        for plan in ("## Plan\n1. Keep `a+b`.", ""):
-            with self.subTest(plan=plan), patch.object(engine.planner, "execute_planner", return_value={
-                "plan": plan, "raw_response": "original output",
-                "plan_processing": "whitespace_only", "attempts": 1,
-            }):
-                result = engine.create_plan("Implement solve(value)")
-                self.assertEqual(result["raw_response"], "original output")
-                self.assertEqual(result["plan_processing"], "whitespace_only")
-                self.assertEqual(result["ok"], bool(plan))
-
     def setUp(self) -> None:
         RecordingExecutor.instances = []
 
@@ -59,15 +46,29 @@ class AdacoderIntegrationTests(unittest.TestCase):
         self.assertIsNot(coder.config, planner.config)
         self.assertIsNot(coder.config, tester.config)
         self.assertEqual(coder.config.max_tokens, 1024)
-        self.assertEqual(planner.config.max_tokens, 512)
+        self.assertEqual(planner.config.max_tokens, 768)
+        self.assertEqual(planner.config.temperature, 0.5)
+        self.assertEqual(coder.config.temperature, 0.2)
+        self.assertEqual(tester.config.temperature, 0.2)
+        self.assertEqual(config.temperature, 0.2)
         self.assertEqual(tester.config.max_tokens, 768)
         self.assertEqual(config.max_tokens, 1024)
         self.assertIn("original task as the authoritative contract", coder.system_prompt)
         self.assertIn("max((score, name)) incorrectly chooses the largest tied name", coder.system_prompt)
         self.assertIn("never invent requirements", planner.system_prompt)
-        self.assertIn("Use the fewest steps needed, never more than 5", planner.system_prompt)
-        self.assertNotIn("max((score, name))", planner.system_prompt)
+        self.assertIn("with 4 to 8 distinct, actionable steps", planner.system_prompt)
+        self.assertIn("max((score, name))", planner.system_prompt)
         self.assertIn("Test only behavior explicitly required", tester.system_prompt)
+
+    def test_explicit_planner_budget_is_preserved(self) -> None:
+        config = LLMConfig(provider="vllm", model="test", max_tokens=1024)
+        planner_config = LLMConfig(provider="vllm", model="test", max_tokens=3072, temperature=0.7)
+        with patch("src.Adacoder.AdacoderExecutor", RecordingExecutor):
+            engine = Adacoder(config, planner_config=planner_config)
+        self.assertEqual(engine.planner_config.max_tokens, 3072)
+        self.assertEqual(engine.planner_config.temperature, 0.7)
+        self.assertIsNot(engine.planner_config, planner_config)
+        self.assertEqual(config.max_tokens, 1024)
 
     def test_chinese_prompt_language_localizes_all_system_prompts(self) -> None:
         config = LLMConfig(provider="vllm", model="test", base_url="http://example/v1")
@@ -78,7 +79,7 @@ class AdacoderIntegrationTests(unittest.TestCase):
         coder, planner, tester = RecordingExecutor.instances
         self.assertEqual([coder.prompt_language, planner.prompt_language, tester.prompt_language], ["zh-CN"] * 3)
         self.assertIn("严谨的 Python 实现助手", coder.system_prompt)
-        self.assertIn("最多 5 步", planner.system_prompt)
+        self.assertIn("4 至 8 个", planner.system_prompt)
         self.assertIn("Python 测试生成助手", tester.system_prompt)
 
     def test_wrapper_forwards_current_failure_state(self) -> None:

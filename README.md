@@ -100,6 +100,8 @@ LLM profiles can be configured from the AdaAssist UI:
 
 Profiles are stored in `.vscode/adaassist-profiles.json` by default. You can open this file with `AdaAssist: Open Profile Config File` or the `Open Config` button.
 
+The model dropdown to the right of “Ctrl/Cmd+Enter to send” lists the models in this file's `profiles` array. Selecting an entry saves `activeProfileId` and uses that profile's model, endpoint, provider, and credentials for the next task. During a workflow, click **New Task** before switching models. After editing the file, use **Settings → Profiles → Reload Profiles** to refresh the list. A custom file can be set through `adaassist.profileConfigPath`.
+
 Example:
 
 ```json
@@ -271,3 +273,11 @@ If the workflow cannot continue after test review:
 - The `Tests` editor cannot be empty.
 - Paste manual tests or click `Generate Tests`.
 - Generated tests must be reviewed and confirmed before code generation.
+
+## Follow-up input and history
+
+Before starting a task, the composer submits the original requirement. During an interactive task, it submits additional guidance for future plan, test, and code generation; it does not replace the original requirement or directly edit the current plan. Edit the plan card to change the plan itself. The composer placeholder explains the current stage in English or Chinese.
+
+Saved guidance, requirement edits, plan edits, and test generation goals appear as user messages with a saved-status label. History uses backend events, so session refreshes do not duplicate these messages.
+
+A plan changed by the user and submitted through **Save Plan** or **Next Step** becomes binding guidance for subsequent plan-based code generation. The English and Chinese prompts require every step to be implemented and checked; explicit requirement changes in that plan take precedence over the original wording. Saving the same plan retains this status. A newly generated plan or a restarted task clears it. Merely saving an unchanged model-generated plan does not mark it as a human edit.

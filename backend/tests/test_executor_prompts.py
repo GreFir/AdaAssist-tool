@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import Mock
 
 from src.executor.AdacoderExe import AdacoderExecutor
+from src.llm_clients.llm_router import OutputTokenLimitError
 
 
 class FakeRouter:
@@ -27,6 +29,42 @@ def executor_with(response: str, prompt_language: str = "en") -> tuple[AdacoderE
 
 
 class ExecutorPromptTests(unittest.TestCase):
+    def test_truncated_output_is_not_retried_or_committed(self) -> None:
+        for method, field in (("execute_coder", "code"), ("generate_test_code", "test_code")):
+            with self.subTest(method=method):
+                executor, router = executor_with("")
+                router.generate = Mock(side_effect=OutputTokenLimitError("Output limit reached", "repeated partial plan"))
+                router.generation_info = lambda: {"finish_reason": "length", "truncated": True, "usage": {"output_tokens": 2048}}
+                result = getattr(executor, method)("Implement solve(value)")
+                self.assertFalse(result["ok"])
+                self.assertEqual(result[field], "")
+                self.assertEqual(result["attempts"], 1)
+                self.assertEqual(router.generate.call_count, 1)
+                self.assertTrue(result["generation"]["attempts"][0]["truncated"])
+                if method == "execute_planner":
+                    self.assertEqual(result["raw_response"], "repeated partial plan")
+
+    def test_human_plan_has_binding_instructions_in_both_languages(self) -> None:
+        for language in ("en", "zh-CN"):
+            with self.subTest(language=language):
+                executor, router = executor_with("def solve(value):\n    return value", language)
+                plan = "1. Use iteration.\n2. Preserve empty input."
+                executor.execute_coder(
+                    "Implement solve(value)", plan=plan, plan_user_edited=True,
+                    current_code="def solve(value): return None",
+                    test_code="assert solve(1) == 1",
+                )
+                prompt = router.prompts[-1]
+                self.assertIn(plan, prompt)
+                self.assertIn("assert solve(1) == 1", prompt)
+                self.assertIn("Binding Execution Requirements" if language == "en" else "明确执行要求", prompt)
+                self.assertNotIn("The repair plan is advisory", prompt)
+                self.assertNotIn("修复计划只提供建议", prompt)
+                # A later model plan on the same executor must not inherit it.
+                executor.execute_coder("Implement solve(value)", plan="Generated plan")
+                prompt = router.prompts[-1]
+                self.assertIn("The repair plan is advisory" if language == "en" else "修复计划只提供建议", prompt)
+
     def test_chinese_language_localizes_code_test_and_plan_prompts(self) -> None:
         code_executor, code_router = executor_with("def solve(value):\n    return value", "zh-CN")
         code_executor.execute_coder("实现 solve(value)", test_code="assert solve(1) == 1")
@@ -122,7 +160,7 @@ class ExecutorPromptTests(unittest.TestCase):
         self.assertIn("first-seen selection", prompt)
         self.assertIn("chooses the lexicographically largest tied item", prompt)
 
-    def test_planner_receives_current_state_and_keeps_complete_response(self) -> None:
+    def test_planner_receives_current_state_and_preserves_the_plan(self) -> None:
         raw_response = (
             "Ċ##ĠPlanĊ1.ĠFix the aggregation."
             "ĊĊ##ĠExplanationĊThis remains visible."
@@ -156,50 +194,45 @@ class ExecutorPromptTests(unittest.TestCase):
         self.assertIn("[FAILED] #1, line 1: assert summarize([]) == {} | AssertionError", prompt)
         self.assertIn("[PASSED] #2, line 2: assert summarize([1]) == {1: 1}", prompt)
         self.assertIn("full traceback text", prompt)
-        self.assertIn("Use the fewest steps needed and never more than 5", prompt)
-        self.assertIn("Each step must be one short, concrete, actionable sentence", prompt)
-        self.assertNotIn("top group by a total numeric field", prompt)
+        self.assertIn("Produce 4 to 8 distinct, actionable steps", prompt)
+        self.assertIn("Do not repeat or restate equivalent steps", prompt)
+        self.assertIn("top group by a total numeric field", prompt)
         self.assertNotIn("explore various approaches", prompt)
         self.assertEqual(
             result["plan"],
             "## Plan\n1. Fix the aggregation.\n\n## Explanation\nThis remains visible.",
         )
 
-    def test_planner_preserves_full_instructions_and_records_raw_response(self) -> None:
-        raw_response = """## Plan
-1. Replace `a+b` with `a-b`.
-2. Replace `a-b` with `a+b`.
-3. Preserve the key `Name`.
-4. Preserve the key `name`.
-5. Preserve two literal spaces in `a  b`.
-6. Use this exact update:
-```python
-    ready.append(node)
-```
-## Verification
-Check the empty graph.
-"""
-        executor, router = executor_with(raw_response)
-        result = executor.execute_planner("Implement dependency_order(graph)")
-        self.assertEqual(result["plan"], raw_response.strip())
-        self.assertEqual(result["raw_response"], raw_response)
-        self.assertEqual(result["plan_processing"], "whitespace_only")
-        self.assertEqual(len(router.prompts), 1)
-
-    def test_planner_preserves_constraints_after_220_characters(self) -> None:
-        raw = "## Plan\n1. " + ("Preserve existing dependency traversal. " * 8)
-        raw += "Use a min-heap for all ready nodes."
+    def test_planner_preserves_complete_response_without_rewriting(self) -> None:
+        raw = "## Plan\n1. Replace `a+b` with `a-b`.\n2. Replace `a-b` with `a+b`.\n3. Preserve `Name`.\n4. Preserve `name`.\n5. Keep this example:\n```python\nx = 1\n```\n6. " + ("Preserve existing behavior. " * 12) + "Keep the final constraint."
         executor, _ = executor_with(raw)
         result = executor.execute_planner("Implement solve(value)")
+        self.assertTrue(result["ok"])
         self.assertEqual(result["plan"], raw)
-        self.assertTrue(result["plan"].endswith("Use a min-heap for all ready nodes."))
-
-    def test_planner_does_not_disguise_malformed_output_as_a_numbered_plan(self) -> None:
-        raw = "Ċ<jupyter_text>ĊPlan1.ĠInspect inputs.Ċ<jupyter_code>ĊdefĠf():ĊĠĠreturnĠ1"
-        executor, _ = executor_with(raw)
-        result = executor.execute_planner("Implement f()")
         self.assertEqual(result["raw_response"], raw)
-        self.assertEqual(result["plan"], "<jupyter_text>\nPlan1. Inspect inputs.\n<jupyter_code>\ndef f():\n  return 1")
+
+    def test_partial_plan_is_accepted_without_retry_and_keeps_diagnostics(self) -> None:
+        executor, router = executor_with("")
+        raw = "Ċ##ĠPlanĊ1.ĠCorrect the return value.Ċ2.ĠVerify"
+        router.generate = Mock(side_effect=OutputTokenLimitError("Output limit reached", raw))
+        router.generation_info = lambda: {"finish_reason": "length", "truncated": True}
+        result = executor.execute_planner("Implement solve(value)")
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["error"], "")
+        self.assertEqual(result["plan"], "## Plan\n1. Correct the return value.\n2. Verify")
+        self.assertEqual(result["raw_response"], raw)
+        self.assertEqual(router.generate.call_count, 1)
+        self.assertTrue(result["generation"]["attempts"][0]["partial_plan_accepted"])
+        self.assertTrue(result["generation"]["attempts"][0]["truncated"])
+
+    def test_empty_truncated_plan_still_fails(self) -> None:
+        executor, router = executor_with("")
+        router.generate = Mock(side_effect=OutputTokenLimitError("Output limit reached", "ĠĊ"))
+        result = executor.execute_planner("Implement solve(value)")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["plan"], "")
+        self.assertEqual(router.generate.call_count, 1)
+        self.assertIn("OutputTokenLimitError", result["error"])
 
     def test_test_prompt_forbids_invented_requirements_and_repetition(self) -> None:
         executor, router = executor_with("assert solve(0) == 0")

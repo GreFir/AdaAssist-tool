@@ -3,7 +3,7 @@
   "publisher": "adaassist-study",
   "displayName": "AdaAssist",
   "description": "Programming assistant for code workflows in VS Code.",
-  "version": "0.0.15",
+  "version": "0.0.14",
   "engines": {
     "vscode": "^1.110.0"
   },

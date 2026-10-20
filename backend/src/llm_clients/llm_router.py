@@ -5,6 +5,15 @@ from typing import Any
 import requests
 import time
 
+
+class OutputTokenLimitError(RuntimeError):
+    """A response was truncated; changing transport cannot complete it."""
+
+    def __init__(self, message: str, partial_response: str = ""):
+        super().__init__(message)
+        self.partial_response = partial_response
+
+
 class LLMRouter:
     def __init__(self,system_prompt: str, cfg: LLMConfig,is_history:bool=False):
         self.cfg = cfg
@@ -135,11 +144,12 @@ class LLMRouter:
         extra_body: dict[str, Any] | None = None,
     ) -> str:
         """
-        Automatically fall back according to provider strategy priority.
+        Wait for a complete response, falling back in provider strategy order.
         """
         errors: list[str] = []
         started_at = time.perf_counter()
         self._last_usage = {}
+        self._last_finish_reason = None
 
         for step in self._strategy_order():
             try:
@@ -167,8 +177,14 @@ class LLMRouter:
                     "duration_ms": round((time.perf_counter() - started_at) * 1000),
                     "strategy": step,
                     "usage": dict(self._last_usage),
+                    "finish_reason": self._last_finish_reason,
+                    "max_output_tokens": self.cfg.max_tokens,
+                    "fallback_errors": list(errors),
                 }
                 return answer
+            except OutputTokenLimitError as exc:
+                self._record_output_limit(started_at, step, exc)
+                raise
             except Exception as exc:
                 errors.append(f"{step}: {type(exc).__name__}: {exc}")
 
@@ -179,6 +195,38 @@ class LLMRouter:
             "errors": errors,
         }
         raise RuntimeError("All invocation strategies failed:\n" + "\n".join(errors))
+
+    def _record_output_limit(self, started_at: float, strategy: str, exc: Exception) -> None:
+        self.last_generation_info = {
+            "duration_ms": round((time.perf_counter() - started_at) * 1000),
+            "strategy": strategy, "usage": dict(self._last_usage),
+            "finish_reason": "length", "truncated": True,
+            "max_output_tokens": self.cfg.max_tokens, "errors": [str(exc)],
+            "raw_response": getattr(exc, "partial_response", ""),
+        }
+
+    def _check_output_limit(self, finish_reason: str | None, partial_response: str = "") -> None:
+        self._last_finish_reason = finish_reason
+        if finish_reason in {"length", "max_output_tokens"}:
+            raise OutputTokenLimitError(
+                f"Model output reached the {self.cfg.max_tokens}-token output limit and was truncated. "
+                "The incomplete output was not accepted. Shorten the requested output or increase "
+                "the stage output budget before retrying.",
+                partial_response=partial_response,
+            )
+
+    def _check_responses_limit(self, response: Any, partial_response: str = "") -> None:
+        details = response.get("incomplete_details") if isinstance(response, dict) else getattr(response, "incomplete_details", None)
+        reason = details.get("reason") if isinstance(details, dict) else getattr(details, "reason", None)
+        if not partial_response and reason == "max_output_tokens":
+            if isinstance(response, dict):
+                try:
+                    partial_response = self._extract_text_from_responses_json(response)
+                except RuntimeError:
+                    partial_response = ""
+            else:
+                partial_response = getattr(response, "output_text", "") or ""
+        self._check_output_limit(reason, partial_response)
 
     def generation_info(self) -> dict[str, Any]:
         """Return metadata for the most recent generation without exposing credentials."""
@@ -393,6 +441,7 @@ class LLMRouter:
             "instructions": self.system_prompt,
             "input": history,
             "temperature": self.cfg.temperature,
+            "stream": False,
             "max_output_tokens": self.cfg.max_tokens,
         }
 
@@ -401,6 +450,7 @@ class LLMRouter:
 
         resp = client.responses.create(**req)
         self._remember_usage(getattr(resp, "usage", None))
+        self._check_responses_limit(resp)
 
         output_text = getattr(resp, "output_text", None)
         if isinstance(output_text, str) and output_text.strip():
@@ -458,6 +508,7 @@ class LLMRouter:
             "model": self.cfg.model,
             "messages": messages,
             "temperature": self.cfg.temperature,
+            "stream": False,
             "max_tokens": self.cfg.max_tokens,
         }
         if extra_body:
@@ -465,6 +516,10 @@ class LLMRouter:
 
         resp = client.chat.completions.create(**req)
         self._remember_usage(getattr(resp, "usage", None))
+        self._check_output_limit(
+            getattr(resp.choices[0], "finish_reason", None),
+            resp.choices[0].message.content or "",
+        )
 
         content = resp.choices[0].message.content
 
@@ -529,6 +584,7 @@ class LLMRouter:
             "instructions": self.system_prompt,
             "input": history,
             "temperature": self.cfg.temperature,
+            "stream": False,
             "max_output_tokens": self.cfg.max_tokens,
         }
 
@@ -545,6 +601,7 @@ class LLMRouter:
 
         data = resp.json()
         self._remember_usage(data.get("usage"))
+        self._check_responses_limit(data)
         answer = self._extract_text_from_responses_json(data).strip()
 
         if not answer:
@@ -603,6 +660,7 @@ class LLMRouter:
                 *history,
             ],
             "temperature": self.cfg.temperature,
+            "stream": False,
             "max_tokens": self.cfg.max_tokens,
         }
 
@@ -619,6 +677,8 @@ class LLMRouter:
 
         data = resp.json()
         self._remember_usage(data.get("usage"))
+        choice = (data.get("choices") or [{}])[0]
+        self._check_output_limit(choice.get("finish_reason"), (choice.get("message") or {}).get("content") or "")
         answer = self._extract_text_from_chat_json(data).strip()
 
         if not answer:

@@ -10,6 +10,7 @@
 # 3. Test examples (optional)
 # 4. File that stores the test code (required)
 from ..llm_clients import LLMRouter,LLMConfig
+from ..llm_clients.llm_router import OutputTokenLimitError
 import ast
 import re
 
@@ -22,12 +23,7 @@ def format_llm_error(exc: Exception) -> str:
 
 
 def normalize_repair_plan(text: str, prompt_language: str = "en") -> str:
-    """Normalize a complete response without rewriting the model's plan.
-
-    Keep operators, case, repeated steps, code blocks, and trailing constraints.
-    This experimental policy only restores transport whitespace markers; the
-    planning prompt remains responsible for asking for a concise plan.
-    """
+    """Preserve the mid-v0.0.10 plan, restoring only transport whitespace."""
     return normalize_tokenizer_artifacts(text).strip()
 
 
@@ -178,6 +174,7 @@ Error Message: {value("error")}
         context_entries: list[dict[str, Any]] | None = None,
         current_code: str = "",
         evaluation: dict[str, Any] | None = None,
+        plan_user_edited: bool = False,
     )->dict[str, Any]:
         if problem_statement=="":
             raise(RuntimeError("Input cannot be empty."))
@@ -303,6 +300,79 @@ Use these tests as concrete examples of the required behavior. Satisfy all of th
 - Return only the complete replacement Python implementation.
 - Do not include tests, markdown fences, usage examples, or explanations.
 """
+        if plan and plan_user_edited:
+            # Use a dedicated contract so the advisory-plan rules cannot weaken
+            # an explicitly edited and submitted user plan.
+            if self.prompt_language == "zh-CN":
+                user_prompt = f"""{context_block}按照以下人工修改并提交的计划重新生成 Python 实现。
+
+## 原始任务
+{problem_statement}
+
+## 当前代码
+```python
+{current_code.strip() or '(未提供)'}
+```
+
+## 公开测试（用于验证，不得硬编码）
+```python
+{test_code.strip() or '(未提供)'}
+```
+
+## 最近一次失败
+{self._build_failure_block(evaluation)}
+
+## 用户补充要求
+{additional_instruction.strip() or '(无)'}
+
+## 人工修改的计划：明确执行要求
+{plan}
+
+## 执行规则
+- 此计划由用户修改并提交，是必须逐项落实的执行要求，不是可选建议。
+- 严格实现每一步指定的算法、数据结构、约束和修改，不得以已有实现通过测试为由跳过。
+- 计划明确修改原始需求的部分，以人工计划为准；未涉及的需求保持不变。
+- 当前代码、历史计划和测试反馈只是参考，不能覆盖这份最新人工计划。
+- 不要自行重新规划，也不要悄悄换成不同的实现方向。
+- 输出前逐项核对计划与实现；补齐遗漏步骤，再返回完整替换代码。
+- 保留未被计划明确修改的名称、签名和已有正确行为。
+- 只输出完整 Python 实现，不包含测试、Markdown 代码围栏或解释。
+"""
+            else:
+                user_prompt = f"""{context_block}Regenerate the Python implementation using the following user-edited and submitted plan.
+
+## Original Task
+{problem_statement}
+
+## Current Code
+```python
+{current_code.strip() or '(not provided)'}
+```
+
+## Public Tests (validation examples; do not hardcode)
+```python
+{test_code.strip() or '(not provided)'}
+```
+
+## Latest Failure
+{self._build_failure_block(evaluation)}
+
+## Additional User Instruction
+{additional_instruction.strip() or '(none)'}
+
+## User-Edited Plan: Binding Execution Requirements
+{plan}
+
+## Execution Rules
+- The user edited and submitted this plan. Every step is mandatory, not optional advice.
+- Implement each specified algorithm, data structure, constraint, and change. Passing existing tests does not justify skipping a step.
+- Explicit revisions to the original requirements in this plan take precedence; preserve requirements the plan does not change.
+- Current code, historical plans, and test feedback are reference material and must not override this latest user-edited plan.
+- Do not replan or silently substitute a different implementation approach.
+- Before responding, check the implementation against every plan step and complete any missing steps.
+- Preserve names, signatures, and correct behavior unless explicitly changed by the plan.
+- Return only the complete replacement Python implementation, without tests, markdown fences, or explanation.
+"""
         trytime=4
         attempts=0
         code=""
@@ -351,6 +421,8 @@ Previous response:
                 last_error = format_llm_error(e)
                 generations.append(self.llmrouter.generation_info())
                 code=""
+                if isinstance(e, OutputTokenLimitError):
+                    break
             if code:
                 break
 
@@ -521,6 +593,8 @@ Previous response:
                 diagnostics.append({"attempt": attempts, **last_diagnostic})
                 generations.append(self.llmrouter.generation_info())
                 test_code = ""
+                if isinstance(e, OutputTokenLimitError):
+                    break
             if test_code:
                 break
 
@@ -758,15 +832,16 @@ Build the plan from the original task and current implementation state."""
 - 将原始任务视为最高优先级的规范。
 - 代码、测试、最近失败和用户补充要求只用于识别根本原因和必要修改。
 - 不要自行增加任务未要求的校验规则、异常、返回字段、数据结构或边界行为。
-- 先指出失败证据支持的根本原因，再给出准确的代码修改；只有确有必要时才增加独立的验证步骤。
-- 使用完成修复所需的最少步骤，最多 5 步；每步只写一句简短、具体且可执行的话。
-- 不要重述题目、测试或错误输出，不要换一种说法重复同一项修改。
-- 保留已经正确的行为，不要罗列与当前失败无关的边界情况或重构建议。
+- 聚焦当前失败的根本原因，保留已经正确的行为。
+- 当任务要求根据某个数值字段的总和选择最高分组时，计划必须要求按分组累计该字段，不能使用出现次数。若并列时选择字典序最小的分组，必须要求使用 `min(scores, key=lambda group: (-scores[group], group))` 等明确比较；排除普通 `max`、其他指标和首次出现顺序。
+- 给出 4 至 8 个互不重复且可以执行的步骤。
+- 不要重复或换一种说法重述相同的步骤。
+- 说明实现策略和必要的边界情况，不要穷举无关的无效输入。
 - 只按下面的 Markdown 格式输出计划，不要输出实现代码或计划之外的解释。
 
 ## 计划
-1. <根本原因和准确修改>
-2. <仅在必要时写针对性验证>
+1. ...
+2. ...
 """
         else:
             user_prompt=f"""{context_block}{instruction_block}Produce a concise repair plan for the current failed implementation.
@@ -790,41 +865,60 @@ Build the plan from the original task and current implementation state."""
 - Treat the original task as the authoritative specification.
 - Use the code, tests, latest failure, and user instruction only to identify the root cause and necessary changes.
 - Do not invent validation rules, exceptions, return fields, data structures, or edge-case behavior that the task does not require.
-- State the root cause supported by the failure evidence, then the exact code change; add a separate verification step only when it is necessary.
-- Use the fewest steps needed and never more than 5. Each step must be one short, concrete, actionable sentence.
-- Do not restate the task, tests, or error output, and do not repeat the same change in different words.
-- Preserve behavior that is already correct. Omit unrelated edge cases and refactoring suggestions.
+- Focus on the root cause of the current failure and preserve behavior that is already correct.
+- When the task selects a top group by a total numeric field, require accumulation of that field per group rather than occurrence counts. If ties choose the lexicographically smallest group, require an explicit comparison such as `min(scores, key=lambda group: (-scores[group], group))`; reject plain `max`, a different metric, and first-seen order.
+- Produce 4 to 8 distinct, actionable steps.
+- Do not repeat or restate equivalent steps.
+- Describe the implementation strategy and necessary edge cases, not an exhaustive checklist of possible invalid inputs.
 - Output only the plan in the markdown format below. Do not output implementation code or an explanation outside the plan.
 
 ## Plan
-1. <root cause and exact change>
-2. <focused verification only if needed>
+1. ...
+2. ...
 """
         trytime=4
         attempts=0
         plan=""
         raw_response = ""
         last_error = ""
+        generations: list[dict[str, Any]] = []
         while trytime>0:
             trytime-=1
             attempts+=1
             try:
                 raw_response = self.llmrouter.generate(user_prompt=user_prompt)
                 plan = normalize_repair_plan(raw_response, self.prompt_language)
+                generations.append(self.llmrouter.generation_info())
             except Exception as e:
                 last_error = format_llm_error(e)
+                generations.append(self.llmrouter.generation_info())
                 plan=""
+                if isinstance(e, OutputTokenLimitError):
+                    raw_response = e.partial_response
+                    # Plans are advisory, so a nonempty partial plan may still
+                    # guide the next Auto iteration. Code/tests remain strict.
+                    plan = normalize_repair_plan(raw_response, self.prompt_language)
+                    if plan:
+                        generations[-1]["partial_plan_accepted"] = True
+                    break
             if plan:
                 break
 
         return {
             "plan": plan.strip(),
             "raw_response": raw_response,
-            "plan_processing": "whitespace_only",
             "attempts": attempts,
             "prompt": user_prompt,
             "ok": bool(plan.strip()),
             "used_error_feedback": use_error_feedback,
+            "generation": {
+                "attempts": generations,
+                "duration_ms": sum(int(item.get("duration_ms", 0) or 0) for item in generations),
+                "usage": {
+                    key: sum(int((item.get("usage") or {}).get(key, 0) or 0) for item in generations)
+                    for key in ("input_tokens", "output_tokens", "total_tokens")
+                },
+            },
             "error": "" if plan.strip() else (last_error or "Model response did not contain a plan."),
         }
         

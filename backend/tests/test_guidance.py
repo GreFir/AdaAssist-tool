@@ -59,7 +59,7 @@ class ExecutorGuidanceTests(unittest.TestCase):
         self.assertIn("Do not mutate the input.", code_router.prompts[0])
         self.assertIn("Do not mutate the input.", plan_router.prompts[0])
 
-    def test_plan_restores_tokenizer_markers_without_dropping_sections(self) -> None:
+    def test_plan_restores_tokenizer_markers_without_dropping_content(self) -> None:
         raw_plan = "ĊĊ##ĠPlanĊ1.ĠInspect input.ĊĊ##ĠCodeĊkeep this section"
         executor, _ = executor_with([raw_plan])
 
