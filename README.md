@@ -132,8 +132,8 @@ Example:
 Notes:
 
 - `maxTokens` is the **maximum output tokens for workflow code generation**, accepted range 128–32768; old profiles without this field default to **1024**.
-- The plan/test stages retain shorter limits (up to 768 tokens). The inline completion model has its own independent maximum in Settings → Runtime.
-- Saving a profile changes the next workflow session's budget; already-running sessions retain the configuration with which they were created.
+- The configured limit now applies to **all model output stages**: code generation, test generation, and repair planning. The inline completion model has its own independent maximum in Settings → Runtime.
+- Saving the profile also updates a matching **idle** active workflow session without clearing its code, tests, or plan. A request already running retains its original budget; model/endpoint changes still require a new session.
 - `provider` supports `other`, `openai`, `claude`, `ollama`, and `vllm`.
 - `other`, `ollama`, and `vllm` require an OpenAI-compatible `baseUrl`.
 - OpenAI and Claude can use their default official endpoints when `baseUrl` is empty.
