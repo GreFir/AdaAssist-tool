@@ -8,6 +8,7 @@
       inlineSettingsUnsaved: 'Unsaved changes — save to apply.',
       inlineSettingsSaved: 'Inline completion settings saved.',
       inlineSettingsFailed: 'Unable to save inline settings.',
+      composerMode: 'Task mode', composerModeLocked: 'Mode is locked for this task. Choose New Task to change it.',
       modelTab: 'Models', completionTab: 'Completion',
       profileEndpointRequired: 'This provider requires a Base URL.',
       keyOptionalHint: 'Optional for local vLLM and Ollama servers.',
@@ -85,6 +86,7 @@
       inlineSettingsUnsaved: '修改尚未保存，请点击保存应用。',
       inlineSettingsSaved: '行内补全设置已保存。',
       inlineSettingsFailed: '行内补全设置保存失败。',
+      composerMode: '任务模式', composerModeLocked: '当前任务的模式已锁定，创建新任务后可切换。',
       modelTab: '模型', completionTab: '补全',
       profileEndpointRequired: '当前服务类型需要填写 Base URL。',
       keyOptionalHint: '本地 vLLM 和 Ollama 通常不需要 API Key。',
@@ -306,6 +308,9 @@
   const modelSummary = document.getElementById('modelSummary');
   const testsSummary = document.getElementById('testsSummary');
   const executionModeSelect = document.getElementById('executionModeSelect');
+  const composerModeRow = document.getElementById('composerModeRow');
+  const composerInteractiveModeBtn = document.getElementById('composerInteractiveModeBtn');
+  const composerAutoModeBtn = document.getElementById('composerAutoModeBtn');
   const workflowModeHint = document.getElementById('workflowModeHint');
   const contextEnabledInput = document.getElementById('contextEnabledInput');
   const profileNotice = document.getElementById('profileNotice');
@@ -3208,6 +3213,22 @@
     button.setAttribute('aria-busy', String(busy));
   }
 
+  function syncComposerMode() {
+    const locked = state.running || Boolean(state.session);
+    const currentMode = executionModeSelect.value === 'auto' ? 'auto' : 'continue';
+    if (composerModeRow) composerModeRow.classList.toggle('is-locked', locked);
+    [[composerInteractiveModeBtn, 'continue', 'interactiveHint'],
+      [composerAutoModeBtn, 'auto', 'autoHint']].forEach(function (setting) {
+      const button = setting[0];
+      if (!button) return;
+      const active = currentMode === setting[1];
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+      button.disabled = locked;
+      button.title = locked ? t('composerModeLocked') : t(setting[2]);
+    });
+  }
+
   function syncActionButtons() {
     const hasSession = Boolean(state.session);
     const taskPassed = Boolean(state.session && state.session.passed);
@@ -3225,6 +3246,7 @@
       workflowModeHint.textContent = isInteractiveSelected() ? t('interactiveHint') : t('autoHint');
     }
     executionModeSelect.disabled = state.running || hasSession;
+    syncComposerMode();
     taskProfileSelect.disabled = state.running || hasSession || !state.profiles.length;
     const currentProfile = selectedProfile();
     taskProfileSelect.title = (currentProfile ? currentProfile.name + '\n' : '')
@@ -3571,6 +3593,21 @@
       else return;
       event.preventDefault();
       switchSettingsTab(settingsTabButtons[nextIndex].dataset.settingsTab, true);
+    });
+  });
+
+  [[composerInteractiveModeBtn, 'continue'], [composerAutoModeBtn, 'auto']].forEach(function (item) {
+    const button = item[0];
+    if (!button) return;
+    button.addEventListener('click', function () {
+      if (state.running || state.session) return;
+      if (executionModeSelect.value !== item[1]) {
+        executionModeSelect.value = item[1];
+        // The Settings selector is the single source of truth for persisted
+        // preferences and the actual runWorkflow request.
+        executionModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      problemInput.focus();
     });
   });
 
@@ -4083,6 +4120,9 @@
     }
   });
 
+  // Reflect saved mode immediately, before the backend's first state message.
+  executionModeSelect.value = state.preferredWorkflowMode;
+  contextEnabledInput.checked = state.preferredContextEnabled;
   applyTranslations();
   switchPage('task');
 	switchSettingsTab('workflow');
