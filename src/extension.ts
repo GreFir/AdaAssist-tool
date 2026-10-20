@@ -1355,7 +1355,12 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.recordStudyEvent(message);
 					break;
 				}
-				case 'clearWorkflowSession': {
+				case 'restoreArchivedSession': {
+                    const sessionId = typeof message.sessionId === 'string' ? message.sessionId : '';
+                    await this.restoreArchivedSession(sessionId);
+                    break;
+                }
+                case 'clearWorkflowSession': {
 					await this.clearWorkflowSession(message.reason === 'user_confirmed' ? 'user_confirmed' : 'new_task');
 					break;
 				}
@@ -2850,6 +2855,69 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.postOperationError(message, { scope: 'tests', action: 'save_tests' }, 'Failed to save tests');
 		}
 	}
+
+	private async restoreArchivedSession(sessionId: string): Promise<void> {
+        if (this.running || this.activeOperation) {
+            void vscode.window.showWarningMessage('当前任务正在运行，请等待运行结束后再恢复历史会话。');
+            return;
+        }
+        const snapshot = this.archivedSessions.find(session => session.session_id === sessionId);
+        if (!snapshot) {
+            void vscode.window.showWarningMessage('没有找到该历史 Session。');
+            return;
+        }
+        if (this.activeSession?.session_id) {
+            const action = await vscode.window.showWarningMessage(
+                '恢复历史任务前，需要先归档当前任务。是否继续？',
+                { modal: true }, '归档并恢复'
+            );
+            if (action !== '归档并恢复') { return; }
+            await this.clearWorkflowSession('new_task');
+        }
+        const profile = this.getActiveProfile();
+        if (!profile) {
+            void vscode.window.showErrorMessage('无法恢复：请先配置可用的模型 Profile。');
+            return;
+        }
+        try {
+            let restored: BackendSessionState | undefined;
+            try {
+                const result = await this.backendServer.request<BackendResponse>(
+                    `/api/sessions/${encodeURIComponent(sessionId)}`
+                );
+                restored = result.session;
+            } catch {
+                const result = await this.backendServer.request<BackendResponse>(
+                    '/api/sessions/restore', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            snapshot,
+                            llm: profileToRequestConfig(profile)
+                        })
+                    }
+                );
+                restored = result.session;
+            }
+            if (!restored) { throw new Error('后端没有返回恢复的 Session。'); }
+            this.activeSession = restored;
+            this.archivedSessions = this.archivedSessions.filter(item => item.session_id !== sessionId);
+            await this.context.workspaceState.update('adaassist.archivedSessions.v1', this.archivedSessions);
+            this.workflowMode = 'continue';
+            this.interactiveState = 'idle';
+            this.clearResumeState();
+            this.interruptRequested = false;
+            this.lastSessionSnapshot = '';
+            this.activeStudyTaskId = '';
+            this.studyTaskEnded = true;
+            await this.postState();
+            this.postSessionState();
+            this.appendUiLog('info', `Restored archived session ${sessionId}`);
+        } catch (error) {
+            void vscode.window.showErrorMessage(
+                `恢复历史 Session 失败：${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
 
 	private async clearWorkflowSession(reason: 'new_task' | 'user_confirmed' = 'new_task'): Promise<void> {
 		this.stopSessionPolling();
