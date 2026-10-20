@@ -2915,6 +2915,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
             this.studyTaskEnded = true;
             await this.postState();
             this.postSessionState();
+            this.postMessage({ type: 'switchPage', page: 'task' });
             this.appendUiLog('info', `Restored archived session ${sessionId}`);
         } catch (error) {
             void vscode.window.showErrorMessage(
