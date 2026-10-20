@@ -4120,6 +4120,9 @@
     }
   });
 
+  // Reflect saved mode immediately, before the backend's first state message.
+  executionModeSelect.value = state.preferredWorkflowMode;
+  contextEnabledInput.checked = state.preferredContextEnabled;
   applyTranslations();
   switchPage('task');
 	switchSettingsTab('workflow');
