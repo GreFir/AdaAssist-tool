@@ -1348,6 +1348,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.interruptWorkflow();
 					break;
 				}
+				case 'switchPausedAutoToInteractive': {
+					await this.switchPausedAutoToInteractive();
+					break;
+				}
 				case 'resumeWorkflow': {
 					await this.resumeWorkflow(context, this.parseActionRequest(message));
 					break;
@@ -1803,6 +1807,53 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				this.appendUiLog('error', `Failed to request interrupt: ${error instanceof Error ? error.message : String(error)}`);
 			}
 		}
+	}
+
+	private async switchPausedAutoToInteractive(): Promise<void> {
+		if (this.running || this.workflowMode !== 'auto' || this.resumeState?.kind !== 'auto' || !this.activeSession || this.activeSession.passed) {
+			return;
+		}
+		const session = this.activeSession;
+		const lastStageEvent = [...session.events].reverse().find(event =>
+			['generate', 'regenerate', 'debug_fix', 'evaluate', 'plan', 'tests'].includes(event.stage)
+			&& event.status !== 'running');
+		const stage = lastStageEvent?.stage ?? session.current_stage;
+		const base: ActionRequestState = {
+			problem: session.problem_statement,
+			testText: session.test_text || session.resolved_test_code,
+			testMode: 'manual',
+			useErrorFeedback: true,
+			contextEnabled: session.context_enabled,
+			maxRounds: session.max_rounds,
+			resolvedTestCode: session.resolved_test_code,
+			testDescription: session.test_description,
+			additionalInstruction: session.additional_instruction
+		};
+		if (stage === 'plan' && session.current_plan.trim()) {
+			this.interactiveState = 'await_plan';
+			this.resumeState = undefined;
+		} else if (session.latest_evaluation && !session.latest_evaluation.passed
+			&& (stage === 'evaluate' || stage === 'debug_fix')) {
+			this.interactiveState = 'await_failure_choice';
+			this.resumeState = undefined;
+		} else if (session.current_code.trim()) {
+			const last = [...session.events].reverse().find(event =>
+				['generate', 'regenerate', 'debug_fix'].includes(event.stage) && event.status === 'completed');
+			this.interactiveState = 'await_code_review';
+			this.resumeState = { kind: 'code-review', request: { ...base, codeOverride: session.current_code, codeEventId: last?.id } };
+		} else {
+			this.interactiveState = 'await_test_setup';
+			this.resumeState = {
+				kind: 'tests-confirmation',
+				request: { ...base, executionMode: 'continue' },
+				restartAfterTests: false
+			};
+		}
+		this.workflowMode = 'continue';
+		this.interruptRequested = false;
+		await this.recordStudyEvent({ eventType: 'mode_switch', metadata: { from: 'auto', to: 'interactive', paused_stage: stage } });
+		await this.postState();
+		this.postSessionState();
 	}
 
 	private async continueAfterTestsConfirmation(

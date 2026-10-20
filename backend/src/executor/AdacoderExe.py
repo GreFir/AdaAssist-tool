@@ -17,6 +17,7 @@ import re
 from ..utils import diagnose_code_output, normalize_test_output, normalize_tokenizer_artifacts, preprocess
 import traceback
 from typing import Any
+from .unittest_adapter import evaluate_unittest_tests
 
 def format_llm_error(exc: Exception) -> str:
     return f"{type(exc).__name__}: {exc}"
@@ -691,6 +692,22 @@ Previous response:
                 "failed_test": failed_test,
                 "test_line": test_line,
             }
+
+        unittest_classes = [
+            node.name for node in test_tree.body
+            if isinstance(node, ast.ClassDef)
+            and any(
+                (isinstance(base, ast.Attribute) and base.attr == "TestCase")
+                or (isinstance(base, ast.Name) and base.id == "TestCase")
+                for base in node.bases
+            )
+        ]
+        if unittest_classes:
+            try:
+                evaluation = evaluate_unittest_tests(compiled_tests, namespace, unittest_classes)
+                return evaluation
+            except Exception as exc:
+                return failure_result(exc)
 
         direct_assertions = [node for node in test_tree.body if isinstance(node, ast.Assert)]
         has_future_import = any(
