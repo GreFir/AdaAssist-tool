@@ -1136,6 +1136,46 @@ class SessionStore:
             self._sessions[session.session_id] = session
         return session
 
+    def restore_session(self, snapshot: dict[str, Any], llm_config: LLMConfig) -> WorkflowSession:
+        """Rebuild a saved session with the same identity and execution state."""
+        session_id = str(snapshot.get("session_id", "")).strip()
+        problem = str(snapshot.get("problem_statement", "")).strip()
+        if not session_id or not problem:
+            raise ValueError("A valid session ID and original requirement are required.")
+        with self._lock:
+            existing = self._sessions.get(session_id)
+            if existing is not None:
+                return existing
+            session = WorkflowSession(
+                problem_statement=problem,
+                test_text=str(snapshot.get("test_text", "")),
+                llm_config=llm_config,
+                test_mode="generate" if snapshot.get("test_mode") == "generate" else "manual",
+                context_enabled=bool(snapshot.get("context_enabled", False)),
+                max_rounds=max(1, min(10, int(snapshot.get("max_rounds", 3)))),
+                prompt_language="zh-CN" if snapshot.get("prompt_language") == "zh-CN" else "en",
+                test_description=str(snapshot.get("test_description", "")),
+                additional_instruction=str(snapshot.get("additional_instruction", "")),
+                session_id=session_id,
+            )
+            for field_name in ("status", "current_stage", "current_code", "current_plan",
+                               "resolved_test_code", "created_at", "updated_at"):
+                value = snapshot.get(field_name)
+                if isinstance(value, str):
+                    setattr(session, field_name, value)
+            for field_name in ("passed", "plan_user_edited", "resolved_tests_confirmed"):
+                setattr(session, field_name, bool(snapshot.get(field_name, False)))
+            for field_name in ("attempt_count", "regeneration_count"):
+                setattr(session, field_name, max(0, int(snapshot.get(field_name, 0))))
+            session.latest_evaluation = snapshot.get("latest_evaluation")
+            for field_name in ("events", "study_events", "context_entries"):
+                value = snapshot.get(field_name)
+                if isinstance(value, list):
+                    setattr(session, field_name, value)
+            session.interrupt_requested = False
+            self._sessions[session_id] = session
+            return session
+
     def get_session(self, session_id: str) -> WorkflowSession:
         with self._lock:
             session = self._sessions.get(session_id)
