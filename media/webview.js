@@ -831,10 +831,8 @@
       state.logEntries = data.logEntries;
     }
     state.session = data.session && typeof data.session === 'object' ? data.session : null;
-    if (state.session && state.passedTaskConfirmedContinue !== state.session.session_id) {
-      // A restored passed task is ready for follow-up Guidance rather than a new-task prompt.
-      const restoredInArchive = (state.archivedSessions || []).some(item => item.session_id === state.session.session_id);
-      if (restoredInArchive) state.passedTaskConfirmedContinue = state.session.session_id;
+    if (state.session && state.session.session_id === data.restoredSessionId) {
+      state.passedTaskConfirmedContinue = state.session.session_id;
     }
     if (Array.isArray(data.archivedSessions)) {
       const previousCount = state.archivedSessions.length;
