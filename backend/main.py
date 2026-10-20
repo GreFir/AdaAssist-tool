@@ -233,12 +233,7 @@ def list_sessions() -> dict[str, Any]:
 
 @app.post("/api/sessions")
 def create_session(request: CreateSessionRequest) -> dict[str, Any]:
-    llm_config = LLMConfig(
-        provider=request.llm.provider,  # type: ignore[arg-type]
-        base_url=request.llm.base_url,
-        api_key=request.llm.api_key,
-        model=request.llm.model,
-    )
+    llm_config = make_llm_config(request.llm)
     session = store.create_session(
         problem_statement=request.problem,
         test_text=request.test_text,
