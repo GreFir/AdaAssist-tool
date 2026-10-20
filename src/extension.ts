@@ -4886,6 +4886,13 @@ async function insertGeneratedCode(code: string): Promise<void> {
 						</button>
 					</div>
 					<div class="composer-input-shell">
+						<div class="composer-mode-row" id="composerModeRow">
+							<span class="composer-mode-label" id="composerModeLabel" data-i18n="composerMode">Mode</span>
+							<div class="composer-mode-switch" role="group" aria-labelledby="composerModeLabel">
+								<button class="composer-mode-option active" id="composerInteractiveModeBtn" type="button" aria-pressed="true" data-i18n="interactive">Interactive</button>
+								<button class="composer-mode-option" id="composerAutoModeBtn" type="button" aria-pressed="false" data-i18n="auto">Auto</button>
+							</div>
+						</div>
 						<textarea id="problemInput" placeholder="Describe the coding task, constraints, expected behavior, and anything the model must preserve." data-i18n-placeholder="problemPlaceholder"></textarea>
 						<div class="composer-input-toolbar">
 							<div class="composer-input-actions">
