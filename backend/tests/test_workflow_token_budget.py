@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 
 from main import CreateSessionRequest, LLMSettingsRequest, create_session, make_llm_config
 
@@ -26,9 +26,7 @@ class WorkflowTokenBudgetTests(unittest.TestCase):
 
     def test_patch_session_budget_uses_existing_session(self) -> None:
         from main import UpdateSessionRequest, update_session
-        fake_session = Mock()
-        fake_session.lock.__enter__ = Mock(return_value=None)
-        fake_session.lock.__exit__ = Mock(return_value=None)
+        fake_session = MagicMock()
         fake_session.to_dict.return_value = {"session_id": "test-existing-session"}
         with patch("main.get_session_or_404", return_value=fake_session):
             response = update_session("test-existing-session", UpdateSessionRequest(max_tokens=4096))
