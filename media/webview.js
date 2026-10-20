@@ -3379,6 +3379,7 @@
         break;
       case 'runState':
         state.running = Boolean(data.running);
+        if (!state.running) promptForPassedTask();
         state.runningLabel = typeof data.label === 'string' ? data.label : '';
         renderComposerStatus();
         renderOperationFeedback();
@@ -3390,6 +3391,7 @@
         const scope = typeof data.scope === 'string' ? data.scope : 'workflow';
         state.running = Boolean(data.running);
         state.runningLabel = typeof data.label === 'string' ? data.label : '';
+        if (!state.running) promptForPassedTask();
         if (state.running) {
           state.operationStatus = 'running';
           state.operationMessage = state.runningLabel || t('running');
