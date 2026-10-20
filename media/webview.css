@@ -800,6 +800,11 @@ textarea {
   cursor: pointer;
 }
 .composer-icon-action svg { width: 17px; height: 17px; }
+.composer-icon-action img { width: 17px; height: 17px; display: block; }
+.composer-icon-action.is-active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+}
 .composer-icon-action:hover:not(:disabled) {
   color: var(--fg);
   background: var(--vscode-toolbar-hoverBackground, color-mix(in srgb, var(--fg) 8%, transparent));

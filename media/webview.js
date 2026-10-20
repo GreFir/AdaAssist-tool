@@ -195,6 +195,7 @@
   const logsPage = document.getElementById('logsPage');
   const showOutputBtn = document.getElementById('showOutputBtn');
   const openTestsBtn = document.getElementById('openTestsBtn');
+  const composerTestsBtn = document.getElementById('composerTestsBtn');
   const openSettingsBtn = document.getElementById('openSettingsBtn');
 	const settingsTabButtons = Array.from(document.querySelectorAll('[data-settings-tab]'));
 	const settingsTabPanels = Array.from(document.querySelectorAll('[data-settings-panel]'));
@@ -524,7 +525,7 @@
       testsDrawer.classList.toggle('hidden', !state.testsDrawerOpen);
       testsDrawer.setAttribute('aria-hidden', state.testsDrawerOpen ? 'false' : 'true');
     }
-    [openTestsBtn, testsDrawerToggleBtn].forEach(function (button) {
+    [openTestsBtn, composerTestsBtn, testsDrawerToggleBtn].forEach(function (button) {
       if (!button) {
         return;
       }
@@ -3445,12 +3446,17 @@
     renderAll();
   });
 
-  if (openTestsBtn) {
-    openTestsBtn.addEventListener('click', function () {
-      switchPage('task');
-      setTestsDrawerOpen(!state.testsDrawerOpen, { focusEditor: !state.testsDrawerOpen });
-    });
+  let lastTestsDrawerTrigger = openTestsBtn;
+  function toggleTestsFromButton(button) {
+    lastTestsDrawerTrigger = button;
+    switchPage('task');
+    setTestsDrawerOpen(!state.testsDrawerOpen, { focusEditor: !state.testsDrawerOpen });
   }
+
+  if (openTestsBtn) {
+    openTestsBtn.addEventListener('click', function () { toggleTestsFromButton(openTestsBtn); });
+  }
+  composerTestsBtn.addEventListener('click', function () { toggleTestsFromButton(composerTestsBtn); });
 
   if (testsDrawerToggleBtn) {
     testsDrawerToggleBtn.addEventListener('click', function () {
@@ -3497,8 +3503,8 @@
     }
     event.preventDefault();
     setTestsDrawerOpen(false);
-    if (openTestsBtn) {
-      openTestsBtn.focus();
+    if (lastTestsDrawerTrigger) {
+      lastTestsDrawerTrigger.focus();
     }
   });
 

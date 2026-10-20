@@ -4911,6 +4911,9 @@ async function insertGeneratedCode(code: string): Promise<void> {
 								<button class="composer-icon-action" id="useSelectionForProblemBtn" type="button" title="Use Selection" aria-label="Use Selection" data-i18n-title="selectionToPrompt" data-i18n-aria-label="selectionToPrompt">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M4 9h8M4 13h5M15 14v7M11.5 17.5h7"/></svg>
 								</button>
+								<button class="composer-icon-action" id="composerTestsBtn" type="button" title="Open Tests" aria-label="Open Tests" aria-controls="testsDrawer" aria-expanded="false" aria-pressed="false" data-i18n-title="openTests" data-i18n-aria-label="openTests">
+									<img src="${testsIconUri}" alt="" />
+								</button>
 								<button class="composer-icon-action" id="clearSessionBtn" type="button" title="New Task" aria-label="New Task" data-i18n-title="newTask" data-i18n-aria-label="newTask">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M13 3l7 7M13 3v7h7"/><path d="M17 3v6M14 6h6"/></svg>
 								</button>
