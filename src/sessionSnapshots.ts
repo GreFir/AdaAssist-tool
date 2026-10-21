@@ -67,6 +67,30 @@ export class SessionSnapshotStore<T extends IdentifiedSession, R = unknown> {
 		return [...this.known];
 	}
 
+	/**
+	 * Lightweight search metadata for saved sessions. Diagnostic history expires,
+	 * but full snapshots remain searchable by their task requirements.
+	 */
+	public async listSummaries(): Promise<Array<{
+		sessionId: string; requirement: string; updatedAt: string; passed: boolean;
+	}>> {
+		const summaries = await Promise.all(this.knownSessionIds().map(async id => {
+			const saved = await this.load(id);
+			if (!saved) { return undefined; }
+			const session = saved.session as IdentifiedSession & {
+				updated_at?: string; passed?: boolean;
+			};
+			return {
+				sessionId: id,
+				requirement: session.problem_statement,
+				updatedAt: session.updated_at || saved.savedAt,
+				passed: session.passed === true
+			};
+		}));
+		return summaries.filter((item): item is NonNullable<typeof item> => Boolean(item))
+			.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+	}
+
 	public async save(record: SavedWorkflowSession<T, R>): Promise<void> {
 		const id = record.session.session_id;
 		if (!validSessionId(id) || !record.session.problem_statement.trim()) {
