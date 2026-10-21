@@ -114,6 +114,36 @@ jobs:
             fi
             echo "publish=true" >> "${GITHUB_OUTPUT}"
           fi
+      - name: Prepare release notes
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          version = json.loads(pathlib.Path("package.json").read_text())["version"]
+          changelog = pathlib.Path("CHANGELOG.md").read_text()
+          lines = changelog.splitlines()
+          starts = [i for i, line in enumerate(lines) if line.startswith(f"## [{version}]")]
+          if len(starts) != 1:
+              raise SystemExit(f"Expected one CHANGELOG entry for {version}")
+          start = starts[0]
+          end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## [")), len(lines))
+          details = "\n".join(lines[start:end]).strip()
+          notes = (
+              f"# AdaAssist v{version}\n\n"
+              "Download the `adaassist-" + version + ".vsix` file below and install it via "
+              "**VS Code → Extensions → ··· → Install from VSIX…**.\n\n"
+              "Alternatively, run `code --install-extension adaassist-" + version + ".vsix`.\n\n"
+              + details + "\n\n"
+              "**Important:** VSIX includes the Python backend source, but not Python 3.12+, "
+              "its dependencies, a configured LLM endpoint, or model weights. "
+              "Read [setup instructions](https://github.com/GreFir/AdaAssist-tool#readme) before use. "
+              "For integrity verification, compare the downloaded VSIX checksum with `SHA256SUMS.txt`.\n"
+          )
+          pathlib.Path("RELEASE_NOTES.md").write_text(notes)
+          PY
       - name: Publish VSIX and SHA-256 checksum
         if: steps.release.outputs.publish == 'true'
         uses: softprops/action-gh-release@v2
@@ -124,7 +154,7 @@ jobs:
           draft: false
           prerelease: false
           make_latest: true
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md
           fail_on_unmatched_files: true
           files: |
             adaassist-*.vsix
