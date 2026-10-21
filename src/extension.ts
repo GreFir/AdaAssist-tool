@@ -1594,6 +1594,11 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.recordStudyEvent(message);
 					break;
 				}
+				case 'exportSessionJson': {
+					const sessionId = typeof message.sessionId === 'string' ? message.sessionId : '';
+					await this.exportSessionJson(sessionId);
+					break;
+				}
 				case 'restoreArchivedSession': {
                     const sessionId = typeof message.sessionId === 'string' ? message.sessionId : '';
                     await this.restoreArchivedSession(sessionId);
@@ -1683,6 +1688,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				}
 				case 'showOutput': {
 					this.outputChannel.show(true);
+					break;
+				}
+				case 'requestHistoryIndex': {
+					await this.postHistoryIndex();
 					break;
 				}
 				case 'requestLogHistory': {
@@ -3237,6 +3246,65 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.postMessage({ type: 'testsSaveResult', ok: false, requestId, message });
 			this.postOperationError(message, { scope: 'tests', action: 'save_tests' }, 'Failed to save tests');
 		}
+	}
+
+
+	private async postHistoryIndex(): Promise<void> {
+		const saved = await this.sessionSnapshotStore.listSummaries();
+		const byId = new Map(saved.map(item => [item.sessionId, item]));
+		const all = [...this.archivedSessions, ...(this.activeSession ? [this.activeSession] : [])];
+		for (const session of all) {
+			if (!byId.has(session.session_id)) {
+				byId.set(session.session_id, {
+					sessionId: session.session_id, requirement: session.problem_statement,
+					updatedAt: session.updated_at, passed: session.passed
+				});
+			}
+		}
+		this.postMessage({ type: 'historyIndex', sessions: [...byId.values()]
+			.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)) });
+	}
+
+	private async exportSessionJson(sessionId: string): Promise<void> {
+		if (!/^[a-zA-Z0-9_-]{8,128}$/.test(sessionId)) {
+			void vscode.window.showWarningMessage('Invalid session ID.');
+			return;
+		}
+		// Prefer the latest in-memory state; otherwise load the full persisted
+		// snapshot. Never export the short diagnostic-only history as a session.
+		const current = this.activeSession?.session_id === sessionId ? this.activeSession : undefined;
+		if (current) { await this.persistActiveSessionSnapshot(); }
+		const stored = await this.sessionSnapshotStore.load(sessionId);
+		const legacy = this.archivedSessions.find(session => session.session_id === sessionId);
+		const session = current ?? stored?.session ?? legacy;
+		if (!session) {
+			void vscode.window.showWarningMessage('No complete JSON snapshot is available for this session.');
+			return;
+		}
+		const exportData = stored ? {
+			...stored, session,
+			...(current ? {
+				workflowMode: this.workflowMode, interactiveState: this.interactiveState,
+				...(this.resumeState ? { resumeState: this.resumeState } : {})
+			} : {})
+		} : {
+			schemaVersion: 1, savedAt: new Date().toISOString(),
+			session, workflowMode: current ? this.workflowMode : 'continue',
+			interactiveState: current ? this.interactiveState : session.passed ? 'done' : 'idle',
+			...(current && this.resumeState ? { resumeState: this.resumeState } : {})
+		};
+		const uri = await vscode.window.showSaveDialog({
+			title: 'Export AdaAssist Session JSON',
+			defaultUri: vscode.Uri.file(path.join(
+				getWorkspaceRootPath() || this.context.globalStorageUri.fsPath,
+				'adaassist-session-' + sessionId.slice(0, 8) + '.json'
+			)),
+			filters: { JSON: ['json'] }
+		});
+		if (!uri) { return; }
+		await vscode.workspace.fs.writeFile(uri,
+			Buffer.from(JSON.stringify(exportData, null, 2), 'utf8'));
+		void vscode.window.showInformationMessage('Session JSON exported successfully.');
 	}
 
 	private async restoreArchivedSession(sessionId: string): Promise<void> {
@@ -5275,6 +5343,7 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<button class="btn subtle" id="backFromLogsBtn" type="button" data-i18n="back">Back</button>
 				</div>
 				<div class="logs-toolbar">
+					<input id="historySearchInput" class="history-search-input" type="search" placeholder="Search history / 搜索历史" aria-label="Search history" autocomplete="off" />
 					<button class="btn secondary" id="refreshLogsBtn" type="button" data-i18n="refreshLogs">Refresh</button>
 					<button class="btn secondary" id="openRawOutputBtn" type="button" data-i18n="openOutput">Open VS Code Output</button>
 				</div>
