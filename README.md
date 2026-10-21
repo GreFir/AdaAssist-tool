@@ -27,12 +27,12 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 **Alternative, if the `code` command is available:**
 
 ```bash
-code --install-extension adaassist-0.0.14.vsix
+code --install-extension adaassist-1.0.0.vsix
 ```
 
 Replace the filename with the VSIX you downloaded. A VSIX installation is local; **VS Code does not automatically update manually installed VSIX extensions**. Download a newer VSIX to upgrade.
 
-> **No VSIX in Releases yet?** The [VSIX packaging workflow](https://github.com/GreFir/AdaAssist-tool/actions/workflows/package-vsix.yml) generates installable files under **Artifacts** after a successful build. GitHub may require you to sign in to download an Actions artifact, which is a ZIP containing the VSIX. Tagged releases will attach the VSIX directly to the release page. You can also [build a VSIX locally](#-build-from-source).
+> **Trouble downloading from Releases?** The [VSIX packaging workflow](https://github.com/GreFir/AdaAssist-tool/actions/workflows/package-vsix.yml) also provides installable files under **Artifacts** after a successful build. Download and unzip `adaassist-vsix` (GitHub sign-in may be required), or [build locally](#-build-from-source).
 
 ### One-time runtime setup
 
@@ -151,7 +151,7 @@ npm run package:vsix
 
 The command compiles the extension and creates `adaassist-<version>.vsix` in the repository root. To debug the extension, run `npm run compile` and press **F5** in VS Code. Node.js **22** is used by the CI build. See [Developer guide](docs/DEVELOPMENT.md).
 
-**For maintainers:** The [GitHub Actions VSIX workflow](.github/workflows/package-vsix.yml) packages and checks a VSIX on pull requests, pushes to `main`, and manual runs. Pushing a version tag matching `package.json` (for example `v0.0.14`) creates a GitHub Release with the VSIX and a SHA-256 checksum. Publishing a release is a separate action; the presence of this workflow does not mean a release already exists.
+**For maintainers:** The [GitHub Actions VSIX workflow](.github/workflows/package-vsix.yml) packages and checks a VSIX on pull requests, pushes to `main`, and manual runs. A matching version tag (for example `v1.0.0`) publishes the VSIX plus a SHA-256 checksum to GitHub Releases. A `main` push marked `[publish-vsix]` also publishes the current package version after successful packaging; ordinary pushes never publish automatically.
 
 ## 🔬 Research and reproducibility
 
