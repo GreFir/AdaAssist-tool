@@ -8,7 +8,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.0.0] - 2026-10-20
 
-First officially distributed AdaAssist VSIX release (GitHub Releases).
+First officially distributed AdaAssist VSIX release (GitHub Releases). The installation asset was corrected in place to remove development-time model defaults.
+
+- Model endpoint and model ID now start blank. Users must configure their own LLM service.
+- Inline completion starts disabled until the user configures its endpoint and model.
+- Previously saved user profiles are preserved; the bundled backend still listens locally.
 
 - Provide Interactive and Auto workflows for Python code generation, public testing, visible error feedback, reviewable repair plans, and iterative fixes.
 - Support independent top-level `assert` tests and `unittest.TestCase` cases with per-test reporting.

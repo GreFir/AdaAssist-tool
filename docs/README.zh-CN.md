@@ -49,17 +49,17 @@ python -m pip install fastapi uvicorn openai requests anthropic google-genai
 
 ## 3. 配置模型并开始第一个任务
 
-在 **Settings → Models** 新建模型配置：
+在 **Settings → Models** 新建模型配置。新安装时，**模型地址和模型名称均默认留空**，需要自行配置：
 
 | 配置 | 示例 | 备注 |
 | --- | --- | --- |
 | Provider | `vllm`、`ollama` 或 `openai` | 根据你的服务选择 |
-| Base URL | `http://127.0.0.1:8003/v1` | 本地模型服务地址仅为示例，必须与你实际部署一致 |
+| Base URL | 你自己的模型服务地址 | 默认留空；根据实际部署填写 |
 | Model | 你的模型 ID | 必须与服务返回的模型名称一致 |
 | API Key | 按服务要求填写 | 通过设置界面保存密钥，避免提交到 GitHub |
 | Max Output Tokens | `4096` | 设置代码、测试与修复规划的输出长度上限 |
 
-点击 **Save Profile** 保存。行内补全的模型可以在 **Settings → Completion** 单独设置；无需与主模型相同。
+点击 **Save Profile** 保存。行内补全默认关闭，在 **Settings → Completion** 中填写独立的模型地址和模型名称后即可启用。重新安装修正后的 v1.0.0 不会删除旧工作区配置；如果仍显示旧地址，请在已保存的模型配置中自行清除。
 
 接下来在主界面：
 

@@ -29,6 +29,22 @@ jobs:
         run: npm run lint
       - name: Check Python backend syntax
         run: python3 -m compileall -q backend
+      - name: Verify no preconfigured model endpoints
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          props = json.loads(Path("package.json").read_text())["contributes"]["configuration"]["properties"]
+          for key in ("adaassist.baseUrl", "adaassist.model", "adaassist.inlineCompletion.baseUrl", "adaassist.inlineCompletion.model"):
+              assert props[key]["default"] == "", key
+          assert props["adaassist.inlineCompletion.enabled"]["default"] is False
+          host = Path("src/extension.ts").read_text()
+          for name in ("DEFAULT_LLM_BASE_URL", "DEFAULT_LLM_MODEL", "DEFAULT_INLINE_BASE_URL", "DEFAULT_INLINE_MODEL"):
+              assert "const " + name + " = '';" in host, name
+          frontend = Path("media/webview.js").read_text()
+          assert "profileModelInput.value = 'gpt-5.4'" not in frontend
+          PY
       - name: Create installable VSIX
         run: npm run package:vsix
       - name: Verify VSIX contents
@@ -159,3 +175,47 @@ jobs:
           files: |
             adaassist-*.vsix
             SHA256SUMS.txt
+
+  republish-v1-model-defaults:
+    name: Correct v1.0.0 GitHub Release
+    needs: package
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      contains(github.event.head_commit.message, '[republish-vsix]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: adaassist-vsix
+      - name: Verify exact version, old tag and new checksum
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./package.json').version")" = "1.0.0"
+          test -f adaassist-1.0.0.vsix
+          sha256sum -c SHA256SUMS.txt
+          gh release view v1.0.0 --repo "$GITHUB_REPOSITORY" > /dev/null
+          CURRENT_TAG=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v1.0.0" --jq '.object.sha')
+          if [[ "$CURRENT_TAG" != "d4496d3a3d5b42f7b61657e92153e4b367b8543b" &&
+                "$CURRENT_TAG" != "$GITHUB_SHA" ]]; then
+            echo "::error::v1.0.0 tag changed unexpectedly; refusing to replace release"
+            exit 1
+          fi
+      - name: Replace release assets and update tag to corrected source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload v1.0.0 adaassist-1.0.0.vsix SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/v1.0.0" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          gh release view v1.0.0 --repo "$GITHUB_REPOSITORY" --json body --jq '.body' > RELEASE_NOTES_CORRECTED.md
+          printf '\n\n**Corrected v1.0.0 asset:** Rebuilt with empty default model URL and model ID; inline completion is disabled until configured. This replaces the original VSIX under the same version at the maintainer request. Previously saved profiles are unchanged. Re-download the VSIX and verify its new SHA-256 checksum.\n' >> RELEASE_NOTES_CORRECTED.md
+          gh release edit v1.0.0 --repo "$GITHUB_REPOSITORY" --notes-file RELEASE_NOTES_CORRECTED.md
+          gh release view v1.0.0 --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'

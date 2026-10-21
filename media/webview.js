@@ -2674,7 +2674,7 @@
     if (isNewDraft) {
       profileNameInput.value = t('newProfileName');
       profileBaseUrlInput.value = '';
-      profileModelInput.value = 'gpt-5.4';
+      profileModelInput.value = '';
       profileMaxTokensInput.value = '1024';
       profileProviderSelect.value = 'other';
       profileApiKeyInput.value = '';
@@ -2691,7 +2691,7 @@
       }
       profileNameInput.value = '';
       profileBaseUrlInput.value = '';
-      profileModelInput.value = 'gpt-5.4';
+      profileModelInput.value = '';
       profileMaxTokensInput.value = '1024';
       profileProviderSelect.value = 'other';
       profileApiKeyInput.value = '';
