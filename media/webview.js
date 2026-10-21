@@ -1588,7 +1588,7 @@
       ...(state.restorableSessionIds || []),
       ...(state.archivedSessions || []).map(session => session.session_id)
     ]);
-    if (entries.length === 0 && snapshotIds.size === 0) {
+    if (entries.length === 0 && snapshotIds.size === 0 && !(state.historyIndex || []).length) {
       const empty = document.createElement('div');
       empty.className = 'visual-log-empty';
       empty.textContent = t('noLogs');
@@ -3725,6 +3725,7 @@
 
   if (refreshLogsBtn) {
     refreshLogsBtn.addEventListener('click', function () {
+      vscode.postMessage({ type: 'requestHistoryIndex' });
       vscode.postMessage({ type: 'requestLogHistory' });
     });
   }
