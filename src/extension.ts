@@ -856,7 +856,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			);
 			const matches = (await Promise.all(tasks.map(async (taskUri) => {
 				const directory = vscode.Uri.joinPath(taskUri, '..');
-				for (const name of ['public_tests.py', 'pulic_tests.py']) {
+				for (const name of ['public_tests.py']) {
 					const testsUri = vscode.Uri.joinPath(directory, name);
 					try {
 						const stat = await vscode.workspace.fs.stat(testsUri);
@@ -876,8 +876,8 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 
 			if (!matches.length) {
 				void vscode.window.showInformationMessage(tr(
-					'No example pair found. Place task.py and public_tests.py (or pulic_tests.py) in the same workspace directory.',
-					'未找到示例文件对。请将 task.py 和 public_tests.py（或 pulic_tests.py）放在工作区的同一个目录中。'
+					'No example pair found. Place task.py and public_tests.py in the same workspace directory.',
+					'未找到示例文件对。请将 task.py 和 public_tests.py 放在工作区的同一个目录中。'
 				));
 				return;
 			}
