@@ -96,7 +96,7 @@ your-workspace/
       public_tests.py
 ```
 
-AdaAssist searches all folders in the currently opened VS Code workspace for `task.py` paired with `public_tests.py` **in the same folder**. It automatically loads the only match or shows a directory picker if multiple examples exist. Contents of `task.py` are placed in the requirement input; the paired file goes into the editable **Tests** card as manual Python tests. The import does **not** execute code or submit the task. Review both inputs, select a model and execution mode, then press **Send**.
+AdaAssist searches the **workspace root and at most two levels of subdirectories** for `task.py` paired with `public_tests.py` **in the same folder**. For example, `examples/example-01/` is included, while `examples/category/example-01/` is too deep and is not scanned. It automatically loads the only match or shows a directory picker if multiple examples exist. Contents of `task.py` are placed in the requirement input; the paired file goes into the editable **Tests** card as manual Python tests. The import does **not** execute code or submit the task. Review both inputs, select a model and execution mode, then press **Send**.
 
 If a task is already open or either input contains a draft, AdaAssist asks for confirmation before replacing it; a previous session is archived when starting a new task. Import is unavailable while a workflow is running. Each file is limited to 256 KiB, and the scanner skips common dependency/build directories.
 
