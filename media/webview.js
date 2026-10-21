@@ -99,7 +99,7 @@
       selectionAppended: 'Editor selection appended.', selectionReplaced: 'Tests replaced from editor selection.',
       generatingTestsStatus: 'Generating tests…', generatedTestsStatus: 'Tests generated. Review and save them before continuing.',
       savingTestsStatus: 'Saving tests…', savedTestsStatus: 'Tests saved.', sendingInstructionStatus: 'Sending update…', instructionAddedStatus: 'Instruction saved for the next generated plan, tests, or code.',
-      workflowUpdatedStatus: 'Workflow updated.', operationFailed: 'Operation failed', retry: 'Retry', dismiss: 'Dismiss', studyTask: 'User study task', studyIntro: 'Choose a task and a workflow mode, then start with the fixed public tests.', studyMode: 'Workflow mode', loadStudyTask: 'Load task', startStudyTask: 'Start workflow', workflowProgress: 'Workflow progress', noWorkflowHistory: 'No workflow history yet.',
+      workflowUpdatedStatus: 'Workflow updated.', operationFailed: 'Operation failed', workflowExecutionFailed: 'Execution failed', retry: 'Retry', dismiss: 'Dismiss', studyTask: 'User study task', studyIntro: 'Choose a task and a workflow mode, then start with the fixed public tests.', studyMode: 'Workflow mode', loadStudyTask: 'Load task', startStudyTask: 'Start workflow', workflowProgress: 'Workflow progress', noWorkflowHistory: 'No workflow history yet.',
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
@@ -198,7 +198,7 @@
       selectionAppended: '已追加编辑器选区。', selectionReplaced: '已用编辑器选区替换测试。',
       generatingTestsStatus: '正在生成测试…', generatedTestsStatus: '测试已生成，请检查并保存后继续。',
       savingTestsStatus: '正在保存测试…', savedTestsStatus: '测试已保存。', sendingInstructionStatus: '正在发送补充要求…', instructionAddedStatus: '补充要求已保存，将用于下一次生成计划、测试或代码。',
-      workflowUpdatedStatus: '工作流已更新。', operationFailed: '操作失败', retry: '重试', dismiss: '关闭', studyTask: '用户研究任务', studyIntro: '选择任务和工作流模式，然后使用固定公开测试开始。', studyMode: '工作流模式', loadStudyTask: '载入任务', startStudyTask: '开始工作流', workflowProgress: '工作流进度', noWorkflowHistory: '暂无工作流历史。',
+      workflowUpdatedStatus: '工作流已更新。', operationFailed: '操作失败', workflowExecutionFailed: '执行失败', retry: '重试', dismiss: '关闭', studyTask: '用户研究任务', studyIntro: '选择任务和工作流模式，然后使用固定公开测试开始。', studyMode: '工作流模式', loadStudyTask: '载入任务', startStudyTask: '开始工作流', workflowProgress: '工作流进度', noWorkflowHistory: '暂无工作流历史。',
       copyCode: '复制代码', copied: '已复制', copyFailed: '复制失败', logViewer: '日志', logViewerHint: '浏览跨会话保存的工作流、模型、评测和用户交互记录。', refreshLogs: '刷新', openOutput: '打开 VS Code 输出', noLogs: '暂无已保存的日志历史。', logDetails: '详情', localLog: '扩展', workflowLog: '工作流', logModel: '模型', logEvaluation: '评测', logInteraction: '用户交互', logSession: '会话', currentLogSession: '当前', logEvents: '条事件', unscopedLogs: '通用扩展日志'
     }
   };
@@ -475,6 +475,7 @@
     operationStatus: '',
     operationMessage: '',
     workflowError: '',
+    workflowErrorPayload: null,
     lastPostedOperation: null,
     operationSequence: 0,
     pendingSelectionTarget: '',
@@ -834,17 +835,39 @@
     element.setAttribute('aria-live', status === 'failed' ? 'assertive' : 'polite');
   }
 
+  function displayedWorkflowError() {
+    // The raw reason remains available for diagnostics; only structured errors
+    // are localized, avoiding guesses about arbitrary process/HTTP error text.
+    const payload = state.workflowErrorPayload;
+    if (!payload || !state.workflowError || payload.reason !== state.workflowError || !payload.messageKey) {
+      return state.workflowError;
+    }
+    const title = payload.titleKey ? t(payload.titleKey) : String(payload.title || 'Workflow Error');
+    const message = environmentText(payload.messageKey, payload.messageParams, payload.message);
+    return title + ': ' + message;
+  }
+
   function renderOperationFeedback() {
+    const errorMessage = displayedWorkflowError();
+    const localizedExecutionError = Boolean(state.workflowError && state.workflowErrorPayload
+      && state.workflowErrorPayload.messageKey
+      && state.workflowErrorPayload.reason === state.workflowError);
     const operationMessage = state.running
       ? (state.runningLabel || t('running'))
-      : state.operationMessage;
+      : localizedExecutionError && state.operationStatus === 'failed'
+        ? t('operationFailed') + ': ' + errorMessage
+        : state.operationMessage;
     const operationStatus = state.running
       ? 'running'
       : state.operationStatus;
     setInlineStatus(operationState, operationMessage, operationStatus);
+    const testMessage = localizedExecutionError && state.testOperationStatus === 'failed'
+      && state.testOperationMessage.includes(state.workflowError)
+      ? t('operationFailed') + ': ' + errorMessage
+      : state.testOperationMessage;
     setInlineStatus(
       testsSaveResult,
-      state.testOperation === 'save' || state.testOperation === 'generate' ? state.testOperationMessage : '',
+      state.testOperation === 'save' || state.testOperation === 'generate' ? testMessage : '',
       state.testOperationStatus
     );
     renderWorkflowProgress();
@@ -859,7 +882,7 @@
     }
     const message = document.createElement('span');
     message.className = 'workflow-error-message';
-    message.textContent = state.workflowError;
+    message.textContent = errorMessage;
     workflowError.appendChild(message);
     const actions = document.createElement('span');
     actions.className = 'workflow-error-actions';
@@ -4345,6 +4368,7 @@
         break;
       case 'workflowError':
         state.workflowError = typeof data.reason === 'string' ? data.reason : 'Unknown workflow error.';
+        state.workflowErrorPayload = data;
         state.operationStatus = 'failed';
         state.operationMessage = t('operationFailed') + ': ' + state.workflowError;
         if (state.testOperationStatus === 'running') {
