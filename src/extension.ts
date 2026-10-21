@@ -5166,9 +5166,6 @@ async function insertGeneratedCode(code: string): Promise<void> {
 								<button class="composer-icon-action" id="useSelectionForProblemBtn" type="button" title="Use Selection" aria-label="Use Selection" data-i18n-title="selectionToPrompt" data-i18n-aria-label="selectionToPrompt">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M4 9h8M4 13h5M15 14v7M11.5 17.5h7"/></svg>
 								</button>
-								<button class="composer-icon-action" id="importWorkspaceExampleBtn" type="button" title="Import example from workspace" aria-label="Import example from workspace" data-i18n-title="importWorkspaceExample" data-i18n-aria-label="importWorkspaceExample">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v8m-3-3 3 3 3-3"/></svg>
-								</button>
 								<button class="composer-icon-action" id="composerTestsBtn" type="button" title="Open Tests" aria-label="Open Tests" aria-controls="testsDrawer" aria-expanded="false" aria-pressed="false" data-i18n-title="openTests" data-i18n-aria-label="openTests">
 									<img src="${testsIconUri}" alt="" />
 								</button>
@@ -5192,7 +5189,12 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<div class="workflow-error" id="workflowError" role="alert"></div>
 					<div class="composer-status" id="composerStatus" aria-live="polite"></div>
 					<div class="composer-footer">
-						<span class="composer-note" data-i18n="composerNote">Ctrl/Cmd+Enter to send.</span>
+						<div class="composer-footer-hint">
+							<button class="composer-icon-action" id="importWorkspaceExampleBtn" type="button" title="Import example from workspace" aria-label="Import example from workspace" data-i18n-title="importWorkspaceExample" data-i18n-aria-label="importWorkspaceExample">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v8m-3-3 3 3 3-3"/></svg>
+							</button>
+							<span class="composer-note" data-i18n="composerNote">Ctrl/Cmd+Enter to send.</span>
+						</div>
 						<div class="composer-model-picker" id="composerModelPicker">
 							<select id="taskProfileSelect" hidden aria-hidden="true" tabindex="-1"></select>
 							<button id="modelPickerButton" class="model-picker-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="modelPickerMenu">
