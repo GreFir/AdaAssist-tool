@@ -835,6 +835,123 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		});
 	}
 
+
+	private async importWorkspaceExample(hasDraft: boolean): Promise<void> {
+		const tr = (en: string, zh: string): string => this.promptLanguage === 'zh-CN' ? zh : en;
+		if (this.running) {
+			void vscode.window.showWarningMessage(tr('Pause the current task before importing an example.', '请先暂停当前任务，再导入示例。'));
+			return;
+		}
+		if (!vscode.workspace.workspaceFolders?.length) {
+			void vscode.window.showInformationMessage(tr('Open a folder or workspace before importing an example.', '请先在 VS Code 中打开文件夹或工作区，再导入示例。'));
+			return;
+		}
+
+		try {
+			// Only import paired files from the same directory; exclude generated and environment folders.
+			const tasks = await vscode.workspace.findFiles(
+				'**/task.py',
+				'**/{.git,node_modules,.venv,venv,__pycache__,dist,out,build,.tox,.mypy_cache}/**',
+				300
+			);
+			const matches = (await Promise.all(tasks.map(async (taskUri) => {
+				const directory = vscode.Uri.joinPath(taskUri, '..');
+				for (const name of ['public_tests.py', 'pulic_tests.py']) {
+					const testsUri = vscode.Uri.joinPath(directory, name);
+					try {
+						const stat = await vscode.workspace.fs.stat(testsUri);
+						if ((stat.type & vscode.FileType.File) !== 0) {
+							return {
+								taskUri,
+								testsUri,
+								label: vscode.workspace.asRelativePath(directory, true),
+								testFile: name
+							};
+						}
+					} catch { /* No paired test file with this spelling. */ }
+				}
+				return undefined;
+			}))).filter((match): match is NonNullable<typeof match> => Boolean(match))
+				.sort((left, right) => left.label.localeCompare(right.label));
+
+			if (!matches.length) {
+				void vscode.window.showInformationMessage(tr(
+					'No example pair found. Place task.py and public_tests.py (or pulic_tests.py) in the same workspace directory.',
+					'未找到示例文件对。请将 task.py 和 public_tests.py（或 pulic_tests.py）放在工作区的同一个目录中。'
+				));
+				return;
+			}
+			const selected = matches.length === 1 ? matches[0] : await vscode.window.showQuickPick(
+				matches.map((match) => ({
+					label: match.label,
+					description: \`task.py + \${match.testFile}\`,
+					match
+				})),
+				{
+					title: tr('Import AdaAssist example', '导入 AdaAssist 示例'),
+					placeHolder: tr('Select an example directory to load', '选择需要导入的示例目录'),
+					matchOnDescription: true
+				}
+			).then((picked) => picked?.match);
+			if (!selected) { return; }
+
+			const [taskStat, testStat] = await Promise.all([
+				vscode.workspace.fs.stat(selected.taskUri),
+				vscode.workspace.fs.stat(selected.testsUri)
+			]);
+			const maxBytes = 256 * 1024;
+			if (taskStat.size > maxBytes || testStat.size > maxBytes) {
+				void vscode.window.showWarningMessage(tr(
+					'Example files must each be 256 KiB or smaller.',
+					'每个示例文件必须不超过 256 KiB。'
+				));
+				return;
+			}
+			const [taskBytes, testBytes] = await Promise.all([
+				vscode.workspace.fs.readFile(selected.taskUri),
+				vscode.workspace.fs.readFile(selected.testsUri)
+			]);
+			if (taskBytes.byteLength > maxBytes || testBytes.byteLength > maxBytes) {
+				throw new Error(tr('Example file exceeds the 256 KiB limit.', '示例文件超出 256 KiB 限制。'));
+			}
+			const problem = Buffer.from(taskBytes).toString('utf8');
+			const testText = Buffer.from(testBytes).toString('utf8');
+			if (!problem.trim() || !testText.trim()) {
+				void vscode.window.showWarningMessage(tr(
+					'Both task.py and the public test file must contain text.',
+					'task.py 和公开测试文件都不能为空。'
+				));
+				return;
+			}
+			if (this.activeSession || hasDraft) {
+				const accept = tr('Import and replace', '导入并替换');
+				const message = this.activeSession
+					? tr(
+						'Importing this example starts a new task and archives the current session. Any unsaved drafts will be replaced. Continue?',
+						'导入示例将新建任务并归档当前会话，同时替换未保存的输入内容。是否继续？'
+					)
+					: tr('Replace the current unsaved task and tests with this example?', '是否使用该示例替换当前未保存的任务和测试？');
+				const answer = await vscode.window.showWarningMessage(message, { modal: true }, accept);
+				if (answer !== accept) { return; }
+			}
+			if (this.running) {
+				void vscode.window.showWarningMessage(tr('A task started while selecting the example. Please try again later.', '选择示例期间有任务开始运行，请稍后重试。'));
+				return;
+			}
+			if (this.activeSession) {
+				await this.clearWorkflowSession('new_task');
+			}
+			this.pendingProblem = problem;
+			this.pendingTestText = testText;
+			this.pendingTestReveal = false;
+			this.postMessage({ type: 'workspaceExampleImported', problem, testText, source: selected.label });
+			this.appendUiLog('info', \`Example imported from workspace: \${selected.label}\`);
+		} catch (error) {
+			const detail = error instanceof Error ? error.message : String(error);
+			void vscode.window.showErrorMessage(\`\${tr('Could not import workspace example:', '无法导入工作区示例：')} \${detail}\`);
+		}
+	}
+
 	private captureEditorSelection(editor: vscode.TextEditor | undefined): void {
 		if (!editor || editor.selection.isEmpty) {
 			return;
@@ -1451,7 +1568,11 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.clearWorkflowSession(message.reason === 'user_confirmed' ? 'user_confirmed' : 'new_task');
 					break;
 				}
-					case 'useEditorSelection': {
+					case 'importWorkspaceExample': {
+					await this.importWorkspaceExample(message.hasDraft === true);
+					break;
+				}
+				case 'useEditorSelection': {
 						const target = message.target === 'tests' ? 'tests' : 'problem';
 						const mode: SelectionWriteMode = message.mode === 'append' ? 'append' : 'replace';
 						const selection = this.currentOrCachedEditorSelection();
@@ -5044,6 +5165,9 @@ async function insertGeneratedCode(code: string): Promise<void> {
 							<div class="composer-input-actions">
 								<button class="composer-icon-action" id="useSelectionForProblemBtn" type="button" title="Use Selection" aria-label="Use Selection" data-i18n-title="selectionToPrompt" data-i18n-aria-label="selectionToPrompt">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M4 9h8M4 13h5M15 14v7M11.5 17.5h7"/></svg>
+								</button>
+								<button class="composer-icon-action" id="importWorkspaceExampleBtn" type="button" title="Import example from workspace" aria-label="Import example from workspace" data-i18n-title="importWorkspaceExample" data-i18n-aria-label="importWorkspaceExample">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v8m-3-3 3 3 3-3"/></svg>
 								</button>
 								<button class="composer-icon-action" id="composerTestsBtn" type="button" title="Open Tests" aria-label="Open Tests" aria-controls="testsDrawer" aria-expanded="false" aria-pressed="false" data-i18n-title="openTests" data-i18n-aria-label="openTests">
 									<img src="${testsIconUri}" alt="" />
