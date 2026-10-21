@@ -6,7 +6,7 @@
   "repository": {"type": "git", "url": "https://github.com/GreFir/AdaAssist-tool.git"},
   "homepage": "https://github.com/GreFir/AdaAssist-tool#readme",
   "bugs": {"url": "https://github.com/GreFir/AdaAssist-tool/issues"},
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.110.0"
   },
@@ -153,18 +153,18 @@
         },
         "adaassist.baseUrl": {
           "type": "string",
-          "default": "http://127.0.0.1:8003/v1",
-          "description": "Default LLM base_url sent to backend."
+          "default": "",
+          "description": "Legacy default model endpoint; left blank until the user sets up an LLM profile."
         },
         "adaassist.model": {
           "type": "string",
-          "default": "deepseek-coder-33b-instruct",
-          "description": "Default model name sent to backend."
+          "default": "",
+          "description": "Legacy default model ID; blank until configured."
         },
         "adaassist.inlineCompletion.enabled": {
           "type": "boolean",
-          "default": true,
-          "description": "Enable AdaAssist inline Python completions in the editor."
+          "default": false,
+          "description": "Enable inline completion only after configuring its own endpoint and model ID."
         },
         "adaassist.inlineCompletion.maxContextLines": {
           "type": "number",
@@ -184,13 +184,13 @@
         },
         "adaassist.inlineCompletion.baseUrl": {
           "type": "string",
-          "default": "http://127.0.0.1:8004/v1",
-          "description": "Dedicated OpenAI-compatible endpoint for inline completion. This is independent from the workflow chat model."
+          "default": "",
+          "description": "Dedicated inline-completion endpoint. Blank until explicitly configured."
         },
         "adaassist.inlineCompletion.model": {
           "type": "string",
-          "default": "deepseek-coder-6.7b-instruct",
-          "description": "Dedicated model used for inline completion."
+          "default": "",
+          "description": "Dedicated inline-completion model ID. Blank until configured."
         },
         "adaassist.inlineCompletion.provider": {
           "type": "string",
