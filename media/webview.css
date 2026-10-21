@@ -2565,6 +2565,27 @@ body.vscode-high-contrast-light .workflow-progress-popover {
   flex: 0 1 auto;
 }
 
+.composer-footer-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.composer-footer-hint .composer-icon-action {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border-radius: 5px;
+}
+
+.composer-footer-hint .composer-icon-action svg {
+  width: 16px;
+  height: 16px;
+}
+
+
 .composer-model-picker {
   position: relative;
   min-width: 0;
