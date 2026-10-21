@@ -805,9 +805,14 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		if (!selected) {
 			return;
 		}
-		await getExtensionConfiguration().update('pythonPath', selected, getConfigurationTarget());
+		// Persist the executable itself, not a Python Environments discovery ID
+		// which may be unavailable or change after VS Code restarts.
+		const configuration = getExtensionConfiguration();
+		const target = getConfigurationTarget();
+		await configuration.update('pythonArgs', selected.args, target);
+		await configuration.update('pythonPath', selected.executable, target);
 		this.backendServer.stop();
-		this.appendUiLog('info', `Python interpreter selected: ${selected}`);
+		this.appendUiLog('info', `Python interpreter selected: ${formatPythonCommand(selected)}`);
 		await this.checkEnvironment();
 	}
 
@@ -833,6 +838,153 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			mode,
 			reveal
 		});
+	}
+
+
+	private async importWorkspaceExample(hasDraft: boolean): Promise<void> {
+		const tr = (en: string, zh: string): string => this.promptLanguage === 'zh-CN' ? zh : en;
+		if (this.running) {
+			void vscode.window.showWarningMessage(tr('Pause the current task before importing an example.', '请先暂停当前任务，再导入示例。'));
+			return;
+		}
+		if (!vscode.workspace.workspaceFolders?.length) {
+			void vscode.window.showInformationMessage(tr('Open a folder or workspace before importing an example.', '请先在 VS Code 中打开文件夹或工作区，再导入示例。'));
+			return;
+		}
+
+		try {
+			// Scan the workspace root and at most two nested directory levels.
+			// A bounded traversal avoids a potentially expensive '**/task.py' search.
+			const ignoredDirectories = new Set([
+				'.git', 'node_modules', '.venv', 'venv', '__pycache__',
+				'dist', 'out', 'build', '.tox', '.mypy_cache'
+			]);
+			const directories: Array<{ uri: vscode.Uri; depth: number }> =
+				vscode.workspace.workspaceFolders.map((folder) => ({ uri: folder.uri, depth: 0 }));
+			const matches: Array<{
+				taskUri: vscode.Uri;
+				testsUri: vscode.Uri;
+				label: string;
+				testFile: string;
+			}> = [];
+			// Keep a practical bound for unusually wide workspaces, in addition to max depth.
+			const maxDirectories = 1500;
+			let truncated = false;
+			for (let index = 0; index < directories.length; index += 1) {
+				if (index >= maxDirectories || matches.length >= 300) {
+					truncated = true;
+					break;
+				}
+				const { uri, depth } = directories[index];
+				let entries: [string, vscode.FileType][];
+				try {
+					entries = await vscode.workspace.fs.readDirectory(uri);
+				} catch {
+					// Skip inaccessible folders; other workspace folders may still be usable.
+					continue;
+				}
+				const hasFile = (filename: string): boolean =>
+					entries.some(([name, type]) =>
+						name === filename && (type & vscode.FileType.File) !== 0);
+				if (hasFile('task.py') && hasFile('public_tests.py')) {
+					matches.push({
+						taskUri: vscode.Uri.joinPath(uri, 'task.py'),
+						testsUri: vscode.Uri.joinPath(uri, 'public_tests.py'),
+						label: vscode.workspace.asRelativePath(uri, true),
+						testFile: 'public_tests.py'
+					});
+				}
+				if (depth >= 2) { continue; }
+				for (const [name, type] of entries) {
+					if (ignoredDirectories.has(name)) { continue; }
+					if ((type & vscode.FileType.Directory) === 0 ||
+						(type & vscode.FileType.SymbolicLink) !== 0) { continue; }
+					directories.push({ uri: vscode.Uri.joinPath(uri, name), depth: depth + 1 });
+				}
+			}
+			matches.sort((left, right) => left.label.localeCompare(right.label));
+			if (truncated) {
+				void vscode.window.showWarningMessage(tr(
+					'Example scan reached its directory or result limit; only the matches found so far are shown.',
+					'示例扫描达到目录或结果数量上限，仅显示当前已找到的示例。'
+				));
+			}
+			if (!matches.length) {
+				void vscode.window.showInformationMessage(tr(
+					'No example pair found. Place task.py and public_tests.py in the same workspace directory.',
+					'未找到示例文件对。请将 task.py 和 public_tests.py 放在工作区的同一个目录中。'
+				));
+				return;
+			}
+			const selected = matches.length === 1 ? matches[0] : await vscode.window.showQuickPick(
+				matches.map((match) => ({
+					label: match.label,
+					description: `task.py + ${match.testFile}`,
+					match
+				})),
+				{
+					title: tr('Import AdaAssist example', '导入 AdaAssist 示例'),
+					placeHolder: tr('Select an example directory to load', '选择需要导入的示例目录'),
+					matchOnDescription: true
+				}
+			).then((picked) => picked?.match);
+			if (!selected) { return; }
+
+			const [taskStat, testStat] = await Promise.all([
+				vscode.workspace.fs.stat(selected.taskUri),
+				vscode.workspace.fs.stat(selected.testsUri)
+			]);
+			const maxBytes = 256 * 1024;
+			if (taskStat.size > maxBytes || testStat.size > maxBytes) {
+				void vscode.window.showWarningMessage(tr(
+					'Example files must each be 256 KiB or smaller.',
+					'每个示例文件必须不超过 256 KiB。'
+				));
+				return;
+			}
+			const [taskBytes, testBytes] = await Promise.all([
+				vscode.workspace.fs.readFile(selected.taskUri),
+				vscode.workspace.fs.readFile(selected.testsUri)
+			]);
+			if (taskBytes.byteLength > maxBytes || testBytes.byteLength > maxBytes) {
+				throw new Error(tr('Example file exceeds the 256 KiB limit.', '示例文件超出 256 KiB 限制。'));
+			}
+			const problem = Buffer.from(taskBytes).toString('utf8');
+			const testText = Buffer.from(testBytes).toString('utf8');
+			if (!problem.trim() || !testText.trim()) {
+				void vscode.window.showWarningMessage(tr(
+					'Both task.py and the public test file must contain text.',
+					'task.py 和公开测试文件都不能为空。'
+				));
+				return;
+			}
+			if (this.activeSession || hasDraft) {
+				const accept = tr('Import and replace', '导入并替换');
+				const message = this.activeSession
+					? tr(
+						'Importing this example starts a new task and archives the current session. Any unsaved drafts will be replaced. Continue?',
+						'导入示例将新建任务并归档当前会话，同时替换未保存的输入内容。是否继续？'
+					)
+					: tr('Replace the current unsaved task and tests with this example?', '是否使用该示例替换当前未保存的任务和测试？');
+				const answer = await vscode.window.showWarningMessage(message, { modal: true }, accept);
+				if (answer !== accept) { return; }
+			}
+			if (this.running) {
+				void vscode.window.showWarningMessage(tr('A task started while selecting the example. Please try again later.', '选择示例期间有任务开始运行，请稍后重试。'));
+				return;
+			}
+			if (this.activeSession) {
+				await this.clearWorkflowSession('new_task');
+			}
+			this.pendingProblem = problem;
+			this.pendingTestText = testText;
+			this.pendingTestReveal = false;
+			this.postMessage({ type: 'workspaceExampleImported', problem, testText, source: selected.label });
+			this.appendUiLog('info', `Example imported from workspace: ${selected.label}`);
+		} catch (error) {
+			const detail = error instanceof Error ? error.message : String(error);
+			void vscode.window.showErrorMessage(`${tr('Could not import workspace example:', '无法导入工作区示例：')} ${detail}`);
+		}
 	}
 
 	private captureEditorSelection(editor: vscode.TextEditor | undefined): void {
@@ -1451,7 +1603,11 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 					await this.clearWorkflowSession(message.reason === 'user_confirmed' ? 'user_confirmed' : 'new_task');
 					break;
 				}
-					case 'useEditorSelection': {
+					case 'importWorkspaceExample': {
+					await this.importWorkspaceExample(message.hasDraft === true);
+					break;
+				}
+				case 'useEditorSelection': {
 						const target = message.target === 'tests' ? 'tests' : 'problem';
 						const mode: SelectionWriteMode = message.mode === 'append' ? 'append' : 'replace';
 						const selection = this.currentOrCachedEditorSelection();
@@ -1548,7 +1704,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				this.postOperationError(messageText, {
 					scope: message.type === 'updateResolvedTests' ? 'tests' : 'workflow',
 					action: message.type
-				}, 'Panel action failed');
+				}, 'Panel action failed', true, error);
 			}
 	}
 
@@ -1800,12 +1956,21 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		message: string,
 		operation: OperationContext,
 		title = 'Workflow Error',
-		retryable = true
+		retryable = true,
+		cause?: unknown
 	): void {
+		// Preserve the original error for logs, but send a structured localization key
+		// so the Webview can re-render diagnostics when users switch languages.
+		const pythonError = cause instanceof PythonEnvironmentResolutionError ? cause : undefined;
 		this.postMessage({
 			type: 'workflowError',
 			title,
+			...(title === 'Execution failed' ? { titleKey: 'workflowExecutionFailed' } : {}),
 			message,
+			...(pythonError ? {
+				messageKey: pythonError.detailKey,
+				messageParams: pythonError.detailParams
+			} : {}),
 			reason: `${title}: ${message}`,
 			scope: operation.scope,
 			action: operation.action,
@@ -2262,7 +2427,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			succeeded = true;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			this.postOperationError(message, operation, errorPrefix);
+			this.postOperationError(message, operation, errorPrefix, true, error);
 		} finally {
 			await this.refreshActiveSession(true);
 			this.stopSessionPolling();
@@ -4656,7 +4821,7 @@ async function getPythonExtensionInterpreterPath(): Promise<string | undefined> 
 async function choosePythonInterpreter(
 	context: vscode.ExtensionContext,
 	language: 'en' | 'zh-CN'
-): Promise<string | undefined> {
+): Promise<PythonCommand | undefined> {
 	// Match the AdaAssist Webview language, independent of VS Code's display language.
 	const tr = (english: string, chinese: string): string => language === 'zh-CN' ? chinese : english;
 	for (;;) {
@@ -4687,7 +4852,8 @@ async function choosePythonInterpreter(
 				description: `${env.manager}${env.version ? ' · Python ' + env.version : ''}`,
 				detail: `${env.path} · ${env.executable}${runnable ? '' : tr(' (not executable)', ' (不可运行)')}`,
 				value: `env:${env.id}`,
-				picked: env.id === explicitEnvironment
+				picked: env.id === explicitEnvironment ||
+					(configured !== 'auto' && configured === env.executable)
 			});
 			paths.delete(env.executable);
 		}
@@ -4723,7 +4889,7 @@ async function choosePythonInterpreter(
 			placeHolder: tr('Choose an environment with backend dependencies installed (Conda, venv, or system Python).', '支持 Conda、venv、系统 Python；请选择已安装后端依赖的环境')
 		});
 		if (!choice) { return undefined; }
-		if (choice.action === 'auto') { return 'auto'; }
+		if (choice.action === 'auto') { return { executable: 'auto', args: [] }; }
 		if (choice.action === 'refresh') {
 			try {
 				const api = await getPythonEnvironmentsApi();
@@ -4748,7 +4914,7 @@ async function choosePythonInterpreter(
 				void vscode.window.showErrorMessage(`${tr('Python interpreter is not executable:', '解释器不可运行：')} ${executable}`);
 				continue;
 			}
-			return executable;
+			return { executable, args: [] };
 		}
 		if (!choice.value) { continue; }
 		let command: PythonCommand;
@@ -4763,14 +4929,16 @@ async function choosePythonInterpreter(
 			void vscode.window.showErrorMessage(`${tr('Python environment is not executable:', 'Python 环境不可运行：')} ${formatPythonCommand(command)}`);
 			continue;
 		}
-		return choice.value;
+		return command;
 	}
 }
 
 function pythonCommandCandidates(context: vscode.ExtensionContext): PythonCommand[] {
 	const configured = (getConfigurationValue<string>('pythonPath', 'auto') || 'auto').trim();
 	if (configured && configured.toLowerCase() !== 'auto' && !configured.startsWith('env:')) {
-		return [{ executable: resolveConfiguredPythonPath(configured, context), args: [] }];
+		const rawArgs = getConfigurationValue<unknown>('pythonArgs', []);
+		const args = Array.isArray(rawArgs) ? rawArgs.filter((arg): arg is string => typeof arg === 'string') : [];
+		return [{ executable: resolveConfiguredPythonPath(configured, context), args }];
 	}
 
 	const detected = detectPythonPath(context);
@@ -4848,7 +5016,19 @@ async function resolvePythonCommand(context: vscode.ExtensionContext): Promise<P
 			throw new PythonEnvironmentResolutionError('所选 Python 环境已删除或不可用，请重新选择解释器。', 'environmentSelectedPythonMissing');
 		}
 		const command = { executable: env.executable, args: env.args };
-		if (await isRunnablePython(command)) { return command; }
+		if (await isRunnablePython(command)) {
+			// One-time migration of older env:<id> settings. New sessions will
+			// use the stable executable + arguments without discovery.
+			const configuration = getExtensionConfiguration();
+			const target = getConfigurationTarget();
+			try {
+				await configuration.update('pythonArgs', command.args, target);
+				await configuration.update('pythonPath', command.executable, target);
+			} catch {
+				// A read-only settings scope must not stop an otherwise valid interpreter.
+			}
+			return command;
+		}
 		throw new PythonEnvironmentResolutionError(
 			`所选 Python 环境不可运行：${formatPythonCommand(command)}`,
 			'environmentSelectedPythonNotRunnable', { command: formatPythonCommand(command) }
@@ -5068,7 +5248,12 @@ async function insertGeneratedCode(code: string): Promise<void> {
 					<div class="workflow-error" id="workflowError" role="alert"></div>
 					<div class="composer-status" id="composerStatus" aria-live="polite"></div>
 					<div class="composer-footer">
-						<span class="composer-note" data-i18n="composerNote">Ctrl/Cmd+Enter to send.</span>
+						<div class="composer-footer-hint">
+							<button class="composer-icon-action" id="importWorkspaceExampleBtn" type="button" title="Import example from workspace" aria-label="Import example from workspace" data-i18n-title="importWorkspaceExample" data-i18n-aria-label="importWorkspaceExample">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v8m-3-3 3 3 3-3"/></svg>
+							</button>
+							<span class="composer-note" data-i18n="composerNote">Ctrl/Cmd+Enter to send.</span>
+						</div>
 						<div class="composer-model-picker" id="composerModelPicker">
 							<select id="taskProfileSelect" hidden aria-hidden="true" tabindex="-1"></select>
 							<button id="modelPickerButton" class="model-picker-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="modelPickerMenu">

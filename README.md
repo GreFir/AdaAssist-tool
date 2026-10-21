@@ -51,7 +51,7 @@ If your chosen Python environment does not already have the backend packages, in
 python -m pip install fastapi uvicorn openai requests anthropic google-genai
 ```
 
-On Windows, `py -3.12 -m pip install ...` is an alternative if `python` does not point to Python 3.12+. On Linux/macOS with an externally managed Python, use a virtual environment; see [Python setup](docs/INSTALLATION.md#python-runtime-setup). In **AdaAssist → Settings → Environment**, select the Python interpreter where you installed these packages and run **Check Environment**.
+On Windows, `py -3.12 -m pip install ...` is an alternative if `python` does not point to Python 3.12+. On Linux/macOS with an externally managed Python, use a virtual environment; see [Python setup](docs/INSTALLATION.md#python-runtime-setup). In **AdaAssist → Settings → Environment**, select the Python interpreter where you installed these packages and run **Check Environment**. AdaAssist saves the selected interpreter's executable path and any launch arguments in VS Code settings for the current workspace, so restarting VS Code does not require selecting it again. Use **Auto-detect Python** to follow the active VS Code workspace interpreter instead. Older `env:` selections are migrated to stable paths when they can be resolved; genuinely deleted or moved interpreters must be selected again.
 
 The extension starts the bundled FastAPI service automatically when needed; **you do not normally need to launch `backend/main.py` yourself**.
 
@@ -80,6 +80,25 @@ assert unique_sorted([-1, -1, 0]) == [-1, 0]
 
 Tests can use top-level Python `assert` statements or `unittest.TestCase` suites (including an explicit `TextTestRunner`); AdaAssist reports per-test results for both. Generated tests use top-level assertions and should be reviewed before relying on them. `pytest` is not a supported test runner.
 
+
+### Import an example from the current workspace
+
+Use the **Import example from workspace** folder icon beneath the task input to load a task and its public tests without copying them manually.
+
+```text
+your-workspace/
+  examples/
+    example-01/
+      task.py
+      public_tests.py
+    example-02/
+      task.py
+      public_tests.py
+```
+
+AdaAssist searches the **workspace root and at most two levels of subdirectories** for `task.py` paired with `public_tests.py` **in the same folder**. For example, `examples/example-01/` is included, while `examples/category/example-01/` is too deep and is not scanned. It automatically loads the only match or shows a directory picker if multiple examples exist. Contents of `task.py` are placed in the requirement input; the paired file goes into the editable **Tests** card as manual Python tests. The import does **not** execute code or submit the task. Review both inputs, select a model and execution mode, then press **Send**.
+
+If a task is already open or either input contains a draft, AdaAssist asks for confirmation before replacing it; a previous session is archived when starting a new task. Import is unavailable while a workflow is running. Each file is limited to 256 KiB, and the scanner skips common dependency/build directories.
 
 ### Task composer controls
 

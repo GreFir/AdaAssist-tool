@@ -71,6 +71,7 @@
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
       llmSetupRequired: 'LLM Setup Required', configureProfileBeforeStart: 'Configure an LLM profile before starting the workflow.', conversation: 'Conversation',
       conversationHint: 'Requirements, code, run results, and plans appear here in order.', problemPlaceholder: 'Describe the coding task, constraints, expected behavior, and anything the model must preserve.',
+      importWorkspaceExample: 'Import example from workspace', workspaceExampleImported: 'Loaded example from',
       selectionToPrompt: 'Use Selection', send: 'Send', sendWorkflow: 'Send workflow', newTask: 'New Task', composerNote: 'Ctrl/Cmd+Enter to send.', modelSelectHint: 'Choose a model from your profile config.', modelLockedHint: 'Click New Task to switch models.',
       closeTests: 'Close tests', testsCompactEmpty: 'Leave empty to generate tests.', testsCompactDirty: 'Unsaved changes · save or continue to apply.', testsCompactReady: 'Edit the tests, then save or continue.', testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', generateShort: 'Generate', replaceTestsShort: 'Replace?', replaceWithGeneratedTests: 'Replace existing tests with generated tests', appendSelection: 'Append selected code', testDescriptionCompactPlaceholder: 'Test focus (optional)...', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
       manualTestsHint: 'This is the single current test suite. Leave it empty to generate tests before code generation.', selectionToTests: 'Selection To Tests', saveTests: 'Save Tests',
@@ -98,7 +99,7 @@
       selectionAppended: 'Editor selection appended.', selectionReplaced: 'Tests replaced from editor selection.',
       generatingTestsStatus: 'Generating tests…', generatedTestsStatus: 'Tests generated. Review and save them before continuing.',
       savingTestsStatus: 'Saving tests…', savedTestsStatus: 'Tests saved.', sendingInstructionStatus: 'Sending update…', instructionAddedStatus: 'Instruction saved for the next generated plan, tests, or code.',
-      workflowUpdatedStatus: 'Workflow updated.', operationFailed: 'Operation failed', retry: 'Retry', dismiss: 'Dismiss', studyTask: 'User study task', studyIntro: 'Choose a task and a workflow mode, then start with the fixed public tests.', studyMode: 'Workflow mode', loadStudyTask: 'Load task', startStudyTask: 'Start workflow', workflowProgress: 'Workflow progress', noWorkflowHistory: 'No workflow history yet.',
+      workflowUpdatedStatus: 'Workflow updated.', operationFailed: 'Operation failed', workflowExecutionFailed: 'Execution failed', retry: 'Retry', dismiss: 'Dismiss', studyTask: 'User study task', studyIntro: 'Choose a task and a workflow mode, then start with the fixed public tests.', studyMode: 'Workflow mode', loadStudyTask: 'Load task', startStudyTask: 'Start workflow', workflowProgress: 'Workflow progress', noWorkflowHistory: 'No workflow history yet.',
       copyCode: 'Copy code', copied: 'Copied', copyFailed: 'Copy failed', logViewer: 'Logs', logViewerHint: 'Browse saved workflow, model, evaluation, and interaction events across sessions.', refreshLogs: 'Refresh', openOutput: 'Open VS Code Output', noLogs: 'No saved log history yet.', logDetails: 'Details', localLog: 'Extension', workflowLog: 'Workflow', logModel: 'Model', logEvaluation: 'Evaluation', logInteraction: 'Interaction', logSession: 'Session', currentLogSession: 'Current', logEvents: 'events', unscopedLogs: 'General extension logs'
     },
     'zh-CN': {
@@ -169,6 +170,7 @@
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
       llmSetupRequired: '需要配置 LLM', configureProfileBeforeStart: '请先配置一个 LLM 配置，再启动工作流。', conversation: '对话',
       conversationHint: '需求、代码、运行结果和计划会按顺序显示在这里。', problemPlaceholder: '描述编程任务、约束条件、预期行为，以及模型必须保留的内容。',
+      importWorkspaceExample: '从工作区导入示例', workspaceExampleImported: '已从示例目录导入',
       selectionToPrompt: '使用选区', send: '发送', sendWorkflow: '发送工作流', newTask: '新任务', composerNote: '按 Ctrl/Cmd+Enter 发送。', modelSelectHint: '从配置文件列表中选择模型。', modelLockedHint: '点击“新任务”后可切换模型。',
       testsHint: '为当前工作流维护一套共享的 Python assert 测试。', back: '返回', testSuite: '测试集', testMode: '测试模式', manualTests: '手动测试', generateTests: '生成测试', testOptions: '生成选项', testGenerationGoal: '测试生成目标', generateShort: '生成', replaceTestsShort: '替换?', replaceWithGeneratedTests: '再次点击以替换已有测试', appendSelection: '追加选区', testDescriptionCompactPlaceholder: '测试重点（可选）...', replaceWithSelection: '用选区替换', collapseTests: '完成',
       manualTestsHint: '这是当前唯一的测试集。留空可在生成代码前自动生成测试。', selectionToTests: '选区写入测试', saveTests: '保存测试',
@@ -196,7 +198,7 @@
       selectionAppended: '已追加编辑器选区。', selectionReplaced: '已用编辑器选区替换测试。',
       generatingTestsStatus: '正在生成测试…', generatedTestsStatus: '测试已生成，请检查并保存后继续。',
       savingTestsStatus: '正在保存测试…', savedTestsStatus: '测试已保存。', sendingInstructionStatus: '正在发送补充要求…', instructionAddedStatus: '补充要求已保存，将用于下一次生成计划、测试或代码。',
-      workflowUpdatedStatus: '工作流已更新。', operationFailed: '操作失败', retry: '重试', dismiss: '关闭', studyTask: '用户研究任务', studyIntro: '选择任务和工作流模式，然后使用固定公开测试开始。', studyMode: '工作流模式', loadStudyTask: '载入任务', startStudyTask: '开始工作流', workflowProgress: '工作流进度', noWorkflowHistory: '暂无工作流历史。',
+      workflowUpdatedStatus: '工作流已更新。', operationFailed: '操作失败', workflowExecutionFailed: '执行失败', retry: '重试', dismiss: '关闭', studyTask: '用户研究任务', studyIntro: '选择任务和工作流模式，然后使用固定公开测试开始。', studyMode: '工作流模式', loadStudyTask: '载入任务', startStudyTask: '开始工作流', workflowProgress: '工作流进度', noWorkflowHistory: '暂无工作流历史。',
       copyCode: '复制代码', copied: '已复制', copyFailed: '复制失败', logViewer: '日志', logViewerHint: '浏览跨会话保存的工作流、模型、评测和用户交互记录。', refreshLogs: '刷新', openOutput: '打开 VS Code 输出', noLogs: '暂无已保存的日志历史。', logDetails: '详情', localLog: '扩展', workflowLog: '工作流', logModel: '模型', logEvaluation: '评测', logInteraction: '用户交互', logSession: '会话', currentLogSession: '当前', logEvents: '条事件', unscopedLogs: '通用扩展日志'
     }
   };
@@ -234,6 +236,7 @@
   const showOutputBtn = document.getElementById('showOutputBtn');
   const openTestsBtn = document.getElementById('openTestsBtn');
   const composerTestsBtn = document.getElementById('composerTestsBtn');
+  const importWorkspaceExampleBtn = document.getElementById('importWorkspaceExampleBtn');
   const openSettingsBtn = document.getElementById('openSettingsBtn');
 	const settingsTabButtons = Array.from(document.querySelectorAll('[data-settings-tab]'));
 	const settingsTabPanels = Array.from(document.querySelectorAll('[data-settings-panel]'));
@@ -472,6 +475,7 @@
     operationStatus: '',
     operationMessage: '',
     workflowError: '',
+    workflowErrorPayload: null,
     lastPostedOperation: null,
     operationSequence: 0,
     pendingSelectionTarget: '',
@@ -831,17 +835,39 @@
     element.setAttribute('aria-live', status === 'failed' ? 'assertive' : 'polite');
   }
 
+  function displayedWorkflowError() {
+    // The raw reason remains available for diagnostics; only structured errors
+    // are localized, avoiding guesses about arbitrary process/HTTP error text.
+    const payload = state.workflowErrorPayload;
+    if (!payload || !state.workflowError || payload.reason !== state.workflowError || !payload.messageKey) {
+      return state.workflowError;
+    }
+    const title = payload.titleKey ? t(payload.titleKey) : String(payload.title || 'Workflow Error');
+    const message = environmentText(payload.messageKey, payload.messageParams, payload.message);
+    return title + ': ' + message;
+  }
+
   function renderOperationFeedback() {
+    const errorMessage = displayedWorkflowError();
+    const localizedExecutionError = Boolean(state.workflowError && state.workflowErrorPayload
+      && state.workflowErrorPayload.messageKey
+      && state.workflowErrorPayload.reason === state.workflowError);
     const operationMessage = state.running
       ? (state.runningLabel || t('running'))
-      : state.operationMessage;
+      : localizedExecutionError && state.operationStatus === 'failed'
+        ? t('operationFailed') + ': ' + errorMessage
+        : state.operationMessage;
     const operationStatus = state.running
       ? 'running'
       : state.operationStatus;
     setInlineStatus(operationState, operationMessage, operationStatus);
+    const testMessage = localizedExecutionError && state.testOperationStatus === 'failed'
+      && state.testOperationMessage.includes(state.workflowError)
+      ? t('operationFailed') + ': ' + errorMessage
+      : state.testOperationMessage;
     setInlineStatus(
       testsSaveResult,
-      state.testOperation === 'save' || state.testOperation === 'generate' ? state.testOperationMessage : '',
+      state.testOperation === 'save' || state.testOperation === 'generate' ? testMessage : '',
       state.testOperationStatus
     );
     renderWorkflowProgress();
@@ -856,7 +882,7 @@
     }
     const message = document.createElement('span');
     message.className = 'workflow-error-message';
-    message.textContent = state.workflowError;
+    message.textContent = errorMessage;
     workflowError.appendChild(message);
     const actions = document.createElement('span');
     actions.className = 'workflow-error-actions';
@@ -3382,6 +3408,7 @@
     const testsEditable = !state.running && (!hasSession || interactiveSession);
     const testsBusy = state.testOperationStatus === 'running';
 
+    if (importWorkspaceExampleBtn) importWorkspaceExampleBtn.disabled = state.running;
     problemInput.readOnly = !guidanceEditable;
     problemInput.classList.toggle('locked-input', !guidanceEditable);
     problemInput.placeholder = composerPlaceholder();
@@ -3927,6 +3954,16 @@
     });
   });
 
+  if (importWorkspaceExampleBtn) {
+    importWorkspaceExampleBtn.addEventListener('click', function () {
+      if (state.running) return;
+      vscode.postMessage({
+        type: 'importWorkspaceExample',
+        hasDraft: Boolean(problemInput.value.trim() || configuredTestCode().trim())
+      });
+    });
+  }
+
   useSelectionForProblemBtn.addEventListener('click', function () {
     state.pendingSelectionTarget = 'problem';
     state.pendingSelectionMode = 'append';
@@ -4144,6 +4181,22 @@
         state.logEntries = Array.isArray(data.entries) ? data.entries : [];
         renderLogsPage();
         break;
+      case 'workspaceExampleImported': {
+        if (typeof data.problem !== 'string' || typeof data.testText !== 'string') break;
+        resetTaskDraft();
+        problemInput.value = data.problem;
+        setEditableCodeText(testInput, data.testText);
+        setEditableCodeText(resolvedTestsEditor, data.testText);
+        testModeSelect.value = 'manual';
+        state.problemDraftDirty = true;
+        state.resolvedTestsDirty = true;
+        state.operationStatus = 'passed';
+        state.operationMessage = t('workspaceExampleImported') + ': ' + String(data.source || '');
+        setTestsDrawerOpen(false);
+        switchPage('task');
+        renderAll();
+        break;
+      }
       case 'prefillProblem':
         if (typeof data.problem === 'string') {
           const mode = data.mode || (state.pendingSelectionTarget === 'problem' ? state.pendingSelectionMode : '');
@@ -4315,6 +4368,7 @@
         break;
       case 'workflowError':
         state.workflowError = typeof data.reason === 'string' ? data.reason : 'Unknown workflow error.';
+        state.workflowErrorPayload = data;
         state.operationStatus = 'failed';
         state.operationMessage = t('operationFailed') + ': ' + state.workflowError;
         if (state.testOperationStatus === 'running') {

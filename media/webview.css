@@ -725,10 +725,17 @@ textarea {
 
 .composer-input-shell textarea {
   display: block;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 112px;
   max-height: 240px;
   padding: 12px 14px 4px;
+  overflow-x: hidden;
   overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   resize: none;
   border: 0;
   border-radius: 0;
@@ -2074,6 +2081,28 @@ body.vscode-high-contrast-light .workflow-progress-popover {
   background: var(--vscode-input-background, var(--surface-strong));
 }
 
+/* User-provided requirements often contain long Python/docstring lines.
+   Wrap only the user's sent content: keep the source's newlines/indentation,
+   and leave generated code blocks' scrolling behavior unchanged. */
+.conversation-card.user-card .markdown,
+.conversation-card.user-card .markdown pre,
+.conversation-card.user-card .markdown .code-shell,
+.conversation-card.user-card .markdown .code-block {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.conversation-card.user-card .markdown pre,
+.conversation-card.user-card .markdown pre code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.conversation-card.user-card .markdown .code-block {
+  overflow-x: hidden;
+}
+
 .conversation-card.user-card::before {
   background: color-mix(in srgb, var(--accent) 54%, var(--border));
 }
@@ -2564,6 +2593,27 @@ body.vscode-high-contrast-light .workflow-progress-popover {
 .composer-footer .composer-note {
   flex: 0 1 auto;
 }
+
+.composer-footer-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.composer-footer-hint .composer-icon-action {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border-radius: 5px;
+}
+
+.composer-footer-hint .composer-icon-action svg {
+  width: 16px;
+  height: 16px;
+}
+
 
 .composer-model-picker {
   position: relative;
