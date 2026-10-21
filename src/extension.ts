@@ -805,9 +805,14 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		if (!selected) {
 			return;
 		}
-		await getExtensionConfiguration().update('pythonPath', selected, getConfigurationTarget());
+		// Persist the executable itself, not a Python Environments discovery ID
+		// which may be unavailable or change after VS Code restarts.
+		const configuration = getExtensionConfiguration();
+		const target = getConfigurationTarget();
+		await configuration.update('pythonArgs', selected.args, target);
+		await configuration.update('pythonPath', selected.executable, target);
 		this.backendServer.stop();
-		this.appendUiLog('info', `Python interpreter selected: ${selected}`);
+		this.appendUiLog('info', `Python interpreter selected: ${formatPythonCommand(selected)}`);
 		await this.checkEnvironment();
 	}
 
@@ -4816,7 +4821,7 @@ async function getPythonExtensionInterpreterPath(): Promise<string | undefined> 
 async function choosePythonInterpreter(
 	context: vscode.ExtensionContext,
 	language: 'en' | 'zh-CN'
-): Promise<string | undefined> {
+): Promise<PythonCommand | undefined> {
 	// Match the AdaAssist Webview language, independent of VS Code's display language.
 	const tr = (english: string, chinese: string): string => language === 'zh-CN' ? chinese : english;
 	for (;;) {
@@ -4847,7 +4852,8 @@ async function choosePythonInterpreter(
 				description: `${env.manager}${env.version ? ' · Python ' + env.version : ''}`,
 				detail: `${env.path} · ${env.executable}${runnable ? '' : tr(' (not executable)', ' (不可运行)')}`,
 				value: `env:${env.id}`,
-				picked: env.id === explicitEnvironment
+				picked: env.id === explicitEnvironment ||
+					(configured !== 'auto' && configured === env.executable)
 			});
 			paths.delete(env.executable);
 		}
@@ -4883,7 +4889,7 @@ async function choosePythonInterpreter(
 			placeHolder: tr('Choose an environment with backend dependencies installed (Conda, venv, or system Python).', '支持 Conda、venv、系统 Python；请选择已安装后端依赖的环境')
 		});
 		if (!choice) { return undefined; }
-		if (choice.action === 'auto') { return 'auto'; }
+		if (choice.action === 'auto') { return { executable: 'auto', args: [] }; }
 		if (choice.action === 'refresh') {
 			try {
 				const api = await getPythonEnvironmentsApi();
@@ -4908,7 +4914,7 @@ async function choosePythonInterpreter(
 				void vscode.window.showErrorMessage(`${tr('Python interpreter is not executable:', '解释器不可运行：')} ${executable}`);
 				continue;
 			}
-			return executable;
+			return { executable, args: [] };
 		}
 		if (!choice.value) { continue; }
 		let command: PythonCommand;
@@ -4923,14 +4929,16 @@ async function choosePythonInterpreter(
 			void vscode.window.showErrorMessage(`${tr('Python environment is not executable:', 'Python 环境不可运行：')} ${formatPythonCommand(command)}`);
 			continue;
 		}
-		return choice.value;
+		return command;
 	}
 }
 
 function pythonCommandCandidates(context: vscode.ExtensionContext): PythonCommand[] {
 	const configured = (getConfigurationValue<string>('pythonPath', 'auto') || 'auto').trim();
 	if (configured && configured.toLowerCase() !== 'auto' && !configured.startsWith('env:')) {
-		return [{ executable: resolveConfiguredPythonPath(configured, context), args: [] }];
+		const rawArgs = getConfigurationValue<unknown>('pythonArgs', []);
+		const args = Array.isArray(rawArgs) ? rawArgs.filter((arg): arg is string => typeof arg === 'string') : [];
+		return [{ executable: resolveConfiguredPythonPath(configured, context), args }];
 	}
 
 	const detected = detectPythonPath(context);
@@ -5008,7 +5016,19 @@ async function resolvePythonCommand(context: vscode.ExtensionContext): Promise<P
 			throw new PythonEnvironmentResolutionError('所选 Python 环境已删除或不可用，请重新选择解释器。', 'environmentSelectedPythonMissing');
 		}
 		const command = { executable: env.executable, args: env.args };
-		if (await isRunnablePython(command)) { return command; }
+		if (await isRunnablePython(command)) {
+			// One-time migration of older env:<id> settings. New sessions will
+			// use the stable executable + arguments without discovery.
+			const configuration = getExtensionConfiguration();
+			const target = getConfigurationTarget();
+			try {
+				await configuration.update('pythonArgs', command.args, target);
+				await configuration.update('pythonPath', command.executable, target);
+			} catch {
+				// A read-only settings scope must not stop an otherwise valid interpreter.
+			}
+			return command;
+		}
 		throw new PythonEnvironmentResolutionError(
 			`所选 Python 环境不可运行：${formatPythonCommand(command)}`,
 			'environmentSelectedPythonNotRunnable', { command: formatPythonCommand(command) }
