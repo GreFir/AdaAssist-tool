@@ -81,6 +81,25 @@ assert unique_sorted([-1, -1, 0]) == [-1, 0]
 Tests can use top-level Python `assert` statements or `unittest.TestCase` suites (including an explicit `TextTestRunner`); AdaAssist reports per-test results for both. Generated tests use top-level assertions and should be reviewed before relying on them. `pytest` is not a supported test runner.
 
 
+### Import an example from the current workspace
+
+Use the **Import example from workspace** folder icon beneath the task input to load a task and its public tests without copying them manually.
+
+```text
+your-workspace/
+  examples/
+    example-01/
+      task.py
+      public_tests.py
+    example-02/
+      task.py
+      pulic_tests.py        # Legacy spelling is also accepted
+```
+
+AdaAssist searches all folders in the currently opened VS Code workspace for `task.py` paired with `public_tests.py` or `pulic_tests.py` **in the same folder**. It automatically loads the only match or shows a directory picker if multiple examples exist. Contents of `task.py` are placed in the requirement input; the paired file goes into the editable **Tests** card as manual Python tests. The import does **not** execute code or submit the task. Review both inputs, select a model and execution mode, then press **Send**.
+
+If a task is already open or either input contains a draft, AdaAssist asks for confirmation before replacing it; a previous session is archived when starting a new task. Import is unavailable while a workflow is running. Each file is limited to 256 KiB, and the scanner skips common dependency/build directories.
+
 ### Task composer controls
 
 The composer uses a single input frame, with icon-only **Use Selection** and **New Task** controls. The compact **Interactive / Auto** menu beside **Send** stays synchronized with **Settings → Workflow**. Mode switching is disabled while a model stage is running. After Auto is paused, select **Interactive** to review and edit the current code, tests, feedback, or plan. While Interactive is at a review checkpoint, select **Auto** and press **Continue** to resume autonomous repair from the same session. Save draft edits before switching modes; saved artifacts and repair counts are retained. Use **New Task** only to start a separate requirement.
