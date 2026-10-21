@@ -58,12 +58,12 @@ npm ci
 npm run package:vsix
 ```
 
-This builds the TypeScript host and runs the VS Code extension packager. It produces a versioned file such as `adaassist-0.0.14.vsix`, based on the current version in `package.json`.
+This builds the TypeScript host and runs the VS Code extension packager. It produces a versioned file such as `adaassist-1.0.0.vsix`, based on the current version in `package.json`.
 
 Install it with the VS Code Extensions menu, or:
 
 ```bash
-code --install-extension adaassist-0.0.14.vsix
+code --install-extension adaassist-1.0.0.vsix
 ```
 
 Replace the filename with your actual package name.
@@ -72,25 +72,27 @@ The VSIX contains compiled extension JavaScript, media assets, production JavaSc
 
 ## CI and tagged releases
 
-The [VSIX workflow](../.github/workflows/package-vsix.yml) builds on pull requests, main-branch pushes, and manual runs:
+The [VSIX workflow](../.github/workflows/package-vsix.yml) builds on pull requests, main-branch pushes, version-tag pushes, and manual runs:
 
-1. Install JS dependencies with `npm ci`, lint, and package the VSIX.
+1. Install JavaScript dependencies with `npm ci`, check Python backend syntax, lint TypeScript, and package the VSIX.
 2. Inspect the VSIX archive for required runtime JS, Python backend, and media assets.
 3. Upload an Actions artifact named `adaassist-vsix` plus `SHA256SUMS.txt`.
-4. On a version tag, match it against `package.json` and attach VSIX + checksum to a GitHub Release.
+4. Publish a GitHub Release **only** on a matching version tag or on an explicitly marked `main` commit containing `[publish-vsix]`, once the package job passes. The release job uses `package.json` to resolve the tag, and will skip an already published version.
 
-There is no requirement to publish to VS Code Marketplace. A release asset becomes publicly downloadable only once the tagged release workflow succeeds.
+There is no requirement to publish to VS Code Marketplace.
 
-To publish, first merge the intended code to main, update the package version if necessary, then create a **new** matching tag. For package version `0.0.14`:
+To publish normally, first merge all intended code into `main`, update both `package.json` and `package-lock.json`, and add a matching `CHANGELOG.md` entry. Then create and push the new version tag:
 
 ```bash
 git switch main
 git pull origin main
-git tag v0.0.14
-git push origin v0.0.14
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
-Use a different version/tag if it already exists. Verify the workflow succeeded and inspect the release's VSIX asset before announcing it.
+Alternatively, a **maintainer-authorized release merge** with `[publish-vsix]` in the resulting `main` commit message publishes and creates the version tag automatically (used for the initial v1.0.0 release). Do not add the marker to ordinary commits.
+
+Always verify the publish workflow succeeded and that `adaassist-<version>.vsix` and `SHA256SUMS.txt` appear in the release Assets before announcing availability.
 
 ## Testing
 
