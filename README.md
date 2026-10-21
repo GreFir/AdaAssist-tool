@@ -57,7 +57,7 @@ The extension starts the bundled FastAPI service automatically when needed; **yo
 
 ## ⚡ Quick start
 
-1. **Models:** Open **AdaAssist → Settings → Models**, create a profile and enter your provider, model ID, optional base URL, and API key. For Ollama or vLLM, point it to your running compatible service. Save the profile.
+1. **Models:** Open **AdaAssist → Settings → Models** and configure your provider, model ID, optional Base URL, and API key. **No model endpoint or model ID is preconfigured.** For Ollama or vLLM, use your own service URL. Save the profile.
 2. **Mode:** Pick **Interactive** or **Auto** in the compact menu beside the Send button (or under **Settings → Workflow**).
 3. **Requirement:** Describe a Python function and its expected behavior. Optionally open **Tests** to provide executable top-level `assert` checks; otherwise AdaAssist can suggest tests.
 4. **Run:** Send the task. In **Interactive**, review tests, generated code, and repair plans at checkpoints. In **Auto**, the workflow proceeds through generation, testing, and repair automatically.
@@ -136,7 +136,7 @@ The four Settings sections intentionally have separate responsibilities:
 - **Completion** — independent Python inline-completion model, trigger mode, debounce, and token budget.
 - **Environment** — local Python interpreter and backend dependency check.
 
-Model profiles live in `.vscode/adaassist-profiles.json` by default. UI-entered API keys are stored in VS Code Secret Storage; do **not** commit real keys. See [Configuration and troubleshooting](docs/INSTALLATION.md#model-configuration) for Ollama/vLLM, hosted APIs, and common problems.
+Model profiles live in `.vscode/adaassist-profiles.json` by default. The corrected v1.0.0 VSIX does not erase existing saved profiles; to clear an old endpoint, edit the saved profile or the legacy `adaassist.baseUrl` setting. Inline completion starts disabled until separately configured. UI-entered API keys are stored in VS Code Secret Storage; do **not** commit real keys. See [Configuration and troubleshooting](docs/INSTALLATION.md#model-configuration) for Ollama/vLLM, hosted APIs, and common problems.
 
 ## 📦 Build from source
 
