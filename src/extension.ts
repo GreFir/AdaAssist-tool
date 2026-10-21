@@ -848,32 +848,62 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		}
 
 		try {
-			// Only import paired files from the same directory; exclude generated and environment folders.
-			const tasks = await vscode.workspace.findFiles(
-				'**/task.py',
-				'**/{.git,node_modules,.venv,venv,__pycache__,dist,out,build,.tox,.mypy_cache}/**',
-				300
-			);
-			const matches = (await Promise.all(tasks.map(async (taskUri) => {
-				const directory = vscode.Uri.joinPath(taskUri, '..');
-				for (const name of ['public_tests.py']) {
-					const testsUri = vscode.Uri.joinPath(directory, name);
-					try {
-						const stat = await vscode.workspace.fs.stat(testsUri);
-						if ((stat.type & vscode.FileType.File) !== 0) {
-							return {
-								taskUri,
-								testsUri,
-								label: vscode.workspace.asRelativePath(directory, true),
-								testFile: name
-							};
-						}
-					} catch { /* No paired test file with this spelling. */ }
+			// Scan the workspace root and at most two nested directory levels.
+			// A bounded traversal avoids a potentially expensive '**/task.py' search.
+			const ignoredDirectories = new Set([
+				'.git', 'node_modules', '.venv', 'venv', '__pycache__',
+				'dist', 'out', 'build', '.tox', '.mypy_cache'
+			]);
+			const directories: Array<{ uri: vscode.Uri; depth: number }> =
+				vscode.workspace.workspaceFolders.map((folder) => ({ uri: folder.uri, depth: 0 }));
+			const matches: Array<{
+				taskUri: vscode.Uri;
+				testsUri: vscode.Uri;
+				label: string;
+				testFile: string;
+			}> = [];
+			// Keep a practical bound for unusually wide workspaces, in addition to max depth.
+			const maxDirectories = 1500;
+			let truncated = false;
+			for (let index = 0; index < directories.length; index += 1) {
+				if (index >= maxDirectories || matches.length >= 300) {
+					truncated = true;
+					break;
 				}
-				return undefined;
-			}))).filter((match): match is NonNullable<typeof match> => Boolean(match))
-				.sort((left, right) => left.label.localeCompare(right.label));
-
+				const { uri, depth } = directories[index];
+				let entries: [string, vscode.FileType][];
+				try {
+					entries = await vscode.workspace.fs.readDirectory(uri);
+				} catch {
+					// Skip inaccessible folders; other workspace folders may still be usable.
+					continue;
+				}
+				const hasFile = (filename: string): boolean =>
+					entries.some(([name, type]) =>
+						name === filename && (type & vscode.FileType.File) !== 0);
+				if (hasFile('task.py') && hasFile('public_tests.py')) {
+					matches.push({
+						taskUri: vscode.Uri.joinPath(uri, 'task.py'),
+						testsUri: vscode.Uri.joinPath(uri, 'public_tests.py'),
+						label: vscode.workspace.asRelativePath(uri, true),
+						testFile: 'public_tests.py'
+					});
+				}
+				if (depth >= 2) { continue; }
+				for (const [name, type] of entries) {
+					if (ignoredDirectories.has(name)) { continue; }
+					if ((type & vscode.FileType.Directory) === 0 ||
+						(type & vscode.FileType.SymbolicLink) !== 0) { continue; }
+					directories.push({ uri: vscode.Uri.joinPath(uri, name), depth: depth + 1 });
+				}
+			}
+			matches.sort((left, right) => left.label.localeCompare(right.label));
+			if (truncated) {
+				void vscode.window.showWarningMessage(tr(
+					'Example scan reached its directory or result limit; only the matches found so far are shown.',
+					'示例扫描达到目录或结果数量上限，仅显示当前已找到的示例。'
+				));
+			}
 			if (!matches.length) {
 				void vscode.window.showInformationMessage(tr(
 					'No example pair found. Place task.py and public_tests.py in the same workspace directory.',
