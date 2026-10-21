@@ -801,7 +801,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	}
 
 	public async selectPythonInterpreter(): Promise<void> {
-		const selected = await choosePythonInterpreter(this.context);
+		const selected = await choosePythonInterpreter(this.context, this.promptLanguage);
 		if (!selected) {
 			return;
 		}
@@ -4653,12 +4653,17 @@ async function getPythonExtensionInterpreterPath(): Promise<string | undefined> 
 	return undefined;
 }
 
-async function choosePythonInterpreter(context: vscode.ExtensionContext): Promise<string | undefined> {
+async function choosePythonInterpreter(
+	context: vscode.ExtensionContext,
+	language: 'en' | 'zh-CN'
+): Promise<string | undefined> {
+	// Match the AdaAssist Webview language, independent of VS Code's display language.
+	const tr = (english: string, chinese: string): string => language === 'zh-CN' ? chinese : english;
 	for (;;) {
 		const configured = getConfiguredPythonPath(context);
 		const items: PythonInterpreterPickItem[] = [{
-			label: '$(sync) 自动跟随 VS Code 工作区 Python',
-			description: '优先使用当前工作区解释器；没有时回退到已有环境或系统 Python。',
+			label: `$(sync) ${tr('Follow VS Code workspace Python', '自动跟随 VS Code 工作区 Python')}`,
+			description: tr('Prefer the current workspace interpreter; otherwise use another detected environment or system Python.', '优先使用当前工作区解释器；没有时回退到已有环境或系统 Python。'),
 			value: 'auto',
 			action: 'auto',
 			picked: configured === 'auto'
@@ -4680,7 +4685,7 @@ async function choosePythonInterpreter(context: vscode.ExtensionContext): Promis
 			items.push({
 				label: `$(symbol-method) ${env.name}`,
 				description: `${env.manager}${env.version ? ' · Python ' + env.version : ''}`,
-				detail: `${env.path} · ${env.executable}${runnable ? '' : ' (不可运行)'}`,
+				detail: `${env.path} · ${env.executable}${runnable ? '' : tr(' (not executable)', ' (不可运行)')}`,
 				value: `env:${env.id}`,
 				picked: env.id === explicitEnvironment
 			});
@@ -4694,24 +4699,28 @@ async function choosePythonInterpreter(context: vscode.ExtensionContext): Promis
 			items.push({
 				label: path.basename(candidate) || candidate,
 				description: candidate,
-				detail: candidate === active ? 'VS Code 当前解释器' : runnable ? '本地 Python 解释器' : '当前不可运行',
+				detail: candidate === active
+					? tr('Current VS Code interpreter', 'VS Code 当前解释器')
+					: runnable
+						? tr('Local Python interpreter', '本地 Python 解释器')
+						: tr('Interpreter is not executable', '当前不可运行'),
 				value: candidate,
 				picked: candidate === configured
 			});
 		}
 		items.push({
-			label: '$(refresh) 刷新本机 Python 环境',
-			description: discoveryError || '重新扫描 Conda、venv、系统 Python 等环境',
+			label: `$(refresh) ${tr('Refresh local Python environments', '刷新本机 Python 环境')}`,
+			description: discoveryError || tr('Rescan Conda, venv, and system Python environments.', '重新扫描 Conda、venv、系统 Python 等环境'),
 			action: 'refresh'
 		});
 		items.push({
-			label: '$(folder-opened) 浏览并选择 Python 可执行文件...',
-			description: '手动选择 python.exe 或 python',
+			label: `$(folder-opened) ${tr('Browse for a Python executable...', '浏览并选择 Python 可执行文件...')}`,
+			description: tr('Manually choose python.exe or python.', '手动选择 python.exe 或 python'),
 			action: 'browse'
 		});
 		const choice = await vscode.window.showQuickPick(items, {
-			title: '选择 AdaAssist 后端 Python 解释器',
-			placeHolder: '支持 Conda、venv、系统 Python；请选择已安装后端依赖的环境'
+			title: tr('Select AdaAssist backend Python interpreter', '选择 AdaAssist 后端 Python 解释器'),
+			placeHolder: tr('Choose an environment with backend dependencies installed (Conda, venv, or system Python).', '支持 Conda、venv、系统 Python；请选择已安装后端依赖的环境')
 		});
 		if (!choice) { return undefined; }
 		if (choice.action === 'auto') { return 'auto'; }
@@ -4721,22 +4730,22 @@ async function choosePythonInterpreter(context: vscode.ExtensionContext): Promis
 				if (api) {
 					await api.refreshEnvironments(undefined);
 				} else {
-					void vscode.window.showWarningMessage('安装并启用 Python Environments 扩展以扫描 Conda 等本机环境。');
+					void vscode.window.showWarningMessage(tr('Install and enable the Python Environments extension to discover local environments such as Conda.', '安装并启用 Python Environments 扩展以扫描 Conda 等本机环境。'));
 				}
 			} catch (error) {
-				void vscode.window.showWarningMessage(`Python 环境刷新失败：${String(error)}`);
+				void vscode.window.showWarningMessage(`${tr('Failed to refresh Python environments:', 'Python 环境刷新失败：')} ${String(error)}`);
 			}
 			continue;
 		}
 		if (choice.action === 'browse') {
 			const picked = await vscode.window.showOpenDialog({
 				canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
-				openLabel: '选择 Python 解释器'
+				openLabel: tr('Select Python interpreter', '选择 Python 解释器')
 			});
 			if (!picked?.[0]) { return undefined; }
 			const executable = picked[0].fsPath;
 			if (!await isRunnablePython({ executable, args: [] })) {
-				void vscode.window.showErrorMessage(`解释器不可运行：${executable}`);
+				void vscode.window.showErrorMessage(`${tr('Python interpreter is not executable:', '解释器不可运行：')} ${executable}`);
 				continue;
 			}
 			return executable;
@@ -4751,7 +4760,7 @@ async function choosePythonInterpreter(context: vscode.ExtensionContext): Promis
 			command = { executable: choice.value, args: [] };
 		}
 		if (!await isRunnablePython(command)) {
-			void vscode.window.showErrorMessage(`Python 环境不可运行：${formatPythonCommand(command)}`);
+			void vscode.window.showErrorMessage(`${tr('Python environment is not executable:', 'Python 环境不可运行：')} ${formatPythonCommand(command)}`);
 			continue;
 		}
 		return choice.value;

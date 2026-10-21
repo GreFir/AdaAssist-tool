@@ -42,7 +42,7 @@
       },
       {
         "command": "adaassist.selectPythonInterpreter",
-        "title": "AdaAssist: 选择 Python 解释器"
+        "title": "%command.selectPythonInterpreter.title%"
       },
       {
         "command": "adaassist.runWorkflow",
