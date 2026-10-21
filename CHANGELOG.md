@@ -1,10 +1,25 @@
 # Change Log
 
-All notable changes to the "adacoder" extension will be documented in this file.
+All notable changes to the "AdaAssist" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-10-20
+
+First officially distributed AdaAssist VSIX release (GitHub Releases).
+
+- Provide Interactive and Auto workflows for Python code generation, public testing, visible error feedback, reviewable repair plans, and iterative fixes.
+- Support independent top-level `assert` tests and `unittest.TestCase` cases with per-test reporting.
+- Add compact task composer controls, in-workflow mode switching at pause points, and recoverable session history.
+- Import paired `task.py` and `public_tests.py` files from the current workspace, scanning at most two directory levels.
+- Remember a selected Python interpreter across VS Code restarts by persisting its executable path and launch arguments.
+- Localize Python environment diagnostics and execution errors; improve narrow-sidebar wrapping of user-entered tasks.
+- Support provider/model profiles and optional Python inline completion with independently configured endpoints.
+- Package the VS Code extension, Webview assets, and bundled FastAPI backend source as an installable VSIX.
+
+**Requirements:** VS Code 1.110.0+, Python 3.12+ with backend dependencies, and access to a configured model API. Python runtimes, API keys, and model weights are not bundled. This is a research-oriented release; public-test passes do not guarantee correctness.
 
 ## [0.0.14]
 
