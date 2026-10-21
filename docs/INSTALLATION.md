@@ -72,7 +72,7 @@ Set **Max Output Tokens** to control generation length across the workflow. It a
 
 Profile metadata is saved to `.vscode/adaassist-profiles.json` by default. API keys entered in the UI are stored in **VS Code Secret Storage**, not written into this file; for manually edited JSON use `apiKeyEnv` instead of putting a secret in source control.
 
-**Inline completions are configured separately:** Settings → Completion controls the smaller Python suggestion model, automatic/manual triggering, debounce delay, and suggestion token limit. To manually trigger, use `Ctrl+Alt+Space` (macOS: `Cmd+Option+Space`) or `AdaAssist: Trigger Inline Completion`.
+**Inline completions are disabled by default and configured separately:** Settings → Completion controls the smaller Python suggestion model, automatic/manual triggering, debounce delay, and suggestion token limit. To manually trigger, use `Ctrl+Alt+Space` (macOS: `Cmd+Option+Space`) or `AdaAssist: Trigger Inline Completion`.
 
 ## Test format and code safety
 
