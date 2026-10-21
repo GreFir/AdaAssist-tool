@@ -49,6 +49,25 @@
       workflow: 'Workflow', logs: 'Logs', tests: 'Tests', profiles: 'Profiles', runtime: 'Runtime', settings: 'Settings', settingsHint: 'Manage workflows, models, inline completion and the Python runtime.', openLogs: 'Open Logs', openTests: 'Open Tests', openProfiles: 'Open Profiles', openSettings: 'Open Settings',
       workflowSetup: 'Workflow setup', runSetup: 'Run Setup', mode: 'Mode', workflowMode: 'Workflow Mode', interactiveContinue: 'Interactive Continue', autoFullWorkflow: 'Auto Full Workflow',
       environmentStatus: 'Environment Status', checkingEnvironment: 'Checking environment...', environmentReady: 'Environment ready', environmentWarning: 'Environment needs attention', environmentFailed: 'Environment unavailable', checkEnvironment: 'Check Environment',
+      environmentPythonDependencies: 'Python and backend dependencies',
+      environmentLocalBackend: 'Local FastAPI backend',
+      environmentRemoteModel: 'Remote model service',
+      environmentBackendNotFound: 'Backend entry not found: {path}',
+      environmentBackendPythonUnavailable: 'Python environment unavailable; cannot start the backend.',
+      environmentBackendHealthy: 'Health check succeeded at {url}',
+      environmentModelNoProfile: 'No LLM profile selected.',
+      environmentModelNoUrl: 'The selected LLM profile is missing a Base URL.',
+      environmentModelClaudeDeferred: 'Claude does not support the /models preflight check; the connection will be validated on the first request.',
+      environmentModelHttpError: '{url} returned HTTP {status}',
+      environmentModelAvailable: '{model} is accessible',
+      environmentModelNotFound: 'Service is reachable, but model {model} was not found.',
+      environmentModelUnreachable: 'Cannot reach {url}: {error}',
+      environmentSelectedPythonMissing: 'The selected Python environment was removed or is unavailable. Please select an interpreter again.',
+      environmentSelectedPythonNotRunnable: 'The selected Python interpreter cannot be executed: {command}',
+      environmentSelectedPythonMissingShort: 'Selected Python environment unavailable; please select another interpreter.',
+      environmentSelectedPythonLoadFailed: 'Unable to load the selected Python environment.',
+      environmentAutoFollowVsCode: 'Following VS Code workspace Python',
+      environmentAutoDetectLocal: 'Automatically detecting local Python',
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
       llmSetupRequired: 'LLM Setup Required', configureProfileBeforeStart: 'Configure an LLM profile before starting the workflow.', conversation: 'Conversation',
       conversationHint: 'Requirements, code, run results, and plans appear here in order.', problemPlaceholder: 'Describe the coding task, constraints, expected behavior, and anything the model must preserve.',
@@ -128,6 +147,25 @@
       workflow: '工作流', logs: '日志', tests: '测试', profiles: '配置', runtime: '运行环境', settings: '设置', settingsHint: '分别管理工作流、模型、行内补全和 Python 运行环境。', openLogs: '打开日志', openTests: '打开测试', openProfiles: '打开配置', openSettings: '打开设置',
       workflowSetup: '工作流设置', runSetup: '运行设置', mode: '模式', workflowMode: '工作流模式', interactiveContinue: '交互式继续', autoFullWorkflow: '自动完整工作流',
       environmentStatus: '环境状态', checkingEnvironment: '正在检查环境...', environmentReady: '环境已就绪', environmentWarning: '环境需要注意', environmentFailed: '环境不可用', checkEnvironment: '检查环境',
+      environmentPythonDependencies: 'Python 与后端依赖',
+      environmentLocalBackend: '本地 FastAPI 后端',
+      environmentRemoteModel: '远端模型服务',
+      environmentBackendNotFound: '未找到 {path}',
+      environmentBackendPythonUnavailable: 'Python 环境不可用，无法启动后端。',
+      environmentBackendHealthy: '已在 {url} 响应健康检查',
+      environmentModelNoProfile: '未选择 LLM 配置。',
+      environmentModelNoUrl: '当前 LLM 配置缺少基础 URL。',
+      environmentModelClaudeDeferred: 'Claude 配置不提供 /models 预检；将在首次请求时验证。',
+      environmentModelHttpError: '{url} 返回 HTTP {status}',
+      environmentModelAvailable: '{model} 可访问',
+      environmentModelNotFound: '服务可访问，但未找到模型 {model}',
+      environmentModelUnreachable: '{url} 无法访问：{error}',
+      environmentSelectedPythonMissing: '所选 Python 环境已删除或不可用，请重新选择解释器。',
+      environmentSelectedPythonNotRunnable: '所选 Python 环境不可运行：{command}',
+      environmentSelectedPythonMissingShort: '已选环境不可用，请重新选择',
+      environmentSelectedPythonLoadFailed: '无法加载已选环境',
+      environmentAutoFollowVsCode: '自动跟随 VS Code',
+      environmentAutoDetectLocal: '自动检测本机 Python',
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
       llmSetupRequired: '需要配置 LLM', configureProfileBeforeStart: '请先配置一个 LLM 配置，再启动工作流。', conversation: '对话',
       conversationHint: '需求、代码、运行结果和计划会按顺序显示在这里。', problemPlaceholder: '描述编程任务、约束条件、预期行为，以及模型必须保留的内容。',
@@ -2782,6 +2820,14 @@
 		return t('checkingEnvironment');
 	}
 
+  function environmentText(key, params, fallback) {
+    const dictionary = translations[uiLanguage] || translations.en;
+    const template = (key && (dictionary[key] || translations.en[key])) || fallback || '';
+    return String(template).replace(/\{(\w+)\}/g, function (whole, name) {
+      return params && Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : whole;
+    });
+  }
+
   function renderEnvironmentStatus() {
 		if (!environmentStatus || !environmentStatusSummary || !environmentCheckList) {
 			return;
@@ -2797,10 +2843,10 @@
 			row.className = 'environment-check-item ' + (item.status || 'checking');
 			const label = document.createElement('span');
 			label.className = 'environment-check-label';
-			label.textContent = String(item.label || '');
+			label.textContent = environmentText(item.labelKey, item.detailParams, item.label);
 			const detail = document.createElement('span');
 			detail.className = 'environment-check-detail';
-			detail.textContent = String(item.detail || '');
+			detail.textContent = environmentText(item.detailKey, item.detailParams, item.detail);
 			row.append(label, detail);
 			environmentCheckList.appendChild(row);
 		});
@@ -2813,7 +2859,12 @@
 		if (!pythonInterpreterValue) {
 			return;
 		}
-		pythonInterpreterValue.textContent = String(state.pythonEnvironmentLabel || (state.pythonPath === 'auto' ? t('autoDetectPython') : state.pythonPath) || t('autoDetectPython'));
+		let label = String(state.pythonEnvironmentLabel || (state.pythonPath === 'auto' ? t('autoDetectPython') : state.pythonPath) || t('autoDetectPython'));
+    if (label === '已选环境不可用，请重新选择') label = t('environmentSelectedPythonMissingShort');
+    else if (label === '无法加载已选环境') label = t('environmentSelectedPythonLoadFailed');
+    else if (label.startsWith('自动跟随 VS Code · ')) label = t('environmentAutoFollowVsCode') + ' · ' + label.slice('自动跟随 VS Code · '.length);
+    else if (label === '自动检测本机 Python') label = t('environmentAutoDetectLocal');
+    pythonInterpreterValue.textContent = label;
 	}
 
   function renderInlineCompletionSettings() {

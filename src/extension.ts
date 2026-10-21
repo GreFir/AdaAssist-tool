@@ -36,14 +36,25 @@ type EnvironmentCheckStatus = 'checking' | 'ready' | 'failed' | 'warning';
 
 interface EnvironmentCheckItem {
 	label: string;
+	labelKey?: string;
 	status: EnvironmentCheckStatus;
 	detail: string;
+	detailKey?: string;
+	detailParams?: Record<string, string | number>;
 }
 
 interface EnvironmentCheckResult {
 	status: EnvironmentCheckStatus;
 	items: EnvironmentCheckItem[];
 	checkedAt: string;
+}
+
+class PythonEnvironmentResolutionError extends Error {
+	constructor(
+		message: string,
+		public readonly detailKey: string,
+		public readonly detailParams: Record<string, string | number> = {}
+	) { super(message); }
 }
 
 interface InlineCompletionSettingsView {
@@ -1052,36 +1063,43 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				throw new Error(compactProcessOutput(probe) || 'Python could not import the required backend packages.');
 			}
 			items.push({
-				label: 'Python 与后端依赖',
+				label: 'Python 与后端依赖', labelKey: 'environmentPythonDependencies',
 				status: 'ready',
 				detail: `${formatPythonCommand(pythonCommand)} (${probe.stdout.trim() || 'version unknown'})`
 			});
 		} catch (error) {
 			items.push({
-				label: 'Python 与后端依赖',
+				label: 'Python 与后端依赖', labelKey: 'environmentPythonDependencies',
 				status: 'failed',
-				detail: error instanceof Error ? error.message : String(error)
+				detail: error instanceof Error ? error.message : String(error),
+				...(error instanceof PythonEnvironmentResolutionError
+					? { detailKey: error.detailKey, detailParams: error.detailParams }
+					: {})
 			});
 		}
 
 		const backendPath = resolveBackendEntryPath(this.context);
 		if (!fs.existsSync(backendPath)) {
-			items.push({ label: '本地 FastAPI 后端', status: 'failed', detail: `未找到 ${backendPath}` });
+			items.push({ label: '本地 FastAPI 后端', labelKey: 'environmentLocalBackend', status: 'failed', detail: `未找到 ${backendPath}`, detailKey: 'environmentBackendNotFound', detailParams: { path: backendPath } });
 		} else if (!pythonCommand) {
-			items.push({ label: '本地 FastAPI 后端', status: 'failed', detail: 'Python 环境不可用，无法启动后端。' });
+			items.push({ label: '本地 FastAPI 后端', labelKey: 'environmentLocalBackend', status: 'failed', detail: 'Python 环境不可用，无法启动后端。', detailKey: 'environmentBackendPythonUnavailable' });
 		} else {
 			try {
 				await this.backendServer.ensureStarted();
 				items.push({
-					label: '本地 FastAPI 后端',
+					label: '本地 FastAPI 后端', labelKey: 'environmentLocalBackend',
 					status: 'ready',
-					detail: `已在 ${getBackendUrl()} 响应健康检查`
+					detail: `已在 ${getBackendUrl()} 响应健康检查`,
+					detailKey: 'environmentBackendHealthy', detailParams: { url: getBackendUrl() }
 				});
 			} catch (error) {
 				items.push({
-					label: '本地 FastAPI 后端',
+					label: '本地 FastAPI 后端', labelKey: 'environmentLocalBackend',
 					status: 'failed',
-					detail: error instanceof Error ? error.message : String(error)
+					detail: error instanceof Error ? error.message : String(error),
+					...(error instanceof PythonEnvironmentResolutionError
+						? { detailKey: error.detailKey, detailParams: error.detailParams }
+						: {})
 				});
 			}
 		}
@@ -1100,16 +1118,17 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 	private async checkModelEndpoint(): Promise<EnvironmentCheckItem> {
 		const profile = this.getActiveProfile();
 		if (!profile) {
-			return { label: '远端模型服务', status: 'failed', detail: '未选择 LLM 配置。' };
+			return { label: '远端模型服务', labelKey: 'environmentRemoteModel', status: 'failed', detail: '未选择 LLM 配置。', detailKey: 'environmentModelNoProfile' };
 		}
 		if (!profile.baseUrl.trim()) {
-			return { label: '远端模型服务', status: 'failed', detail: '当前 LLM 配置缺少基础 URL。' };
+			return { label: '远端模型服务', labelKey: 'environmentRemoteModel', status: 'failed', detail: '当前 LLM 配置缺少基础 URL。', detailKey: 'environmentModelNoUrl' };
 		}
 		if (profile.provider === 'claude') {
 			return {
-				label: '远端模型服务',
+				label: '远端模型服务', labelKey: 'environmentRemoteModel',
 				status: 'warning',
-				detail: 'Claude 配置不提供 /models 预检；将在首次请求时验证。'
+				detail: 'Claude 配置不提供 /models 预检；将在首次请求时验证。',
+				detailKey: 'environmentModelClaudeDeferred'
 			};
 		}
 
@@ -1125,19 +1144,21 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			});
 			if (!response.ok) {
 				return {
-					label: '远端模型服务',
+					label: '远端模型服务', labelKey: 'environmentRemoteModel',
 					status: 'failed',
-					detail: `${profile.baseUrl} 返回 HTTP ${response.status}`
+					detail: `${profile.baseUrl} 返回 HTTP ${response.status}`,
+					detailKey: 'environmentModelHttpError', detailParams: { url: profile.baseUrl, status: response.status }
 				};
 			}
 			const payload = await response.json() as { data?: Array<{ id?: string }> };
 			const modelExists = Array.isArray(payload.data) && payload.data.some((model) => model.id === profile.model);
 			return modelExists
-				? { label: '远端模型服务', status: 'ready', detail: `${profile.model} 可访问` }
-				: { label: '远端模型服务', status: 'failed', detail: `服务可访问，但未找到模型 ${profile.model}` };
+				? { label: '远端模型服务', labelKey: 'environmentRemoteModel', status: 'ready', detail: `${profile.model} 可访问`, detailKey: 'environmentModelAvailable', detailParams: { model: profile.model } }
+				: { label: '远端模型服务', labelKey: 'environmentRemoteModel', status: 'failed', detail: `服务可访问，但未找到模型 ${profile.model}`, detailKey: 'environmentModelNotFound', detailParams: { model: profile.model } };
 		} catch (error) {
 			const detail = error instanceof Error ? error.message : String(error);
-			return { label: '远端模型服务', status: 'failed', detail: `${profile.baseUrl} 无法访问：${detail}` };
+			return { label: '远端模型服务', labelKey: 'environmentRemoteModel', status: 'failed', detail: `${profile.baseUrl} 无法访问：${detail}`,
+				detailKey: 'environmentModelUnreachable', detailParams: { url: profile.baseUrl, error: detail } };
 		}
 	}
 
@@ -4815,11 +4836,14 @@ async function resolvePythonCommand(context: vscode.ExtensionContext): Promise<P
 	if (configured.startsWith('env:')) {
 		const env = await getSelectedPythonEnvironment(configured.slice(4));
 		if (!env) {
-			throw new Error('所选 Python 环境已删除或不可用，请重新选择解释器。');
+			throw new PythonEnvironmentResolutionError('所选 Python 环境已删除或不可用，请重新选择解释器。', 'environmentSelectedPythonMissing');
 		}
 		const command = { executable: env.executable, args: env.args };
 		if (await isRunnablePython(command)) { return command; }
-		throw new Error(`所选 Python 环境不可运行：${formatPythonCommand(command)}`);
+		throw new PythonEnvironmentResolutionError(
+			`所选 Python 环境不可运行：${formatPythonCommand(command)}`,
+			'environmentSelectedPythonNotRunnable', { command: formatPythonCommand(command) }
+		);
 	}
 	const candidates = pythonCommandCandidates(context);
 	if (configured === 'auto') {
