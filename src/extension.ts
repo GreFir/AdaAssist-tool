@@ -1669,7 +1669,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 				this.postOperationError(messageText, {
 					scope: message.type === 'updateResolvedTests' ? 'tests' : 'workflow',
 					action: message.type
-				}, 'Panel action failed');
+				}, 'Panel action failed', true, error);
 			}
 	}
 
@@ -1921,12 +1921,21 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 		message: string,
 		operation: OperationContext,
 		title = 'Workflow Error',
-		retryable = true
+		retryable = true,
+		cause?: unknown
 	): void {
+		// Preserve the original error for logs, but send a structured localization key
+		// so the Webview can re-render diagnostics when users switch languages.
+		const pythonError = cause instanceof PythonEnvironmentResolutionError ? cause : undefined;
 		this.postMessage({
 			type: 'workflowError',
 			title,
+			...(title === 'Execution failed' ? { titleKey: 'workflowExecutionFailed' } : {}),
 			message,
+			...(pythonError ? {
+				messageKey: pythonError.detailKey,
+				messageParams: pythonError.detailParams
+			} : {}),
 			reason: `${title}: ${message}`,
 			scope: operation.scope,
 			action: operation.action,
@@ -2383,7 +2392,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			succeeded = true;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			this.postOperationError(message, operation, errorPrefix);
+			this.postOperationError(message, operation, errorPrefix, true, error);
 		} finally {
 			await this.refreshActiveSession(true);
 			this.stopSessionPolling();
