@@ -884,7 +884,7 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			const selected = matches.length === 1 ? matches[0] : await vscode.window.showQuickPick(
 				matches.map((match) => ({
 					label: match.label,
-					description: \`task.py + \${match.testFile}\`,
+					description: `task.py + ${match.testFile}`,
 					match
 				})),
 				{
@@ -945,10 +945,10 @@ class AdacoderChatPanel implements vscode.WebviewViewProvider {
 			this.pendingTestText = testText;
 			this.pendingTestReveal = false;
 			this.postMessage({ type: 'workspaceExampleImported', problem, testText, source: selected.label });
-			this.appendUiLog('info', \`Example imported from workspace: \${selected.label}\`);
+			this.appendUiLog('info', `Example imported from workspace: ${selected.label}`);
 		} catch (error) {
 			const detail = error instanceof Error ? error.message : String(error);
-			void vscode.window.showErrorMessage(\`\${tr('Could not import workspace example:', '无法导入工作区示例：')} \${detail}\`);
+			void vscode.window.showErrorMessage(`${tr('Could not import workspace example:', '无法导入工作区示例：')} ${detail}`);
 		}
 	}
 
