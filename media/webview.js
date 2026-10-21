@@ -71,6 +71,7 @@
       interactiveHint: 'Interactive pauses at review points so you can edit tests, code, plans, and add directions before the next model call.', autoHint: 'Auto runs the complete backend workflow without mid-step editing or guidance.', llmProfile: 'LLM Profile', configure: 'Configure', startupContext: 'Startup Context',
       llmSetupRequired: 'LLM Setup Required', configureProfileBeforeStart: 'Configure an LLM profile before starting the workflow.', conversation: 'Conversation',
       conversationHint: 'Requirements, code, run results, and plans appear here in order.', problemPlaceholder: 'Describe the coding task, constraints, expected behavior, and anything the model must preserve.',
+      importWorkspaceExample: 'Import example from workspace', workspaceExampleImported: 'Loaded example from',
       selectionToPrompt: 'Use Selection', send: 'Send', sendWorkflow: 'Send workflow', newTask: 'New Task', composerNote: 'Ctrl/Cmd+Enter to send.', modelSelectHint: 'Choose a model from your profile config.', modelLockedHint: 'Click New Task to switch models.',
       closeTests: 'Close tests', testsCompactEmpty: 'Leave empty to generate tests.', testsCompactDirty: 'Unsaved changes · save or continue to apply.', testsCompactReady: 'Edit the tests, then save or continue.', testsHint: 'Keep one shared Python assert test suite for the current workflow.', back: 'Back', testSuite: 'Test Suite', testMode: 'Test Mode', manualTests: 'Manual Tests', generateTests: 'Generate Tests', testOptions: 'Generation options', testGenerationGoal: 'Test generation goal', generateShort: 'Generate', replaceTestsShort: 'Replace?', replaceWithGeneratedTests: 'Replace existing tests with generated tests', appendSelection: 'Append selected code', testDescriptionCompactPlaceholder: 'Test focus (optional)...', replaceWithSelection: 'Replace with selection', collapseTests: 'Done',
       manualTestsHint: 'This is the single current test suite. Leave it empty to generate tests before code generation.', selectionToTests: 'Selection To Tests', saveTests: 'Save Tests',
@@ -169,6 +170,7 @@
       interactiveHint: 'Interactive 会在审查点暂停，你可以修改测试、代码和计划，并在下一次模型调用前补充方向。', autoHint: 'Auto 会连续运行完整后端流程，不开放中途编辑或补充指导。', llmProfile: 'LLM 配置', configure: '配置', startupContext: '启动上下文',
       llmSetupRequired: '需要配置 LLM', configureProfileBeforeStart: '请先配置一个 LLM 配置，再启动工作流。', conversation: '对话',
       conversationHint: '需求、代码、运行结果和计划会按顺序显示在这里。', problemPlaceholder: '描述编程任务、约束条件、预期行为，以及模型必须保留的内容。',
+      importWorkspaceExample: '从工作区导入示例', workspaceExampleImported: '已从示例目录导入',
       selectionToPrompt: '使用选区', send: '发送', sendWorkflow: '发送工作流', newTask: '新任务', composerNote: '按 Ctrl/Cmd+Enter 发送。', modelSelectHint: '从配置文件列表中选择模型。', modelLockedHint: '点击“新任务”后可切换模型。',
       testsHint: '为当前工作流维护一套共享的 Python assert 测试。', back: '返回', testSuite: '测试集', testMode: '测试模式', manualTests: '手动测试', generateTests: '生成测试', testOptions: '生成选项', testGenerationGoal: '测试生成目标', generateShort: '生成', replaceTestsShort: '替换?', replaceWithGeneratedTests: '再次点击以替换已有测试', appendSelection: '追加选区', testDescriptionCompactPlaceholder: '测试重点（可选）...', replaceWithSelection: '用选区替换', collapseTests: '完成',
       manualTestsHint: '这是当前唯一的测试集。留空可在生成代码前自动生成测试。', selectionToTests: '选区写入测试', saveTests: '保存测试',
@@ -234,6 +236,7 @@
   const showOutputBtn = document.getElementById('showOutputBtn');
   const openTestsBtn = document.getElementById('openTestsBtn');
   const composerTestsBtn = document.getElementById('composerTestsBtn');
+  const importWorkspaceExampleBtn = document.getElementById('importWorkspaceExampleBtn');
   const openSettingsBtn = document.getElementById('openSettingsBtn');
 	const settingsTabButtons = Array.from(document.querySelectorAll('[data-settings-tab]'));
 	const settingsTabPanels = Array.from(document.querySelectorAll('[data-settings-panel]'));
@@ -3382,6 +3385,7 @@
     const testsEditable = !state.running && (!hasSession || interactiveSession);
     const testsBusy = state.testOperationStatus === 'running';
 
+    if (importWorkspaceExampleBtn) importWorkspaceExampleBtn.disabled = state.running;
     problemInput.readOnly = !guidanceEditable;
     problemInput.classList.toggle('locked-input', !guidanceEditable);
     problemInput.placeholder = composerPlaceholder();
@@ -3927,6 +3931,16 @@
     });
   });
 
+  if (importWorkspaceExampleBtn) {
+    importWorkspaceExampleBtn.addEventListener('click', function () {
+      if (state.running) return;
+      vscode.postMessage({
+        type: 'importWorkspaceExample',
+        hasDraft: Boolean(problemInput.value.trim() || configuredTestCode().trim())
+      });
+    });
+  }
+
   useSelectionForProblemBtn.addEventListener('click', function () {
     state.pendingSelectionTarget = 'problem';
     state.pendingSelectionMode = 'append';
@@ -4144,6 +4158,22 @@
         state.logEntries = Array.isArray(data.entries) ? data.entries : [];
         renderLogsPage();
         break;
+      case 'workspaceExampleImported': {
+        if (typeof data.problem !== 'string' || typeof data.testText !== 'string') break;
+        resetTaskDraft();
+        problemInput.value = data.problem;
+        setEditableCodeText(testInput, data.testText);
+        setEditableCodeText(resolvedTestsEditor, data.testText);
+        testModeSelect.value = 'manual';
+        state.problemDraftDirty = true;
+        state.resolvedTestsDirty = true;
+        state.operationStatus = 'passed';
+        state.operationMessage = t('workspaceExampleImported') + ': ' + String(data.source || '');
+        setTestsDrawerOpen(false);
+        switchPage('task');
+        renderAll();
+        break;
+      }
       case 'prefillProblem':
         if (typeof data.problem === 'string') {
           const mode = data.mode || (state.pendingSelectionTarget === 'problem' ? state.pendingSelectionMode : '');
