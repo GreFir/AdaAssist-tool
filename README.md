@@ -51,7 +51,7 @@ If your chosen Python environment does not already have the backend packages, in
 python -m pip install fastapi uvicorn openai requests anthropic google-genai
 ```
 
-On Windows, `py -3.12 -m pip install ...` is an alternative if `python` does not point to Python 3.12+. On Linux/macOS with an externally managed Python, use a virtual environment; see [Python setup](docs/INSTALLATION.md#python-runtime-setup). In **AdaAssist → Settings → Environment**, select the Python interpreter where you installed these packages and run **Check Environment**.
+On Windows, `py -3.12 -m pip install ...` is an alternative if `python` does not point to Python 3.12+. On Linux/macOS with an externally managed Python, use a virtual environment; see [Python setup](docs/INSTALLATION.md#python-runtime-setup). In **AdaAssist → Settings → Environment**, select the Python interpreter where you installed these packages and run **Check Environment**. AdaAssist saves the selected interpreter's executable path and any launch arguments in VS Code settings for the current workspace, so restarting VS Code does not require selecting it again. Use **Auto-detect Python** to follow the active VS Code workspace interpreter instead. Older `env:` selections are migrated to stable paths when they can be resolved; genuinely deleted or moved interpreters must be selected again.
 
 The extension starts the bundled FastAPI service automatically when needed; **you do not normally need to launch `backend/main.py` yourself**.
 
