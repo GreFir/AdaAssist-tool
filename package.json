@@ -118,7 +118,13 @@
         "adaassist.pythonPath": {
           "type": "string",
           "default": "auto",
-          "description": "Python executable, 'auto' to follow VS Code's current workspace interpreter, or an environment ID chosen via AdaAssist. Discovers Conda, venv and global interpreters using Python Environments."
+          "description": "Python executable path saved for this workspace, or 'auto' to follow the active VS Code Python interpreter. AdaAssist stores the executable instead of a transient Python Environments ID."
+        },
+        "adaassist.pythonArgs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Additional launch arguments for the selected Python executable, managed together with adaassist.pythonPath."
         },
         "adaassist.backendPath": {
           "type": "string",
