@@ -305,8 +305,8 @@ const LEGACY_PROFILE_CONFIG_RELATIVE_PATH = '.vscode/adacoder-profiles.json';
 const DEFAULT_BACKEND_ENTRY_RELATIVE_PATH = 'backend/main.py';
 const DEFAULT_BACKEND_HOST = '127.0.0.1';
 const DEFAULT_BACKEND_PORT = 8765;
-const DEFAULT_LLM_BASE_URL = 'http://127.0.0.1:8003/v1';
-const DEFAULT_LLM_MODEL = 'deepseek-coder-33b-instruct';
+const DEFAULT_LLM_BASE_URL = '';
+const DEFAULT_LLM_MODEL = '';
 const DEFAULT_WORKFLOW_MAX_TOKENS = 1024;
 const MAX_WORKFLOW_OUTPUT_TOKENS = 32768;
 
@@ -315,8 +315,8 @@ function normalizeWorkflowMaxTokens(value: unknown): number {
 		&& value >= 128 && value <= MAX_WORKFLOW_OUTPUT_TOKENS
 		? value : DEFAULT_WORKFLOW_MAX_TOKENS;
 }
-const DEFAULT_INLINE_BASE_URL = 'http://127.0.0.1:8004/v1';
-const DEFAULT_INLINE_MODEL = 'deepseek-coder-6.7b-instruct';
+const DEFAULT_INLINE_BASE_URL = '';
+const DEFAULT_INLINE_MODEL = '';
 const SESSION_POLL_INTERVAL_MS = 300;
 
 class BackendServerManager {
@@ -4199,7 +4199,7 @@ function getInlineCompletionSettings(): InlineCompletionSettingsView {
 		? 'manual'
 		: 'automatic';
 	return {
-		enabled: getConfigurationValue<boolean>('inlineCompletion.enabled', true),
+		enabled: getConfigurationValue<boolean>('inlineCompletion.enabled', false),
 		provider: normalizeProvider(getConfigurationValue<string>('inlineCompletion.provider', 'vllm')),
 		baseUrl: (getConfigurationValue<string>('inlineCompletion.baseUrl', DEFAULT_INLINE_BASE_URL) || DEFAULT_INLINE_BASE_URL).trim(),
 		model: (getConfigurationValue<string>('inlineCompletion.model', DEFAULT_INLINE_MODEL) || DEFAULT_INLINE_MODEL).trim(),
@@ -4215,8 +4215,8 @@ async function saveInlineCompletionSettings(message: Record<string, unknown>): P
 	const provider = normalizeProvider(typeof message.provider === 'string' ? message.provider : 'vllm');
 	const baseUrl = typeof message.baseUrl === 'string' ? message.baseUrl.trim() : '';
 	const model = typeof message.model === 'string' ? message.model.trim() : '';
-	if (!baseUrl || !model) {
-		throw new Error('行内补全的 Base URL 和模型不能为空。');
+	if (message.enabled !== false && (!baseUrl || !model)) {
+		throw new Error('启用行内补全时，必须填写 Base URL 和模型名称。');
 	}
 	const debounceMs = typeof message.debounceMs === 'number'
 		? Math.max(250, Math.min(5000, Math.round(message.debounceMs)))
@@ -5452,11 +5452,11 @@ async function insertGeneratedCode(code: string): Promise<void> {
           </div>
           <div class="field span-2">
             <label for="inlineCompletionBaseUrlInput" data-i18n="baseUrl">Base URL</label>
-            <input id="inlineCompletionBaseUrlInput" type="text" placeholder="http://127.0.0.1:8004/v1" />
+            <input id="inlineCompletionBaseUrlInput" type="text" placeholder="Enter your model service URL" />
           </div>
           <div class="field span-2">
             <label for="inlineCompletionModelInput" data-i18n="model">Model</label>
-            <input id="inlineCompletionModelInput" type="text" placeholder="deepseek-coder-6.7b-instruct" />
+            <input id="inlineCompletionModelInput" type="text" placeholder="Enter your model ID" />
           </div>
         </div>
       </div>
