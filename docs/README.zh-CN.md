@@ -15,12 +15,12 @@
 命令行安装也可以：
 
 ```powershell
-code --install-extension .\adaassist-0.0.14.vsix
+code --install-extension .\adaassist-1.0.0.vsix
 ```
 
 把文件名换成实际下载的版本。**手动安装的 VSIX 默认不会自动升级**，以后更新时重新安装新版本即可。
 
-**Releases 还没有可下载文件？** 可以在 [VSIX 构建工作流](https://github.com/GreFir/AdaAssist-tool/actions/workflows/package-vsix.yml) 的成功运行记录中下载 **Artifacts → adaassist-vsix**，解压后得到 VSIX（下载 Actions 产物可能需要 GitHub 登录）。开发者也可以参照 [源码打包](DEVELOPMENT.md) 自己生成。
+**如果 Releases 下载遇到问题：** 可以在 [VSIX 构建工作流](https://github.com/GreFir/AdaAssist-tool/actions/workflows/package-vsix.yml) 的成功运行记录中下载 **Artifacts → adaassist-vsix**，解压后得到 VSIX（下载 Actions 产物可能需要 GitHub 登录）。开发者也可以参照 [源码打包](DEVELOPMENT.md) 自己生成。
 
 ## 2. 首次使用还需要准备什么？
 
@@ -42,7 +42,8 @@ python -m pip install fastapi uvicorn openai requests anthropic google-genai
 
 1. 点击 **Select Python Interpreter**，选择刚刚安装依赖的 Python 环境（可选 Conda、venv 或本机 Python）。
 2. 点击 **Check Environment** 检查后端依赖。
-3. AdaAssist 会在需要时自动启动本地 FastAPI 服务，通常不需要你手动打开终端运行 `main.py`。
+3. AdaAssist 会保存所选 Python 解释器路径和启动参数，下次打开同一工作区不必重新选择。
+4. AdaAssist 会在需要时自动启动本地 FastAPI 服务，通常不需要你手动打开终端运行 `main.py`。
 
 **注意：** Python 依赖一定要安装到 AdaAssist 选用的解释器里；安装到 A 环境、却选择 B 环境，是最常见的启动失败原因。
 

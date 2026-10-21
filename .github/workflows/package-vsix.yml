@@ -27,6 +27,8 @@ jobs:
         run: npm ci
       - name: Lint TypeScript
         run: npm run lint
+      - name: Check Python backend syntax
+        run: python3 -m compileall -q backend
       - name: Create installable VSIX
         run: npm run package:vsix
       - name: Verify VSIX contents
@@ -70,9 +72,16 @@ jobs:
           retention-days: 30
 
   github-release:
-    name: Attach VSIX to GitHub Release
+    name: Publish verified VSIX to GitHub Releases
     needs: package
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Ordinary pushes and PRs build artifacts only. An explicitly marked
+    # release commit on main can publish without a separately pushed tag.
+    # Traditional matching version-tag pushes continue to work.
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/main' &&
+       contains(github.event.head_commit.message, '[publish-vsix]'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -81,18 +90,71 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: adaassist-vsix
-      - name: Check tag matches package version
+      - name: Resolve version and guard against duplicate releases
+        id: release
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
-            echo "::error::Release tag ${GITHUB_REF_NAME} must equal v${VERSION} from package.json"
+          TAG="v${VERSION}"
+          if [[ "${GITHUB_REF}" == refs/tags/* && "${GITHUB_REF_NAME}" != "${TAG}" ]]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} must match package.json version ${TAG}"
             exit 1
           fi
-      - uses: softprops/action-gh-release@v2
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "::notice::Release ${TAG} already exists; skipping publication."
+            echo "publish=false" >> "${GITHUB_OUTPUT}"
+          else
+            if [[ "${GITHUB_REF}" == "refs/heads/main" ]] &&
+               git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+              echo "::error::Tag ${TAG} already exists without a release. Inspect it before publishing."
+              exit 1
+            fi
+            echo "publish=true" >> "${GITHUB_OUTPUT}"
+          fi
+      - name: Prepare release notes
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          version = json.loads(pathlib.Path("package.json").read_text())["version"]
+          changelog = pathlib.Path("CHANGELOG.md").read_text()
+          lines = changelog.splitlines()
+          starts = [i for i, line in enumerate(lines) if line.startswith(f"## [{version}]")]
+          if len(starts) != 1:
+              raise SystemExit(f"Expected one CHANGELOG entry for {version}")
+          start = starts[0]
+          end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## [")), len(lines))
+          details = "\n".join(lines[start:end]).strip()
+          notes = (
+              f"# AdaAssist v{version}\n\n"
+              "Download the `adaassist-" + version + ".vsix` file below and install it via "
+              "**VS Code → Extensions → ··· → Install from VSIX…**.\n\n"
+              "Alternatively, run `code --install-extension adaassist-" + version + ".vsix`.\n\n"
+              + details + "\n\n"
+              "**Important:** VSIX includes the Python backend source, but not Python 3.12+, "
+              "its dependencies, a configured LLM endpoint, or model weights. "
+              "Read [setup instructions](https://github.com/GreFir/AdaAssist-tool#readme) before use. "
+              "For integrity verification, compare the downloaded VSIX checksum with `SHA256SUMS.txt`.\n"
+          )
+          pathlib.Path("RELEASE_NOTES.md").write_text(notes)
+          PY
+      - name: Publish VSIX and SHA-256 checksum
+        if: steps.release.outputs.publish == 'true'
+        uses: softprops/action-gh-release@v2
         with:
-          name: AdaAssist ${{ github.ref_name }}
-          generate_release_notes: true
+          tag_name: ${{ steps.release.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: AdaAssist ${{ steps.release.outputs.tag }}
+          draft: false
+          prerelease: false
+          make_latest: true
+          body_path: RELEASE_NOTES.md
           fail_on_unmatched_files: true
           files: |
             adaassist-*.vsix
