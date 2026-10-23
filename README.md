@@ -112,9 +112,11 @@ The composer uses a single input frame, with icon-only **Use Selection** and **N
 | **Interactive / Auto** | Review intermediate artifacts or run the autonomous workflow |
 | **Public-test feedback** | Edit Python `assert` tests, rerun candidates, and see evaluation results |
 | **Repair with a plan** | Inspect, edit, and reuse a plan informed by failures and the current code |
-| **Task history** | Keep independent tasks within the UI; inspect past sessions in **Logs** |
-| **Session recovery** | Reopen restorable historical sessions from complete saved snapshots |
+| **Task history** | Search saved sessions by task description, session ID, and available log text; restore sessions from **Logs** without displaying unrelated previous tasks |
+| **Session recovery and JSON export** | Reopen restorable historical sessions and export complete JSON snapshots from **Logs** using the download arrow beside each saved session |
 | **Python inline completion** | Configurable model, idle debounce, and manual triggering independent of the workflow model |
+
+**History and export:** Select **Logs** in the extension header, search for a requirement or session ID, then click the restore arrow to reopen it or the download arrow to save the complete session JSON. Only the active task appears in the workflow conversation; prior tasks remain available through Logs. Diagnostic-only entries without a complete snapshot cannot be exported as full sessions.
 
 **Workflow sketch**
 

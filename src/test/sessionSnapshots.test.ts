@@ -41,6 +41,30 @@ suite('Session snapshots', () => {
 		}
 	});
 
+
+	test('lists searchable requirements from complete snapshots', async () => {
+		const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'adaassist-history-'));
+		try {
+			const context = { storageUri: vscode.Uri.file(path.join(root, 'data')),
+				globalStorageUri: vscode.Uri.file(path.join(root, 'fallback')) } as vscode.ExtensionContext;
+			const store = new SessionSnapshotStore<TestSession>(context, root);
+			await store.save({
+				schemaVersion: 1, savedAt: '', workflowMode: 'auto',
+				interactiveState: 'done',
+				session: { session_id: 'c'.repeat(32), problem_statement: 'Calculate letter pair counts',
+					current_code: 'pass', passed: true }
+			});
+			const restarted = new SessionSnapshotStore<TestSession>(context, root);
+			await restarted.refreshIndex();
+			const summaries = await restarted.listSummaries();
+			assert.equal(summaries.length, 1);
+			assert.equal(summaries[0].requirement, 'Calculate letter pair counts');
+			assert.equal(summaries[0].passed, true);
+		} finally {
+			await fs.promises.rm(root, { recursive: true, force: true });
+		}
+	});
+
 	test('discovers and reads original user-study sessions JSON', async () => {
 		const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'adaassist-study-'));
 		try {

@@ -247,6 +247,7 @@
   const refreshLogsBtn = document.getElementById('refreshLogsBtn');
   const openRawOutputBtn = document.getElementById('openRawOutputBtn');
   const visualLogList = document.getElementById('visualLogList');
+  const historySearchInput = document.getElementById('historySearchInput');
   const submitWorkflowIcon = document.getElementById('submitWorkflowIcon');
   const submitWorkflowLabel = document.getElementById('submitWorkflowLabel');
   const sendIconSrc = document.body ? String(document.body.dataset.sendIcon || '') : '';
@@ -454,6 +455,8 @@
     runningLabel: '',
     localLogs: [],
     logEntries: [],
+    historyIndex: [],
+    historySearch: '',
     expandedLogSessions: {},
     resolvedTestsDirty: false,
     lastSessionId: '',
@@ -635,6 +638,7 @@
     if (normalized === 'logs') {
       renderLogsPage();
       vscode.postMessage({ type: 'requestLogHistory' });
+      vscode.postMessage({ type: 'requestHistoryIndex' });
     }
   }
 
@@ -1584,7 +1588,7 @@
       ...(state.restorableSessionIds || []),
       ...(state.archivedSessions || []).map(session => session.session_id)
     ]);
-    if (entries.length === 0 && snapshotIds.size === 0) {
+    if (entries.length === 0 && snapshotIds.size === 0 && !(state.historyIndex || []).length) {
       const empty = document.createElement('div');
       empty.className = 'visual-log-empty';
       empty.textContent = t('noLogs');
@@ -1605,7 +1609,22 @@
       if (id && !groups.has(id)) groups.set(id, []);
     });
 
+    const summaries = new Map((state.historyIndex || []).map(item => [item.sessionId, item]));
+    (state.historyIndex || []).forEach(function (item) {
+      if (item.sessionId && !groups.has(item.sessionId)) groups.set(item.sessionId, []);
+    });
+    const term = state.historySearch.trim().toLocaleLowerCase();
+    let shown = 0;
     groups.forEach(function (groupEntries, sessionKey) {
+      const summary = summaries.get(sessionKey);
+      const searchable = [
+        sessionKey,
+        summary && summary.requirement,
+        summary && summary.passed ? 'passed success' : 'failed',
+        ...groupEntries.map(entry => [entry.event, entry.message, entry.category].join(' '))
+      ].join(' ').toLocaleLowerCase();
+      if (term && !searchable.includes(term)) return;
+      shown += 1;
       const sessionId = sessionKey === '__extension__' ? '' : sessionKey;
       const currentSessionId = state.session && state.session.session_id ? String(state.session.session_id) : '';
       const isCurrent = Boolean(sessionId && sessionId === currentSessionId);
@@ -1624,7 +1643,9 @@
       const identity = document.createElement('span');
       identity.className = 'visual-log-session-title';
       identity.textContent = sessionId
-        ? t('logSession') + ' ' + sessionId.slice(0, 8)
+        ? (summary && summary.requirement
+          ? summary.requirement.trim().replace(/\s+/g, ' ').slice(0, 100)
+          : t('logSession') + ' ' + sessionId.slice(0, 8))
         : t('unscopedLogs');
       identity.title = sessionId;
       const summaryMeta = document.createElement('span');
@@ -1635,7 +1656,7 @@
         groupEntries.length ? groupEntries.length + ' ' + t('logEvents') : (snapshotIds.has(sessionId)
           ? (uiLanguage === 'zh-CN' ? '已保存完整快照' : 'Saved full snapshot')
           : '0 ' + t('logEvents')),
-        logTimestamp(latestTimestamp)
+        logTimestamp((summary && summary.updatedAt) || latestTimestamp)
       ].filter(Boolean).join(' · ');
       const summaryContent = document.createElement('span');
       summaryContent.className = 'visual-log-session-identity';
@@ -1643,6 +1664,21 @@
       groupSummary.appendChild(summaryContent);
       const hasSnapshot = Boolean((state.archivedSessions || []).some(item => item.session_id === sessionId))
         || (state.restorableSessionIds || []).includes(sessionId);
+      if (sessionId) {
+        const exportButton = document.createElement('button');
+        exportButton.type = 'button';
+        exportButton.className = 'ada-restore-session visual-log-restore';
+        exportButton.textContent = '⇩';
+        exportButton.title = uiLanguage === 'zh-CN' ? '导出完整会话 JSON' : 'Export full session JSON';
+        exportButton.setAttribute('aria-label', exportButton.title);
+        exportButton.disabled = !hasSnapshot && !isCurrent;
+        exportButton.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          vscode.postMessage({ type: 'exportSessionJson', sessionId });
+        });
+        groupSummary.appendChild(exportButton);
+      }
       if (sessionId && !isCurrent) {
         const restore = document.createElement('button');
         restore.type = 'button';
@@ -1706,6 +1742,12 @@
       group.appendChild(groupBody);
       visualLogList.appendChild(group);
     });
+    if (!shown) {
+      const empty = document.createElement('div');
+      empty.className = 'visual-log-empty';
+      empty.textContent = uiLanguage === 'zh-CN' ? '没有匹配的历史记录' : 'No matching sessions';
+      visualLogList.appendChild(empty);
+    }
     visualLogList.scrollTop = previousScrollTop;
   }
 
@@ -2530,11 +2572,11 @@
       || hasTimelineChange;
 
     timeline.innerHTML = '';
-    renderArchivedHistory();
-    appendNewTaskAnchor();
+    // A restored session is an independent workspace. Archived sessions remain
+    // available in Logs, not concatenated into the active conversation.
     state.lastTimelineSignature = timelineSignature;
 
-    if (entries.length === 0 && !(state.archivedSessions || []).length) {
+    if (entries.length === 0) {
 			const guide = renderStudyGuideCard();
 			if (guide) {
 				timeline.appendChild(guide);
@@ -3683,6 +3725,7 @@
 
   if (refreshLogsBtn) {
     refreshLogsBtn.addEventListener('click', function () {
+      vscode.postMessage({ type: 'requestHistoryIndex' });
       vscode.postMessage({ type: 'requestLogHistory' });
     });
   }
@@ -4100,6 +4143,13 @@
     });
   }
 
+  if (historySearchInput) {
+    historySearchInput.addEventListener('input', function () {
+      state.historySearch = historySearchInput.value;
+      renderLogsPage();
+    });
+  }
+
   window.addEventListener('message', function (event) {
     const data = event.data;
     if (!data || typeof data.type !== 'string') {
@@ -4179,6 +4229,10 @@
         break;
       case 'logHistory':
         state.logEntries = Array.isArray(data.entries) ? data.entries : [];
+        renderLogsPage();
+        break;
+      case 'historyIndex':
+        state.historyIndex = Array.isArray(data.sessions) ? data.sessions : [];
         renderLogsPage();
         break;
       case 'workspaceExampleImported': {

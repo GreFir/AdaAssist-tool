@@ -3060,3 +3060,24 @@ body.vscode-high-contrast-light .workflow-progress-popover {
   .settings-profile-pick { grid-template-columns: minmax(0,1fr); }
   .settings-profile-pick .btn { max-width: none; justify-self: start; }
 }
+
+/* Search and export controls for independent task history. */
+.history-search-input {
+  flex: 1 1 170px;
+  min-width: 0;
+  max-width: 360px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--fg);
+  background: var(--vscode-input-background, var(--surface-strong));
+  font: inherit;
+  font-size: 12px;
+}
+.history-search-input:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--fg));
+  outline-offset: -1px;
+}
+.visual-log-session-summary { grid-template-columns: minmax(0, 1fr) auto auto; }
+.visual-log-session-title { max-width: 100%; }
