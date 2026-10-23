@@ -6,6 +6,8 @@
 
 <p align="center">
   <a href="#-quick-install-vsix">Install VSIX</a> ·
+  <a href="https://www.youtube.com/watch?v=YfQ5a4ThXE4">Demo video</a> ·
+  <a href="examples/README.md">Examples</a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="#-features">Features</a> ·
   <a href="docs/README.zh-CN.md">简体中文</a> ·
@@ -14,7 +16,15 @@
 
 AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. It makes the generation → public testing → feedback → repair workflow visible and lets users review intermediate results instead of working with an opaque agent loop. It supports **Interactive** and **Auto** execution, editable tests and plans, multiple task sessions, historical workflow inspection, and Python inline completion.
 
-> **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. Paper, video, and reproduction links will be added when available.
+> **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. The video is available above; manuscript and reproduction links will be added if publicly released.
+
+## 🎬 Video demonstration and sample tasks
+
+[Watch the AdaAssist tool demonstration on YouTube](https://www.youtube.com/watch?v=YfQ5a4ThXE4).
+
+This repository includes seven **plugin-ready starter examples** adapted from BigCodeBench tasks in [`examples/`](examples/README.md). Each example contains a paired `task.py` and `public_tests.py` and can be loaded using **Import example from workspace**. These are simplified public checks for hands-on exploration, **not the original benchmark tests or a reproduction of the paper's results**. No unpublished manuscript link is provided.
+
+For a quick trial, open the cloned repository as a VS Code workspace, configure Python and a model in AdaAssist, select the import icon under the composer, then choose an example folder. Review the task and tests before pressing **Send**. See the [example catalog](examples/README.md) for dependencies and details.
 
 ## 🚀 Quick install (VSIX)
 
