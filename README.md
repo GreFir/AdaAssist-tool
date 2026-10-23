@@ -14,7 +14,7 @@
 
 AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. It makes the generation → public testing → feedback → repair workflow visible and lets users review intermediate results instead of working with an opaque agent loop. It supports **Interactive** and **Auto** execution, editable tests and plans, multiple task sessions, historical workflow inspection, and Python inline completion.
 
-> **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. Paper, video, and reproduction links will be added when available.
+> **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. The paper link and related publication information will be added after public release.
 
 ## 🚀 Quick install (VSIX)
 
@@ -158,6 +158,14 @@ The command compiles the extension and creates `adaassist-<version>.vsix` in the
 AdaAssist is intended for **code generation under explicit public tests and user intervention**. Historical workflow events and model timing/token metadata can be recorded, including in prepared user-study workspaces. To understand experiment data, setup, and limitations, see [Research and artifacts](docs/RESEARCH.md).
 
 The software and configuration can evolve; for experimental comparisons, **record the exact commit/VSIX version, model identifier, endpoint, output-token settings, and test suite**. A paper link and BibTeX will be added once the manuscript is public.
+
+## 🎬 Video demonstration
+
+[Watch the AdaAssist tool demonstration on YouTube](https://www.youtube.com/watch?v=YfQ5a4ThXE4).
+
+## 🧪 Try example tasks
+
+The [importable examples](examples/README.md) include seven English-language Python tasks with public tests. Open this repository as a VS Code workspace, then use **Import example from workspace** in AdaAssist to select a task. Every example has a paired `task.py` and `public_tests.py` file, so the importer can load both together. Example tests are simplified for hands-on use and are not the original benchmark evaluation suite.
 
 ## 📚 Documentation
 
