@@ -19,7 +19,7 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 
 ## Paper experiment settings
 
-Experimental configurations and reproduction instructions for Tables I–IV are available in the [reproduction guide](reproduction/README.md) ([中文说明](reproduction/README.zh-CN.md)). The materials cover model and tool settings, benchmark datasets and test splits, evaluation procedures, and human study protocols.
+Experimental configurations and reproduction instructions for Tables I–IV are available in the [reproduction guide](reproduction/README.md) ([Chinese version](reproduction/README.zh-CN.md)). The materials cover model and tool settings, benchmark datasets and test splits, evaluation procedures, and human study protocols.
 
 ## 🚀 Quick install (VSIX)
 
