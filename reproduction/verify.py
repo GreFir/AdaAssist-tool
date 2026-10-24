@@ -91,6 +91,10 @@ def main():
     require(deepseek["sampling"]["max_output_tokens"] == qwen["sampling"]["max_output_tokens"] == 512, "Backend output budgets must be 512")
     require(all(method["max_output_tokens"] == 512 for method in deepseek["methods"]), "DeepSeek methods must all use 512 output tokens")
     require(len(deepseek["reported_results"]) == 15, "Expected five methods across three DeepSeek models")
+    require(all(isinstance(method.get("version"), str) and method["version"] for method in deepseek["methods"]), "DeepSeek methods must record a version or 'not recorded'")
+    for tool in ("Codex", "DSH", "AdaAssist"):
+        require(isinstance(qwen[tool].get("version"), str) and qwen[tool]["version"], f"Missing Qwen tool version: {tool}")
+        require(next(method for method in deepseek["methods"] if method["name"] == tool)["version"] == qwen[tool]["version"], f"Tool versions differ between experiments: {tool}")
     print("OK: final backend output budgets and result matrix")
     print("Verification passed.")
 

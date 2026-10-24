@@ -21,27 +21,34 @@
   "methods": [
     {
       "name": "Direct",
+      "version": "not recorded",
       "max_output_tokens": 512,
       "execution": "single generation"
     },
     {
       "name": "MapCoder",
+      "version": "not recorded",
+      "commit": "not recorded",
+      "repository": "https://github.com/Md-Ashraful-Pramanik/MapCoder",
       "max_output_tokens": 512,
       "execution": "MapCoder official default configuration",
       "stopping_policy": "MapCoder official default stopping and retry rules"
     },
     {
       "name": "Codex",
+      "version": "0.144.1",
       "max_output_tokens": 512,
       "execution": "tool default settings"
     },
     {
       "name": "DSH",
+      "version": "0.2.0-rc.2",
       "max_output_tokens": 512,
       "execution": "tool default settings"
     },
     {
       "name": "AdaAssist",
+      "version": "v1.0",
       "max_output_tokens": 512,
       "execution": "backend Auto default configuration",
       "mode": "Auto",

@@ -19,6 +19,7 @@
   "serving_settings": "artifacts/environment/qwen_serving_settings.json",
   "retry_policy": "Use each tool's default retry settings",
   "AdaAssist": {
+    "version": "v1.0",
     "mode": "Auto",
     "language": "English",
     "context_enabled": false,

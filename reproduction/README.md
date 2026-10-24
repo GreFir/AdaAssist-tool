@@ -27,6 +27,13 @@ All manifest paths are relative to `reproduction/`. These JSON files describe ex
 | Seeds | 42, 43, 44 | 42, 43, 44 |
 | Retry settings | Tool defaults | Tool defaults |
 
+| Tool | Version |
+| --- | --- |
+| [MapCoder](https://github.com/Md-Ashraful-Pramanik/MapCoder) | `not recorded` |
+| Codex | `0.144.1` |
+| DSH | `0.2.0-rc.2` |
+| AdaAssist | `v1.0` |
+
 MapCoder uses its **official default configuration**, including its default stopping and retry rules. AdaAssist uses the **backend Auto default workflow**: generate, run public tests, apply rule-based fixes, and plan/regenerate for persistent failures. Auto finishes when public tests pass or the configured repair-round limit is reached, and pauses on user interruption. These method settings are recorded in [deepseek.json](configs/deepseek.json).
 
 DeepSeek model repositories:
