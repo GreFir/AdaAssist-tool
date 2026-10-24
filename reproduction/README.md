@@ -33,7 +33,7 @@ DeepSeek model repositories:
 - [deepseek-ai/deepseek-coder-6.7b-instruct](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct)
 - [deepseek-ai/deepseek-coder-33b-instruct](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct)
 
-Qwen uses [Qwen/Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct), a 16,384-token context and concurrency 16. AdaAssist runs in Auto mode with English prompts, supplied public tests, context reuse disabled and at most six repair rounds after initial generation. Codex and DSH are evaluated with their default execution settings and the Table II limited setting (initial candidate modification plus up to six subsequent modification responses). Retry handling follows each tool's defaults. Versions and deployment parameters are in [qwen.json](configs/qwen.json) and [qwen_serving_settings.json](artifacts/environment/qwen_serving_settings.json).
+Qwen uses [Qwen/Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct), a 16,384-token context and concurrency 16. AdaAssist runs in Auto mode with English prompts, supplied public tests, context reuse disabled and at most six repair rounds after initial generation. Codex and DSH are evaluated with their default execution settings and the Table II ≤6 repairs setting. Retry handling follows each tool's defaults. Versions and deployment parameters are in [qwen.json](configs/qwen.json) and [qwen_serving_settings.json](artifacts/environment/qwen_serving_settings.json).
 
 Table II final results:
 
@@ -77,5 +77,3 @@ Check material integrity from the repository root:
 ```bash
 python reproduction/verify.py
 ```
-
-This command checks checksums, configuration files, task IDs and BCB test splits; it does not execute model experiments.

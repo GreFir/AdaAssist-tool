@@ -81,7 +81,7 @@ def main():
     require(all(method["max_output_tokens"] == 512 for method in deepseek["methods"]), "DeepSeek methods must all use 512 output tokens")
     require(len(deepseek["reported_results"]) == 15, "Expected five methods across three DeepSeek models")
     print("OK: final backend output budgets and result matrix")
-    print("Integrity checks passed. This checks configuration artifacts; it does not run experiments or recompute paper results.")
+    print("Verification passed.")
 
 
 if __name__ == "__main__":

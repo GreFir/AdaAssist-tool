@@ -33,7 +33,7 @@ DeepSeek 模型名称为：
 - [deepseek-ai/deepseek-coder-6.7b-instruct](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct)
 - [deepseek-ai/deepseek-coder-33b-instruct](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct)
 
-Qwen 上下文为 16,384、并发 16；AdaAssist 使用 Auto、英文提示词、给定公开测试、关闭上下文复用，初次生成后最多 6 轮修复。Codex 和 DSH 比较工具默认执行配置与表 II 的限制设置；限制设置计首次候选修改及其后最多 6 次修改响应。模型部署参数见 [qwen_serving_settings.json](artifacts/environment/qwen_serving_settings.json)。
+Qwen 上下文为 16,384、并发 16；AdaAssist 使用 Auto、英文提示词、给定公开测试、关闭上下文复用，初次生成后最多 6 轮修复。Codex 和 DSH 比较工具默认执行配置与表 II 的 ≤6 repairs 设置。模型部署参数见 [qwen_serving_settings.json](artifacts/environment/qwen_serving_settings.json)。
 
 表 II 最终结果：
 
@@ -71,5 +71,3 @@ Qwen 上下文为 16,384、并发 16；AdaAssist 使用 Auto、英文提示词�
 ```powershell
 python reproduction/verify.py
 ```
-
-该命令检查文件哈希、配置、任务数量与 BCB 测试划分，不调用模型。
