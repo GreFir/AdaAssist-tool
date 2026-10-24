@@ -1,0 +1,176 @@
+{
+  "scope": "Later 2026-09-17 identity; not proof of every earlier run",
+  "status": "passed",
+  "files": [
+    {
+      "name": "tokenizer.json",
+      "kind": "compat_tokenizer",
+      "size_bytes": 1367962,
+      "sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+      "unchanged_during_hash": true
+    },
+    {
+      "name": "tokenizer_config.json",
+      "kind": "compat_tokenizer",
+      "size_bytes": 1874,
+      "sha256": "079cf5a5c9accc408803492d9e848e986832890185461789e23dfaca193246d3",
+      "unchanged_during_hash": true
+    },
+    {
+      "name": "config.json",
+      "kind": "checkpoint",
+      "size_bytes": 631,
+      "sha256": "bbe1543f9193bc8ef696046d2f374a003fe94f04a70219c862b9f2fe675b0ca1",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/config.json.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "dfa26b3aeeb3c468c427f6d689329fdffa55ccb3",
+        "download_timestamp": "1787995966.071559"
+      }
+    },
+    {
+      "name": "generation_config.json",
+      "kind": "checkpoint",
+      "size_bytes": 119,
+      "sha256": "186a63b420f66a03e95a035c488373361bb04833a9b83f4bdbaba70c5c816002",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/generation_config.json.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "19a930a8e7a08b1d002e8fa317438423b61fff22",
+        "download_timestamp": "1787995966.0741403"
+      }
+    },
+    {
+      "name": "model-00001-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9733120976,
+      "sha256": "41e3565095074234aa41749a97d152e05de1d40de517c073b1d2a56e09b348fe",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00001-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "41e3565095074234aa41749a97d152e05de1d40de517c073b1d2a56e09b348fe",
+        "download_timestamp": "1787999896.2887168"
+      }
+    },
+    {
+      "name": "model-00002-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9953380272,
+      "sha256": "de2e16deb9371f2fddf2b049bb9e401f3023a5128a3d614fae9c49d78168335a",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00002-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "de2e16deb9371f2fddf2b049bb9e401f3023a5128a3d614fae9c49d78168335a",
+        "download_timestamp": "1787999917.983099"
+      }
+    },
+    {
+      "name": "model-00003-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9923991016,
+      "sha256": "af9ae326a374913bc3153cf1b87513745a952ed1cc569157d072cab9a4950ad3",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00003-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "af9ae326a374913bc3153cf1b87513745a952ed1cc569157d072cab9a4950ad3",
+        "download_timestamp": "1787999917.6403108"
+      }
+    },
+    {
+      "name": "model-00004-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9821230448,
+      "sha256": "880eaa42273b42a6660d309d6fa06285e25c1b1b3d0234232c1f3ab9aedefa95",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00004-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "880eaa42273b42a6660d309d6fa06285e25c1b1b3d0234232c1f3ab9aedefa95",
+        "download_timestamp": "1787999897.77306"
+      }
+    },
+    {
+      "name": "model-00005-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9953380288,
+      "sha256": "5cc39b940335a02703ad3fa6e0a00c09c88e1a08ce4052dccaa14dd6fcbbd8ff",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00005-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "5cc39b940335a02703ad3fa6e0a00c09c88e1a08ce4052dccaa14dd6fcbbd8ff",
+        "download_timestamp": "1787999945.0245287"
+      }
+    },
+    {
+      "name": "model-00006-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 9923991016,
+      "sha256": "999736667c735cfc49700330c07439085041c80452437d58cbde34ca90239eca",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00006-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "999736667c735cfc49700330c07439085041c80452437d58cbde34ca90239eca",
+        "download_timestamp": "1787999943.4830651"
+      }
+    },
+    {
+      "name": "model-00007-of-00007.safetensors",
+      "kind": "checkpoint",
+      "size_bytes": 7376954184,
+      "sha256": "fb240b9c4b8d6c07b2256564cf93d7e03762ff6cca333f2328217039d6b93fab",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model-00007-of-00007.safetensors.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "fb240b9c4b8d6c07b2256564cf93d7e03762ff6cca333f2328217039d6b93fab",
+        "download_timestamp": "1787999235.2287052"
+      }
+    },
+    {
+      "name": "model.safetensors.index.json",
+      "kind": "checkpoint",
+      "size_bytes": 48495,
+      "sha256": "f11a315f712a3cecd53755233063590ac67ee4ee7deafa0d40914e36c887f587",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/model.safetensors.index.json.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "30aef7db04885e8b5c5b9c85c01fa7c8c4627b96",
+        "download_timestamp": "1787995966.8730836"
+      }
+    },
+    {
+      "name": "tokenizer.json",
+      "kind": "checkpoint",
+      "size_bytes": 1367962,
+      "sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/tokenizer.json.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "0dfa4268afc2cf45515dec553772d7ca79f79762",
+        "download_timestamp": "1787996265.6088605"
+      }
+    },
+    {
+      "name": "tokenizer_config.json",
+      "kind": "checkpoint",
+      "size_bytes": 1868,
+      "sha256": "775f116ff1130a5b5bfc3cfdb594f9fcb5a5dc61d5a11ba92b2a7c078d66b7b7",
+      "unchanged_during_hash": true,
+      "huggingface_download": {
+        "metadata_path": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct/.cache/huggingface/download/tokenizer_config.json.metadata",
+        "commit_hash": "61dc97b922b13995e7f83b7c8397701dbf9cfd4c",
+        "etag": "68f6f5bd3350366399a8c53d32a602c825390806",
+        "download_timestamp": "1787996267.3226821"
+      }
+    }
+  ]
+}

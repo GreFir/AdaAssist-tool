@@ -1,0 +1,197 @@
+{
+  "confirmation_date": "2026-09-13",
+  "protocol_alignment": "The 2026-09-13 alignment confirmation applies to historical baselines only. deepseek-harness is a separate 1024-token, up-to-ten-call protocol with normalized frozen candidates; it is not an equal-budget rerun.",
+  "harness_included_on": "2026-10-13",
+  "omitted_from_main_table": [
+    "Codex-1024"
+  ],
+  "label_mapping": {
+    "v1 AdaAssist": "AdaAssist Auto"
+  },
+  "original_source": "v1:evaluation.tex",
+  "original_source_sha256": "b3602a51abab6102db4c31d6b1ac2a7961db9ad392e2bb2d1b68d9008d41dcf1",
+  "frozen_statistics_sha256": "e73bf59069f5ef1d7ed01fb79b25ca8a12aad14ac0033363cdf3e697f6ee2bfb",
+  "harness_statistics_sha256": "bc805ef033fb8813edf8b701225731718393611811a67f9c2325fcdad8633c8c",
+  "rows": [
+    {
+      "model": "1.3b",
+      "method": "Direct",
+      "rates": {
+        "HumanEval": 33.53658536585366,
+        "MBPP": 24.26666666666667,
+        "BigCodeBench-Full-Random150-PublicSplit": 14.222222222222223
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "6.7b",
+      "method": "Direct",
+      "rates": {
+        "HumanEval": 44.10569105691057,
+        "MBPP": 25.2,
+        "BigCodeBench-Full-Random150-PublicSplit": 35.333333333333336
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "33b",
+      "method": "Direct",
+      "rates": {
+        "HumanEval": 44.51219512195122,
+        "MBPP": 11.533333333333333,
+        "BigCodeBench-Full-Random150-PublicSplit": 39.11111111111111
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "1.3b",
+      "method": "AdaCoder",
+      "rates": {
+        "HumanEval": 76.83,
+        "MBPP": 71.8,
+        "BigCodeBench-Full-Random150-PublicSplit": 36.67
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "6.7b",
+      "method": "AdaCoder",
+      "rates": {
+        "HumanEval": 85.98,
+        "MBPP": 78.0,
+        "BigCodeBench-Full-Random150-PublicSplit": 53.33
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "33b",
+      "method": "AdaCoder",
+      "rates": {
+        "HumanEval": 90.85,
+        "MBPP": 81.4,
+        "BigCodeBench-Full-Random150-PublicSplit": 56.67
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "1.3b",
+      "method": "MapCoder",
+      "rates": {
+        "HumanEval": 60.37,
+        "MBPP": 37.4,
+        "BigCodeBench-Full-Random150-PublicSplit": 25.33
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "6.7b",
+      "method": "MapCoder",
+      "rates": {
+        "HumanEval": 67.68,
+        "MBPP": 44.6,
+        "BigCodeBench-Full-Random150-PublicSplit": 48.67
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "33b",
+      "method": "MapCoder",
+      "rates": {
+        "HumanEval": 67.68,
+        "MBPP": 60.4,
+        "BigCodeBench-Full-Random150-PublicSplit": 53.33
+      },
+      "source": "v1:evaluation.tex"
+    },
+    {
+      "model": "1.3b",
+      "method": "Codex",
+      "rates": {
+        "HumanEval": 36.78861788617886,
+        "MBPP": 38.733333333333334,
+        "BigCodeBench-Full-Random150-PublicSplit": 17.333333333333332
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "6.7b",
+      "method": "Codex",
+      "rates": {
+        "HumanEval": 60.36585365853658,
+        "MBPP": 58.33333333333333,
+        "BigCodeBench-Full-Random150-PublicSplit": 39.55555555555556
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "33b",
+      "method": "Codex",
+      "rates": {
+        "HumanEval": 61.78861788617886,
+        "MBPP": 64.86666666666667,
+        "BigCodeBench-Full-Random150-PublicSplit": 45.33333333333333
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "1.3b",
+      "method": "Instruct",
+      "rates": {
+        "HumanEval": 43.90243902439025,
+        "MBPP": 39.0,
+        "BigCodeBench-Full-Random150-PublicSplit": 16.666666666666664
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "6.7b",
+      "method": "Instruct",
+      "rates": {
+        "HumanEval": 47.5609756097561,
+        "MBPP": 37.0,
+        "BigCodeBench-Full-Random150-PublicSplit": 26.666666666666668
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "33b",
+      "method": "Instruct",
+      "rates": {
+        "HumanEval": 72.5609756097561,
+        "MBPP": 59.6,
+        "BigCodeBench-Full-Random150-PublicSplit": 44.0
+      },
+      "source": "generated/baseline_sources.json"
+    },
+    {
+      "model": "1.3b",
+      "method": "Harness-adapter",
+      "rates": {
+        "HumanEval": 62.19512195121951,
+        "MBPP": 46.06666666666667,
+        "BigCodeBench-Full-Random150-PublicSplit": 30.0
+      },
+      "source": "generated/harness_normalized_sources.json"
+    },
+    {
+      "model": "6.7b",
+      "method": "Harness-adapter",
+      "rates": {
+        "HumanEval": 79.0650406504065,
+        "MBPP": 67.2,
+        "BigCodeBench-Full-Random150-PublicSplit": 48.0
+      },
+      "source": "generated/harness_normalized_sources.json"
+    },
+    {
+      "model": "33b",
+      "method": "Harness-adapter",
+      "rates": {
+        "HumanEval": 78.45528455284553,
+        "MBPP": 71.53333333333333,
+        "BigCodeBench-Full-Random150-PublicSplit": 54.44444444444445
+      },
+      "source": "generated/harness_normalized_sources.json"
+    }
+  ]
+}

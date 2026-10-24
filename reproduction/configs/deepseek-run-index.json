@@ -1,0 +1,4847 @@
+{
+  "warning": "This curated index uses the author-confirmed Codex method name. Nested run IDs and source metadata preserve original archive identifiers for traceability. Shared backend settings and model IDs are in configs/deepseek.json and author-confirmations.json.",
+  "blocks": [
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "direct_1.3b_seed42",
+      "reported_rate_percent": 34.146341463414636,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164
+        },
+        "config_hash": "5e895c7e9442043ea968b765c24740ee65b28f82994107cfee74cb431ffeda0a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "direct_1.3b_seed43",
+      "reported_rate_percent": 33.53658536585366,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164
+        },
+        "config_hash": "8940ccb6dacdb19fa781b6e23a77574424b1a262674e58c4432752b154cd519a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "direct_1.3b_seed44",
+      "reported_rate_percent": 32.926829268292686,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164
+        },
+        "config_hash": "4bab4cb71adb1710908bc9a1cd1926eb9d26afb5e6cd5c1413636ba8636b3d92",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_1.3b_seed42_c8_formal",
+      "reported_rate_percent": 26.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "e5c94ca8643c73f71782c52364a3eb269169b4d33bff0145d1625a99483341d4",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_1.3b_seed43_c8_formal",
+      "reported_rate_percent": 27.200000000000003,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "48ac3c794b9b38bdf5fff08dbf8e5d332a310c6ffbf662097564c6ed3179e52d",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_1.3b_seed44_c8_formal",
+      "reported_rate_percent": 19.6,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "7fa468031f62efd7aedac756decc93f333cbe4176f4058b81b74378790b53b16",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed42_c8_formal",
+      "reported_rate_percent": 13.333333333333334,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "4a21a5396da0bd014553dec7f55425f2c54d305a69dee243f3be7d0a7ee9b9a4",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed43_c8_formal",
+      "reported_rate_percent": 15.333333333333332,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "d85ae76573bd57aafb6104fbc64beb63884767bc9e802986dde2b7bd4ff14f03",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed44_c8_formal",
+      "reported_rate_percent": 14.000000000000002,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "613bd52a52b5bdbc6463d9845bd741b692cd39ae057675cd953c106736ab205e",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "controller_1.3b_seed42_formal",
+      "reported_rate_percent": 37.80487804878049,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "4f57c51c912bd65170f640ae8262f37ca4696cb8d7ed9b1b968a7a3c4fac20e3",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "controller_1.3b_seed43_formal",
+      "reported_rate_percent": 35.97560975609756,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "976254c88d920db29e9d9a114e1fa8ff81ecbfcd7ec5ce072f2b86c058c50d36",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "HumanEval",
+      "run_id": "controller_1.3b_seed44_formal",
+      "reported_rate_percent": 36.58536585365854,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "bd2ff4254f84d3010f2c3d77a1babf57ed224ee2901bd879a4e3902649022b9a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_1.3b_seed42_c8_formal",
+      "reported_rate_percent": 36.8,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "11995967d44ad4d75287b9efb6000635151d32c4e9f252610daddc14ce86032f",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_1.3b_seed43_c8_formal",
+      "reported_rate_percent": 39.800000000000004,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "65a9a4147c0485a15b409cc5610fbf9397b1732f6410e42b5b6c076f8969bb56",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_1.3b_seed44_c8_formal",
+      "reported_rate_percent": 39.6,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "3952a92011e6dec43a15ca287cdadafa138bb6c717dac3a776d07f7c05db0a8a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed42_c8_formal",
+      "reported_rate_percent": 18.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "4c1dae36c88c152e15652951bd5aface9bcef323a66242767609ad1a8daf460b",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed43_c8_formal",
+      "reported_rate_percent": 17.333333333333336,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "d79939fe2e3ca202d550b0c1ce9db0074af59bf262ba91e8ddfe27206632c1b4",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "1.3b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_1.3b_seed44_c8_formal",
+      "reported_rate_percent": 16.666666666666664,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-1.3b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 8
+        },
+        "config_hash": "a5659132d5859701806ba7391dc37cdd77a64354ae9e07e8094e7d53d48aab47",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 8
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "direct_6.7b_seed42",
+      "reported_rate_percent": 43.90243902439025,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164
+        },
+        "config_hash": "a029948f45df9e8873b1a0613113a95b9ef5b59aff97638445a938c06f825a46",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "direct_6.7b_seed43",
+      "reported_rate_percent": 45.73170731707317,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164
+        },
+        "config_hash": "7668fa074585e84e32ca7498cfe2db6fb7bf3a8d9b49e902ef2f8f10f8ba4eb0",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "direct_6.7b_seed44",
+      "reported_rate_percent": 42.68292682926829,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164
+        },
+        "config_hash": "37573e9e855d60bfb7fe144fb5dc51964f42bd69d3335f96654a6fb4d9c62113",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_6.7b_seed42_c4_formal",
+      "reported_rate_percent": 22.400000000000002,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "832b9b29a136e5ea2923db48d76e58b634dcb30738cf4c1da42d127cbd17af1f",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_6.7b_seed43_c4_formal",
+      "reported_rate_percent": 24.6,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "669c40dc9bc786a3da13d8285fa4fce77c37f92aa8870b5eae74792b3026f3ff",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_6.7b_seed44_c4_formal",
+      "reported_rate_percent": 28.599999999999998,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "9f6319552b99cdd161f6f8bfbee955c9a705f5bb186d73e471da92b025802d2c",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed42_c4_formal",
+      "reported_rate_percent": 35.333333333333336,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "e91ab43d599e47d5ac3b24eed7ad08c32d8603f77265c9b954fbb75ed03ce6b1",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed43_c4_formal",
+      "reported_rate_percent": 34.66666666666667,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "37952b8cee104840320b0c928502e377c3df83bd1c1b8a3049b6a44cf616237a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed44_c4_formal",
+      "reported_rate_percent": 36.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "bb06024871625bc502622467029e57eeeb90d2ace93d448ee822faeb1498a444",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "controller_6.7b_seed42_formal",
+      "reported_rate_percent": 63.41463414634146,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "364598ad806032ad5e496f92f9e9a13140112ca7cfb64d6a8aefaa9c226fc12a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "controller_6.7b_seed43_formal",
+      "reported_rate_percent": 59.14634146341463,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "e5bdbbdb3b78b9771ffa53514c2d8287db58fc69d3dea5c713da3560df71f22a",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "HumanEval",
+      "run_id": "controller_6.7b_seed44_formal",
+      "reported_rate_percent": 58.536585365853654,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "85ce617f612dead50f5f3cdd6bb69d6faadf7a9cb660836771470983e6b2cde1",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_6.7b_seed42_c4_formal",
+      "reported_rate_percent": 57.599999999999994,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "9f99972b4465aaf8f66c9c144afb151bc975a0e396675039a8f5fba85d713ca5",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_6.7b_seed43_c4_formal",
+      "reported_rate_percent": 57.4,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "7e6e8aab56553e292104ecc3bec7d060c4d69d45b51bb14e1d423e4ee4a3a72b",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_6.7b_seed44_c4_formal",
+      "reported_rate_percent": 60.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "0721ab7b5700da76da769f5e8d02d1c9b645e6ad8819cf4fb69172b69ad38d85",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed42_c4_formal",
+      "reported_rate_percent": 40.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "729626b37538a2c9d53117bc675a7f3dbc3655786f9fe40bf1239d7501ed23d8",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed43_c4_formal",
+      "reported_rate_percent": 38.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "5847bf0e4d2f53fa9e4ad3a653981e2a3e0fd91e2166b05ea54bf78d21f1f8e9",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "6.7b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_6.7b_seed44_c4_formal",
+      "reported_rate_percent": 40.666666666666664,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-6.7b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "33dfdcab71be06bb136d51250e4761927bf0bc9cdfd4bd04f95df03d42bff75e",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "direct_33b_seed42",
+      "reported_rate_percent": 42.68292682926829,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164
+        },
+        "config_hash": "df3290a824d629fab1cb391303e25298e1636884ecf5f78fe62ff13ee5876366",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "direct_33b_seed43",
+      "reported_rate_percent": 46.34146341463415,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164
+        },
+        "config_hash": "7159d205a341af74730a34e3296542ff137e1669fd55e73534e923d732efa577",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "direct_33b_seed44",
+      "reported_rate_percent": 44.51219512195122,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164
+        },
+        "config_hash": "89aa808e95a563e7e01056dbc7a39d3ef557b9121734528a3b70771e29211d50",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_33b_seed42_c4_formal",
+      "reported_rate_percent": 11.799999999999999,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "17aa772ebfadbb15e5d3d02832999e1184b5ab7a2bf9d9dab8c6a9715e382eb7",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_33b_seed43_c4_formal",
+      "reported_rate_percent": 10.6,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "c72ae7c378529efb479f9dfe91de25723165684ba6c984acf9b4a12b1779e293",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "direct_MBPP_33b_seed44_c4_formal",
+      "reported_rate_percent": 12.2,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP"
+        },
+        "config_hash": "feff28449c2426a1fbae0b00cbd76d3fcbc898261a4291b3a6a7fc86d29d56bc",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_33b_seed42_c4_formal",
+      "reported_rate_percent": 40.666666666666664,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "7f05b30acd467fa26e263d171d62df47a00a72ba4edd4d2b02086492354248be",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_33b_seed43_c4_formal",
+      "reported_rate_percent": 38.666666666666664,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "b25d086bdd664fc986bc289f8ffa104e4dbb8024ca343b124b658a3e8f3180be",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Direct",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "direct_BigCodeBench-Full-Random150-PublicSplit_33b_seed44_c4_formal",
+      "reported_rate_percent": 38.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "config": {
+          "method": "direct_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+        },
+        "config_hash": "a814e22d0dc1c9ed13e1d499726899f3171ebda714778206503f171d0a8fa2c0",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "direct_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "controller_33b_seed42_formal",
+      "reported_rate_percent": 60.36585365853659,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only"
+        },
+        "config_hash": "659e2809a5a21175e8693f64e3de085fd05db4d765f8c168eac61d72eb1dcf29",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "controller_33b_seed43_formal",
+      "reported_rate_percent": 62.80487804878049,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 1
+        },
+        "config_hash": "bb6eaa95088df3a4a2940d67f200a4d1ebbb4ca86206b5d9660546e814fe65e2",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "controller_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "HumanEval",
+      "run_id": "controller_33b_seed44_c4_formal",
+      "reported_rate_percent": 62.19512195121951,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "controller_deepseek",
+        "config": {
+          "method": "controller_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 164,
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 1
+        },
+        "config_hash": "ff8025e6b014ac066d193235291a86066c4d07fc1af807d17a7bdd8275c5a372",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        }
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_33b_seed42_c4_formal",
+      "reported_rate_percent": 66.4,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "427ecd46d6cda8fc54897d72edf0068ab0fa35cb1331454c315bee970929ba57",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_33b_seed43_c4_formal",
+      "reported_rate_percent": 65.8,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "a5fc16c1d3238568ebb04824fa0f9d936f268ce4e128f4ebd5be0c495f0d8de5",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "MBPP",
+      "run_id": "codex_MBPP_33b_seed44_c4_formal",
+      "reported_rate_percent": 62.4,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 500,
+          "dataset": "MBPP",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "8fc78a49b3b0a3c6d65113e71caab13497dad0b6e29bf3ba9b4905684aaf28d8",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "MBPP"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "MBPP"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_33b_seed42_c4_formal",
+      "reported_rate_percent": 46.666666666666664,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 42,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "ca02f0a5162174d50b78ce48db3e98309920e519ae6d8eac58f535bee723fbf8",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_33b_seed43_c4_formal",
+      "reported_rate_percent": 45.33333333333333,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 43,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "6c69224c91b2201d6841814bf171ecd67832e6381f820d3ca02a78887b190028",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Codex",
+      "scale": "33b",
+      "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+      "run_id": "codex_BigCodeBench-Full-Random150-PublicSplit_33b_seed44_c4_formal",
+      "reported_rate_percent": 44.0,
+      "provenance_status": "verified run files",
+      "run_summary.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "config": {
+          "method": "codex_deepseek",
+          "model": "deepseek-coder-33b-instruct",
+          "checkpoint": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "checkpoint_revision": "local-checkpoint",
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512,
+          "prompt_template": "## Task Description\\n{prompt}",
+          "seed": 44,
+          "task_count": 150,
+          "dataset": "BigCodeBench-Full-Random150-PublicSplit",
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task": 300.0,
+          "feedback": "public_tests.py and public stdout/stderr after a failed attempt only",
+          "task_workers": 4
+        },
+        "config_hash": "41131417551a51959d38d2022be6648dcd5d306870d194a02a97b78dd600c954",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3"
+          }
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      },
+      "run_metadata.json": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "method": "codex_deepseek",
+        "checkpoint_revision": "local-checkpoint",
+        "software_environment": {
+          "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+          "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+          "packages": {
+            "openai": "2.38.0",
+            "human_eval": "1.0.3",
+            "pytest": "8.3.3",
+            "requests": "2.32.3",
+            "psutil": "7.0.0",
+            "pynvml": "12.0.0"
+          }
+        },
+        "generation": {
+          "api": "chat_completions",
+          "temperature": 0.2,
+          "top_p": 0.9,
+          "max_new_tokens": 512
+        },
+        "controller_limits": {
+          "max_model_calls": 5,
+          "max_public_test_runs": 5,
+          "max_time_per_task_seconds": 300,
+          "task_workers": 4
+        },
+        "dataset": "BigCodeBench-Full-Random150-PublicSplit"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-1.3b-seed42",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "cb352aa420e7e4f701a6c036392ace6bfd9fae5497e657336bb5dea377c3e704",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-1.3b-seed43",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "a30b11187cbcb358958e0021e035db3ae5cc5708431f9a8f7d9592c897c29b83",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-1.3b-seed44",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "512efe25e4fa9318d001595d396a7d2d556d92721b1cdc5716ba1051b50654c8",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-33b-seed42",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "de5fc34bb59116226e9090f62c8411df73b6685763f26db228ee02472a11d969",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-33b-seed43",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "aab244dc791a739d2f2bd82d6498fb4edea2f810996714e9fd4b937a42d4b30d",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-33b-seed44",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "6606e0a7314c3dbc95fe72bc2ed02e2104f784fa946715804cc439c55328ed45",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-6.7b-seed42",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "7c669cba0293b143e7b252bbca5d008b5bdaa0057c0973e223d0b44ce72c988d",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-6.7b-seed43",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "eb48c6add3a52b6c7ab467a9f297804ba470e61aa7c81c76a616ef8dc59d5857",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/BigCodeBench-6.7b-seed44",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "d80429f01a6ab7d2cff78f6d78e19f8b3a5c1bf442b7b14b82c8fa992cca1469",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-1.3b-seed42",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "badc70bb78b595ae58c45310b4851d19c8aa49e96e44a8cd934eaafc0bdd7070",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-1.3b-seed43",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "0eb0bed2243cd777d68f6bdbd1cf98204f4c26f8251f0a35c3639f9ac6bc1e86",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-1.3b-seed44",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "29bc1899bc2a45010c659b2416b493e131758658a7e8d89ec640f47e717cb1ff",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-33b-seed42",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "86ae4d47a14265b91e5d1184e063d58729a69c89c45bed6e7d0dd5ff8c99415f",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-33b-seed43",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "c81b9509430c26da569f9034a0ba8bd0767f106fd8f1eb5634c09df058a99bdc",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-33b-seed44",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "984713cab7ce3276aeffecbd5d06cc58e9d173b7fdceacca6e49b2921859eeea",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-6.7b-seed42",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "679de321c3b2a039a7b97eced973f95281396636c0e38cab95a466a0cd424490",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-6.7b-seed43",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "11b8a5c7c2230db24aede3b5b9bedbbf2cb526f451a6ba0a2b6bb3b6a0f3136a",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/HumanEval-6.7b-seed44",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "b1376d72be4bd016a62ad043d9de3846edb8d63edf1222da802a31330c14c3a7",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "fb861fc0f0a6593a6e870bb111d6185b72df676629c573b73e742d7e63868b4d",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-1.3b-seed42",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "021f89eea624beb4ab6867e893f3184e35ea35a5502943dea273c6007da09fac",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-1.3b-seed43",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "efd07ebaedcbfbe308a239a694ac591a825e6a4d0a402bff447479ae02cea9f0",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-1.3b-seed44",
+      "settings": {
+        "model": "deepseek-coder-1.3b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-1.3b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-1.3b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "83358497f5ed0149d1069fbd15c69abc11ae276a0dfb54add5b7adc3436a066d",
+        "workers": 8,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-33b-seed42",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "39992a7dc2ee1e8dbd56733373c80f2fd98fb51842b6e7021a1575801e16f21e",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-33b-seed43",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "400d6a126f6dee873d4f172e7336cd1238e363bba45f6a53b95fb5f3e675224e",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-33b-seed44",
+      "settings": {
+        "model": "deepseek-coder-33b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-33b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-33b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "17b93786096b306679f8165e82e8f9ec02f52fdef1c8bf9ea3923408edf8f80a",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-6.7b-seed42",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 42,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "1cfad80b518ae1c7e7a734d9bd881ad49fe77e1e070501635fdb5413e62a701c",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-6.7b-seed43",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 43,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "db69a178439a3dee4e17683a360c8a0617efd2c0b8cc377e453ec5d72a84c829",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    },
+    {
+      "experiment": "E1",
+      "method": "Harness-context-adapter",
+      "run_id": "runs/deepseek_harness_20261006/MBPP-6.7b-seed44",
+      "settings": {
+        "model": "deepseek-coder-6.7b-instruct",
+        "seed": 44,
+        "mode": "context_adapter",
+        "data_sha256": "7a60b0f11e9f201d9cdbebf6d0c03ad97fa87b6b014300e573f244e8dc19da58",
+        "dsh_version": "0.2.0-rc.2",
+        "dsh_release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+        "max_model_calls": 10,
+        "max_public_tests": 10,
+        "max_new_tokens": 1024,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "task_timeout": 600,
+        "context": 16384,
+        "runner_sha256": "6e0c1f10a7cd159085a64d43823976c0c9bd51354444a3eb0b8124f9559f8112",
+        "guard_sha256": "0bd5e2e91e57f2b31533e4530132efa8fa68616e340b707917a87dd842e73c7f",
+        "extraction_source_hashes": {
+          "humaneval_utils.py": "c45d1d295317ff94e57d25f8a5f7f0120709e5c95a38b63028cba4e3ff876f2b",
+          "run_controller.py": "c3f01a707b51c2fd2bbaeff42a535521e518b3b4b6f4256a4489a7e6c2b988b6"
+        },
+        "tokenizer_compatibility": {
+          "transformers_version": "5.8.1",
+          "model": "${CHECKPOINT_ROOT}/deepseek-coder-6.7b-instruct",
+          "tokenizer": "runs/tokenizer_compat/deepseek-coder-6.7b-instruct",
+          "class": "TokenizersBackend",
+          "source_class": "LlamaTokenizerFast",
+          "changed_config_fields": [
+            "tokenizer_class"
+          ],
+          "tokenizer_json_sha256": "ef48ebdc8546c2d8092349d321f1d162de804a1c8900df2b615c7dc8b02ce141",
+          "chat_template_preserved": true,
+          "roundtrip_samples_passed": 5,
+          "chat_template_token_ids_match_reference": true
+        },
+        "runtime_lock_sha256": "0b0d99b519b510aae19f30836d74f0bee5c86495734971baab1bc7fb657a915e",
+        "config_hash": "057c07cf2db634aa486a8dd1599adaff94c9c5b2d46a980cd7fbcb3d53f1ac6c",
+        "workers": 4,
+        "hidden_evaluation": "external; MBPP reuses supplied test_list"
+      }
+    }
+  ]
+}

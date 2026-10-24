@@ -2,7 +2,13 @@
 
 [← README](../README.md) · [Developer guide](DEVELOPMENT.md)
 
-AdaAssist is a **research prototype for interactive Python code generation** with visible generation, public-test evaluation, human review, and plan-guided repair. This document describes the artifacts available from the software; it does not claim any unpublished experimental result.
+AdaAssist is a **research prototype for interactive Python code generation** with visible generation, public-test evaluation, human review, and plan-guided repair. Paper experiment settings and their evidence limits are documented in the [reproduction guide](../reproduction/README.md) ([中文](../reproduction/README.zh-CN.md)); this page describes software session artifacts.
+
+## Paper experiment configurations
+
+The versioned [`reproduction/`](../reproduction/README.md) directory maps Section III-A through III-D and Tables I-IV to [DeepSeek](../reproduction/configs/deepseek.json), [Qwen](../reproduction/configs/qwen.json), [controlled intervention](../reproduction/configs/intervention.json) and [user-study](../reproduction/configs/user-study.json) manifests. It includes fixed benchmark task IDs, the BCB public/final test-method split, archived prompt/tool definitions, environment snapshots and result provenance. Run `python reproduction/verify.py` from the repository root to check integrity without model access.
+
+The [frontend study procedures](../reproduction/STUDY_PROTOCOLS.md) explain preparation, grouping, allowed interventions and analysis for the current 9-person and 15-person studies. Questionnaire forms and raw responses are deferred from this update. The [paper/archive alignment notes](../reproduction/DISCREPANCIES.md) retain unverified historical settings, method labels, test-split/budget definitions and result versions. The export's API-reviewer intervention and old 20-person Auto/Interactive study are not treated as participant evidence for the current studies.
 
 ## Workflow semantics
 
@@ -10,7 +16,7 @@ AdaAssist is a **research prototype for interactive Python code generation** wit
 
 **Auto:** The configured workflow proceeds through code generation, evaluation, local repairs, plan creation, and regeneration without the same mid-stage human review. It can stop when tests pass, an interrupt is requested, or a configured limit is reached.
 
-**Public tests:** AdaAssist expects Python top-level `assert` statements, not a pytest/unittest runner. Public-test pass rates must not be represented as hidden-test correctness.
+**Public tests:** The current demo accepts Python top-level `assert` statements and `unittest.TestCase` suites, including an explicit `TextTestRunner`; `pytest` is not a supported runner. Historical benchmark protocols use their frozen evaluators and splits. Public-test pass rates must not be represented as hidden-test correctness.
 
 ## Recording and recovering sessions
 
@@ -30,7 +36,7 @@ Record at minimum:
 | Item | Why it matters |
 | --- | --- |
 | Repository commit and VSIX version | Workflow and UI behavior can change |
-| Model identifier, provider, served revision | Different inference models can change results |
+| Full model identifier and provider; served revision if recorded | Identifies the model; a recorded revision adds version precision |
 | Endpoint configuration, decoding settings, output budget | Affects completions, truncated outputs, and cost |
 | Public tests and benchmark task identifiers | Defines observed outcomes |
 | Execution mode (Auto / Interactive) | Human intervention changes the protocol |
@@ -42,7 +48,7 @@ If results use hidden tests, document the split and evaluation procedure explici
 
 ## Availability
 
-The project currently offers the implementation, installation workflow, and session logging functionality. The paper PDF, video demonstration, benchmark reproduction scripts, tables, and canonical experiment manifests should be linked here only **after they have been checked and intentionally released**.
+The project offers the implementation, installation workflow, session logging and the [curated experiment settings](../reproduction/README.md). The settings include SHA-256 identities and explicit availability limits. Historical benchmark runners, candidates, full test source, model weights and matching raw human-study materials are not included; the manifests alone do not provide an executable replay of every paper result.
 
 Researchers should use a fixed Git commit and archive all required configurations for each reported result. GitHub Releases may provide installable VSIX binaries, but binary packaging alone is not an experimental artifact archive.
 

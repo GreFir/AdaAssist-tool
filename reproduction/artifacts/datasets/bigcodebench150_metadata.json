@@ -1,0 +1,33 @@
+{
+  "name": "BigCodeBench-Full-Random150-PublicSplit",
+  "split_version": "bigcodebench-random150-public-split-v1",
+  "source_dataset_dir": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150",
+  "source_tasks_sha256": "53b386b7ced51c66f34fdeeb47b77200239abf89dad84feada107a4acf27c7ac",
+  "records": 150,
+  "public_test_selection": "one unittest test_* method per task, selected by SHA-256(split_version:seed:task_id) modulo source-order methods",
+  "public_test_seed": 42,
+  "minimum_hidden_test_methods": 2,
+  "maximum_hidden_test_methods": 13,
+  "model_tasks_path": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150-PublicSplit/tasks.jsonl",
+  "evaluator_tasks_path": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150-PublicSplit/hidden_tasks.jsonl",
+  "manifest_path": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150-PublicSplit/test_split_manifest.jsonl",
+  "task_ids_path": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150-PublicSplit/task_ids.json",
+  "model_tasks_sha256": "dd89379e40570861b6c9b44a26f8f649125458f0eb213afffe0f84029ad63801",
+  "evaluator_tasks_sha256": "eab4e773875e7f4f551884a8a1d257d63251faa20a43ab0eb137913d8398c1b5",
+  "manifest_sha256": "33d82103252b3ec263402fdb67725d8b04fb865b1e75046bf105671f4a9b0b91",
+  "task_ids_sha256": "9dfbb18a586070703822c985b6c13ba2913ec0fca41ad84c8cd604d8f2dbe542",
+  "model_visibility": "complete_prompt and exactly one selected public unittest method; no canonical solution or hidden test source",
+  "hidden_evaluation": "all remaining official unittest test_* methods only",
+  "canonical_public_preflight": {
+    "total": 150,
+    "passed": 148,
+    "known_reference_failures": [
+      "BigCodeBench/39",
+      "BigCodeBench/501"
+    ],
+    "report": "${PROJECT_ROOT}/experiments/datasets/BigCodeBench-Full-Random150-PublicSplit/canonical_public_preflight.json"
+  },
+  "evaluator_requirements": "${PROJECT_ROOT}/environment/bigcodebench-evaluator-requirements.txt",
+  "nltk_data_path": "${PROJECT_ROOT}/environment/nltk_data",
+  "nltk_data_sha256": "8d9ac76bdca7a1db2d7b7f16339eb9a0b23924241085799533f9ef6dccd420dc"
+}

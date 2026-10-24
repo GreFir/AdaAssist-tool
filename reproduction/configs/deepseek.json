@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "kind": "declarative_experiment_manifest",
+  "paper_section": "III-A",
+  "paper_table": "I",
+  "status": "model_ids_shared_backend_setup_and_Codex_method_name_confirmed_by_author",
+  "models": [
+    "deepseek-ai/deepseek-coder-1.3b-instruct",
+    "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "deepseek-ai/deepseek-coder-33b-instruct"
+  ],
+  "model_urls": [
+    "https://huggingface.co/deepseek-ai/deepseek-coder-1.3b-instruct",
+    "https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct",
+    "https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct"
+  ],
+  "confirmation": "author-confirmations.json#DeepSeek",
+  "shared_backend_setup": {
+    "applies_to": [
+      "AdaAssist Auto",
+      "MapCoder"
+    ],
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 512,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "repair_prompt_and_source_policy": "Use the corresponding method's repair limits, prompts and source version from the backend evaluation setup; there is no separate experimental configuration for these reported rows",
+    "note": "Shared backend setup does not equate method-specific repair cycles with model calls or replace the separately recorded DSH adapter protocol."
+  },
+  "datasets": "configs/datasets.json",
+  "run_index": "configs/deepseek-run-index.json",
+  "methods": [
+    {
+      "paper_label": "Direct",
+      "archive_method": "Direct",
+      "api": "completions",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "max_output_tokens": 512,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "max_model_calls": 1,
+      "extra_public_test_file_in_prompt": false
+    },
+    {
+      "paper_label": "MapCoder",
+      "archive_method": "MapCoder",
+      "max_output_tokens": 512,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "repair_prompt_and_source_policy": "inherit the corresponding method's backend evaluation setup",
+      "status": "shared_backend_configuration_confirmed_by_author"
+    },
+    {
+      "paper_label": "Codex",
+      "archive_method": "Codex",
+      "implementation": "Codex backend baseline; method name confirmed by author",
+      "status": "method_name_confirmed_by_author",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "max_output_tokens": 512,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "max_model_calls": 5,
+      "max_public_evaluations": 5,
+      "loop_boundary_timeout_seconds": 300,
+      "initial_prompt": "same as Direct",
+      "subsequent_prompt": "task, public tests, previous return code/stdout/stderr; no explicit full previous code or accumulated chat history"
+    },
+    {
+      "paper_label": "DSH",
+      "archive_method": "Harness-context-adapter",
+      "implementation": "context adapter chooses tools; model returns a full Python module",
+      "version": "0.2.0-rc.2",
+      "release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "max_output_tokens": 1024,
+      "context_tokens": 16384,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "max_model_calls": 10,
+      "max_public_evaluations": 10,
+      "task_timeout_seconds_plus_shutdown": 600,
+      "concurrency_by_model_scale": {
+        "1.3b": 8,
+        "6.7b": 4,
+        "33b": 4
+      },
+      "feedback_tail_characters": 12000,
+      "normalization": "2026-10-13 frozen-candidate reevaluation: remove only top-level task self-imports and AST-exact public-test echoes; no model regeneration"
+    },
+    {
+      "paper_label": "Our",
+      "archive_method": "historical AdaAssist Auto / AdaCoder",
+      "max_output_tokens": 512,
+      "seeds": [
+        42,
+        43,
+        44
+      ],
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "repair_prompt_and_source_policy": "inherit the corresponding method's backend evaluation setup",
+      "status": "shared_backend_configuration_confirmed_by_author"
+    }
+  ],
+  "excluded_from_current_table": [
+    "Instruct",
+    "Codex-1024"
+  ],
+  "hardware": "block-specific; Qwen serving hardware must not be applied to all DeepSeek runs",
+  "model_identity_policy": "The full Hugging Face repository IDs supplied by the author identify the models for this reproduction guide. Download revisions and weight hashes are optional additional provenance, not missing model identities.",
+  "equal_token_call_or_time_budget": false,
+  "reported_average_pass_percent": {
+    "Direct": 30.2,
+    "MapCoder": 51.72,
+    "Codex": 47.01,
+    "DSH": 59.66,
+    "Our": 70.17
+  }
+}

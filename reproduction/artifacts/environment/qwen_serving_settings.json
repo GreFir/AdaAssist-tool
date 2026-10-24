@@ -1,0 +1,32 @@
+{
+  "model": "Qwen3-Coder-30B-A3B-Instruct",
+  "checkpoint_revision": "b2cff646eb4bb1d68355c01b18ae02e7cf42d120",
+  "tensor_parallel_size": 4,
+  "dtype": "bfloat16",
+  "context_window": 16384,
+  "max_num_seqs": 16,
+  "gpu_memory_utilization": 0.78,
+  "auto_tool_choice": true,
+  "tool_call_parser": "qwen3_coder",
+  "generation_config": "vllm",
+  "disable_custom_all_reduce": true,
+  "CUDA_VISIBLE_DEVICES": "4,5,6,7",
+  "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+  "reported_gpus": [
+    {
+      "physical_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "name": "NVIDIA GeForce RTX 4090",
+      "reported_memory_mib_per_gpu": 49140
+    }
+  ],
+  "driver": "595.99.02",
+  "nvidia_smi_reported_cuda_supported_version": "13.2",
+  "actual_pytorch": "2.11.0+cu128",
+  "vllm": "0.21.0 (cu129 wheel)",
+  "runtime_cuda_equals_smi_supported_version": false
+}

@@ -17,6 +17,8 @@ backend/.venv/**
 .git/**
 .agents/**
 docs/**
+reproduction/**
+localresources/**
 test-results/**
 playwright-report/**
 backend/outputs/**

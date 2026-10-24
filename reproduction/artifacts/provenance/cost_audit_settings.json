@@ -1,0 +1,31 @@
+{
+  "experiment": "S2",
+  "analysis_type": "retrospective trajectory prefix; not prospectively equal repair budget",
+  "native_tasks": 4884,
+  "max_candidate_edit_responses": 7,
+  "next_boundary_edit_number": 8,
+  "count_failed_edits": true,
+  "multiple_edits_per_response_count_as_one": true,
+  "truncated": 408,
+  "unchanged_hash_reuse": 132,
+  "changed_candidates_rescored": 274,
+  "no_candidate_at_cutoff": 2,
+  "evaluation_concurrency": 16,
+  "cost_reliability_counts": {
+    "exact_native_complete": 4476,
+    "exact_recorded_boundary": 408
+  },
+  "missing_time": 0,
+  "missing_request_count": 0,
+  "cutoff_cost_excludes_boundary_request_and_later_actions": true,
+  "cutoff_shutdown_not_observed_and_not_added": true,
+  "auto_repairs_unit_differs_from_native_edit_response_unit": true,
+  "status": {
+    "complete": true,
+    "tasks": 7326,
+    "pending": 0,
+    "truncated": 408,
+    "source_sha256": "7ed2a55a4cfe8fb1a74187c5b7db95a8b4e27845dfd6be1ad107aa4aa24b2807",
+    "script_sha256": "f4560d625b1ffaf60b6ea3a23c223122721ae10a5d1904adcf63f394b0098ce3"
+  }
+}

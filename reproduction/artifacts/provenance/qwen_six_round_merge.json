@@ -1,0 +1,21 @@
+{
+  "source": "${PROJECT_ROOT}/runs/qwen3_full_512_c16_compact_20261015_103727",
+  "source_manifest_sha256": "a3f7cdbf60a471ef77b11c9d45ea47bf0c032e72a7c30d89d05ebc9964c2cd29",
+  "source_results_sha256": "c6d3442fd223f496f51aea0b3616beb098fd9425aee097eb40942e856f83182c",
+  "continuation_source": "${PROJECT_ROOT}/runs/qwen3_auto_round6_writable_512_c16_eval16",
+  "continuation_results_sha256": "b4694b1050a4d5c5b432626b3ba24fba6207ac71bca141ea4b6ccb05088ee029",
+  "continuation_manifest_sha256": "e23145fada119ad5125d471e20cc38bc2efaeaf8b27e788a8c1e8f8ce5383170",
+  "concurrency": 16,
+  "evaluation_concurrency": 16,
+  "baseline_overlay": "${PROJECT_ROOT}/runs/qwen3_bcb_writable_fix_512_c16_eval16_20261015",
+  "base_url": "http://127.0.0.1:8003/v1",
+  "model": "Qwen3-Coder-30B-A3B-Instruct",
+  "max_output_tokens": 512,
+  "temperature": 0.2,
+  "top_p": 0.9,
+  "task_timeout_seconds": 300,
+  "baseline_repair_rounds": 5,
+  "extended_repair_rounds": 6,
+  "selection_rule": "HumanEval public failure AND five repairs exhausted; no hidden-test selection",
+  "timing_policy": "300 seconds for appended segment; preserve and separately add baseline timing"
+}

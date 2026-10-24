@@ -4,6 +4,19 @@
 
 **AdaAssist** 是面向 Python 代码生成研究的 VS Code 插件。它把“需求 → 测试 → 生成 → 验证 → 修复”过程展示出来，同时提供 **Interactive（交互）** 和 **Auto（自动）** 两种运行模式。
 
+## 论文实验配置与复现
+
+**配置目录：[`reproduction/configs/`](../reproduction/configs/)**；详细参数、环境准备和复现步骤见[中文实验说明](../reproduction/README.zh-CN.md)及[英文完整说明](../reproduction/README.md)。
+
+| 论文实验 | 明确配置 | 路径 |
+| --- | --- | --- |
+| III-A / 表 I：DeepSeek 后端 | 1.3B / 6.7B / 33B；Direct/Codex/AdaAssist/MapCoder 使用 T=0.2、top-p=0.9、512 tokens、seeds 42/43/44，DSH adapter 为 1024 tokens、至多 10 次调用 | [deepseek.json（含完整模型名称）](../reproduction/configs/deepseek.json) |
+| III-B / 表 II：Qwen 后端 | Qwen3-Coder-30B-A3B-Instruct；T=0.2、top-p=0.9、512 tokens、16K 上下文、并发 16、seeds 42/43/44；AdaAssist 最多 6 轮修复 | [qwen.json](../reproduction/configs/qwen.json) |
+| III-C / 表 III：受控干预 | 9 人、20 题、三类干预；每题重新开始，沿用后端参数，无任务总时限 | [intervention.json](../reproduction/configs/intervention.json) |
+| III-D / 表 IV：用户研究 | 15 人、每组一个工具、8 题；全部完成后进行 -2 至 2 工具整体评分 | [user-study.json](../reproduction/configs/user-study.json) |
+
+正式数据为 HumanEval 164、MBPP 500、BigCodeBench Random150。MBPP 使用原始 task_id 11—510 连续 500 题，每题随机挑选 1 条测试公开（seed 42），其余隐藏；9 人受控研究沿用早期 20 题 BCB，各组遵守指定干预，实际提交并纳入的编辑计数，重跑测试等辅助操作不计。固定名单和 BCB 测试方法划分见[数据目录](../reproduction/artifacts/datasets/)。两项前端研究的步骤见[研究复现流程](../reproduction/STUDY_PROTOCOLS.md)，问卷附件与原始评分后补。其余历史细节见[核对说明](../reproduction/DISCREPANCIES.md)。这些 JSON 是实验记录，不会自动覆盖插件配置。
+
 ## 1. 最便捷的安装方式：VSIX
 
 **普通用户不需要下载源代码，也不用安装 Node.js/npm。**

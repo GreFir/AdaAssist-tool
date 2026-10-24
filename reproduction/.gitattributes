@@ -1,0 +1,4 @@
+# Preserve checksum-covered bytes and recognize Windows line endings.
+* -text whitespace=cr-at-eol
+# Archived whitespace is part of the recorded prompt/source identity.
+artifacts/** -whitespace

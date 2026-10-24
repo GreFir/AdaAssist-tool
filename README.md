@@ -8,6 +8,7 @@
   <a href="#-quick-install-vsix">Install VSIX</a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="#-features">Features</a> ·
+  <a href="#paper-experiment-settings">Paper experiments</a> ·
   <a href="docs/README.zh-CN.md">简体中文</a> ·
   <a href="https://github.com/GreFir/AdaAssist-tool/releases">Releases</a>
 </p>
@@ -15,6 +16,31 @@
 AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. It makes the generation → public testing → feedback → repair workflow visible and lets users review intermediate results instead of working with an opaque agent loop. It supports **Interactive** and **Auto** execution, editable tests and plans, multiple task sessions, historical workflow inspection, and Python inline completion.
 
 > **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. The paper link and related publication information will be added after public release.
+
+## Paper experiment settings
+
+**Reproduction materials: [`reproduction/`](reproduction/README.md)** · [中文实验说明](reproduction/README.zh-CN.md) · [Paper/archive discrepancies and missing inputs](reproduction/DISCREPANCIES.md)
+
+The settings below follow Section III and Tables I-IV of *AdaAssist: Progressive Agentic Code Generation for Small Language Models*. Each manifest records the paper protocol, recoverable historical settings and unresolved inputs. These are declarative experiment records; the current extension does not automatically load them.
+
+| Paper experiment | Explicit configuration | Files |
+| --- | --- | --- |
+| **III-A / Table I: DeepSeek backend** | DeepSeek-Coder-Instruct **1.3B / 6.7B / 33B**; Direct, MapCoder, Codex, DSH adapter, AdaAssist. Direct/Codex/AdaAssist/MapCoder: **T=0.2, top-p=0.9, 512 tokens, seeds 42/43/44**; DSH adapter: **1024 tokens, up to 10 calls** | [DeepSeek settings and full model IDs](reproduction/configs/deepseek.json), [per-run index](reproduction/configs/deepseek-run-index.json) |
+| **III-B / Table II: Qwen backend** | **Qwen3-Coder-30B-A3B-Instruct**; **T=0.2, top-p=0.9, 512 tokens, 16K context, concurrency 16, seeds 42/43/44**; AdaAssist up to **6 repair rounds**; native full and retrospectively limited trajectories | [Qwen settings and result versions](reproduction/configs/qwen.json) |
+| **III-C / Table III: controlled intervention** | **9 participants**, **20 BCB tasks**, 3 intervention groups; **fresh workflows, backend settings, no task time limit** | [Configuration](reproduction/configs/intervention.json), [reproduction procedure](reproduction/STUDY_PROTOCOLS.md#iii-c-controlled-intervention-on-residual-failures) |
+| **III-D / Table IV: user study** | **15 participants**, **one tool per group**, **8 tasks**; overall tool ratings **-2 to 2 after all tasks** | [Configuration](reproduction/configs/user-study.json), [reproduction procedure](reproduction/STUDY_PROTOCOLS.md#iii-d-three-tool-usability-study) |
+
+**Datasets:** HumanEval **164**, MBPP **500**, BigCodeBench **Random150**. MBPP uses consecutive original **task IDs 11-510**; randomly select **one public test per task with seed 42**, and hold out all remaining tests for final evaluation. Exact task IDs, the reused **20-task BCB intervention list** and BCB public/final test-method lists are in [`reproduction/artifacts/datasets/`](reproduction/artifacts/datasets/); revisions, hashes, visibility and evaluator settings are in [datasets.json](reproduction/configs/datasets.json). Archived prompts, dependency snapshots, model identities and result provenance are under [`reproduction/artifacts/`](reproduction/artifacts/).
+
+**DeepSeek model IDs:** [1.3B](https://huggingface.co/deepseek-ai/deepseek-coder-1.3b-instruct), [6.7B](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct), [33B](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct). AdaAssist and MapCoder inherit the corresponding backend experiment's repair limits, prompts and source configuration, as confirmed by the author.
+
+**Study procedures:** [Frontend study protocols](reproduction/STUDY_PROTOCOLS.md) describe preparation, grouping, allowed operations and analysis. The controlled study reuses the earlier 20 BCB tasks, starts each task afresh with backend settings and has no task time limit. Count actual submitted/applied edits; auxiliary actions such as test reruns do not count. In the 15-person study each group uses one tool, and participants rate that tool overall after all tasks. Questionnaire forms and raw responses are deferred. Budget definitions and result-version provenance are documented in [the alignment notes](reproduction/DISCREPANCIES.md).
+
+Check material integrity without calling a model:
+
+```bash
+python reproduction/verify.py
+```
 
 ## 🚀 Quick install (VSIX)
 
@@ -155,7 +181,7 @@ The command compiles the extension and creates `adaassist-<version>.vsix` in the
 
 ## 🔬 Research and reproducibility
 
-AdaAssist is intended for **code generation under explicit public tests and user intervention**. Historical workflow events and model timing/token metadata can be recorded, including in prepared user-study workspaces. To understand experiment data, setup, and limitations, see [Research and artifacts](docs/RESEARCH.md).
+AdaAssist is intended for **code generation under explicit public tests and user intervention**. For paper settings, fixed benchmark identities, prompt/environment records and reproduction steps, start at [Paper experiment settings](#paper-experiment-settings) and the [`reproduction/` guide](reproduction/README.md). For session recording and recovery, see [Research and artifacts](docs/RESEARCH.md).
 
 The software and configuration can evolve; for experimental comparisons, **record the exact commit/VSIX version, model identifier, endpoint, output-token settings, and test suite**. A paper link and BibTeX will be added once the manuscript is public.
 
@@ -173,6 +199,7 @@ The [importable examples](examples/README.md) include seven English-language Pyt
 - [Installation, model setup, troubleshooting](docs/INSTALLATION.md)
 - [Development, testing, VSIX packaging](docs/DEVELOPMENT.md)
 - [Research artifacts, session logs, recovery](docs/RESEARCH.md)
+- [Paper experiment configurations and reproduction instructions](reproduction/README.md)
 
 ## ⚠️ Important notes
 

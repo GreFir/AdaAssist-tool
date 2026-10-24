@@ -1,0 +1,260 @@
+{
+  "auto_seed": 42,
+  "historical_auto_seeds": [
+    42,
+    43,
+    44
+  ],
+  "selection_seed": 42,
+  "requested": 20,
+  "selected_task_ids": [
+    "BigCodeBench/23",
+    "BigCodeBench/61",
+    "BigCodeBench/88",
+    "BigCodeBench/130",
+    "BigCodeBench/191",
+    "BigCodeBench/217",
+    "BigCodeBench/224",
+    "BigCodeBench/292",
+    "BigCodeBench/313",
+    "BigCodeBench/327",
+    "BigCodeBench/338",
+    "BigCodeBench/457",
+    "BigCodeBench/493",
+    "BigCodeBench/548",
+    "BigCodeBench/601",
+    "BigCodeBench/664",
+    "BigCodeBench/758",
+    "BigCodeBench/821",
+    "BigCodeBench/973",
+    "BigCodeBench/1059"
+  ],
+  "source": "${PROJECT_ROOT}/runs/qwen3_auto_all_round6_writable_512_c16_eval16/merged_results.json",
+  "source_sha256": "7ed2a55a4cfe8fb1a74187c5b7db95a8b4e27845dfd6be1ad107aa4aa24b2807",
+  "reference_audit_sha256": "bfed11a292b2a26f52823aa54146d540fffe78358d7415bead8c7ddd83e322c0",
+  "sampling_policy": "All 16 unique canonical-valid public failures with final failure across historical Auto seeds 42/43/44, plus four seed-42 public-pass final failures initially sampled without replacement with selection seed 42, then user-requested replacement of /644 (historical Qwen A0/A1 success) by /61 (A0/A1 failure in both prior Qwen batches). Historical evidence uses the earliest eligible failing seed per task. Fresh initial generation uses seed 42, 512 tokens, temperature 0.2, top_p 0.9 at every generator stage; no filtering on fresh outcomes.",
+  "replacement": {
+    "removed": "BigCodeBench/644",
+    "added": "BigCodeBench/61",
+    "prior_branch_evidence": [
+      {
+        "path": "${PROJECT_ROOT}/experiments/bigcodebench_intervention_study/runs/qwen3_same20_seed42/formal/blocks/BigCodeBench/61-seed42/attempt-0/A0/result.json",
+        "condition": "A0",
+        "final_pass": false,
+        "sha256": "4c3514e83c07477a5c559cbc4e5dcf3b92790f196b3cca34db474a1461f4bc7d"
+      },
+      {
+        "path": "${PROJECT_ROOT}/experiments/bigcodebench_intervention_study/runs/qwen3_same20_seed42/formal/blocks/BigCodeBench/61-seed42/attempt-0/A1/result.json",
+        "condition": "A1",
+        "final_pass": false,
+        "sha256": "5a942695bad48fe760cf9b7613920c2681e99fe9c01d3cc8c26bd5352d265700"
+      },
+      {
+        "path": "${PROJECT_ROOT}/experiments/bigcodebench_intervention_study/runs/qwen3_stratified20_seed42_20261016_staged16/formal/blocks/BigCodeBench/61-seed42/attempt-0/A0/result.json",
+        "condition": "A0",
+        "final_pass": false,
+        "sha256": "d24a11c3d5e80ff557c7ac8d9b5159dd2dbd9681871d6606c5b4c9d0135c795b"
+      },
+      {
+        "path": "${PROJECT_ROOT}/experiments/bigcodebench_intervention_study/runs/qwen3_stratified20_seed42_20261016_staged16/formal/blocks/BigCodeBench/61-seed42/attempt-0/A1/result.json",
+        "condition": "A1",
+        "final_pass": false,
+        "sha256": "5d5cd5fec93535bb239a519166ed8c462930b934434963f14204b45a48ecb57f"
+      }
+    ]
+  },
+  "source_evidence": {
+    "BigCodeBench/23": {
+      "seed": 42,
+      "public_pass": true,
+      "final_pass": false
+    },
+    "BigCodeBench/61": {
+      "seed": 42,
+      "public_pass": true,
+      "final_pass": false
+    },
+    "BigCodeBench/88": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/130": {
+      "seed": 43,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/191": {
+      "seed": 42,
+      "public_pass": true,
+      "final_pass": false
+    },
+    "BigCodeBench/217": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/224": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/292": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/313": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/327": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/338": {
+      "seed": 44,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/457": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/493": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/548": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/601": {
+      "seed": 42,
+      "public_pass": true,
+      "final_pass": false
+    },
+    "BigCodeBench/664": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/758": {
+      "seed": 44,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/821": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/973": {
+      "seed": 42,
+      "public_pass": false,
+      "final_pass": false
+    },
+    "BigCodeBench/1059": {
+      "seed": 43,
+      "public_pass": false,
+      "final_pass": false
+    }
+  },
+  "strata": {
+    "public_fail": {
+      "count": 16,
+      "eligible_task_ids": [
+        "BigCodeBench/88",
+        "BigCodeBench/130",
+        "BigCodeBench/217",
+        "BigCodeBench/224",
+        "BigCodeBench/292",
+        "BigCodeBench/313",
+        "BigCodeBench/327",
+        "BigCodeBench/338",
+        "BigCodeBench/457",
+        "BigCodeBench/493",
+        "BigCodeBench/548",
+        "BigCodeBench/664",
+        "BigCodeBench/758",
+        "BigCodeBench/821",
+        "BigCodeBench/973",
+        "BigCodeBench/1059"
+      ],
+      "selected_task_ids": [
+        "BigCodeBench/88",
+        "BigCodeBench/130",
+        "BigCodeBench/217",
+        "BigCodeBench/224",
+        "BigCodeBench/292",
+        "BigCodeBench/313",
+        "BigCodeBench/327",
+        "BigCodeBench/338",
+        "BigCodeBench/457",
+        "BigCodeBench/493",
+        "BigCodeBench/548",
+        "BigCodeBench/664",
+        "BigCodeBench/758",
+        "BigCodeBench/821",
+        "BigCodeBench/973",
+        "BigCodeBench/1059"
+      ]
+    },
+    "public_pass": {
+      "count": 4,
+      "eligible_task_ids": [
+        "BigCodeBench/13",
+        "BigCodeBench/23",
+        "BigCodeBench/51",
+        "BigCodeBench/61",
+        "BigCodeBench/93",
+        "BigCodeBench/146",
+        "BigCodeBench/161",
+        "BigCodeBench/191",
+        "BigCodeBench/229",
+        "BigCodeBench/255",
+        "BigCodeBench/365",
+        "BigCodeBench/469",
+        "BigCodeBench/538",
+        "BigCodeBench/541",
+        "BigCodeBench/592",
+        "BigCodeBench/601",
+        "BigCodeBench/611",
+        "BigCodeBench/644",
+        "BigCodeBench/663",
+        "BigCodeBench/765",
+        "BigCodeBench/775",
+        "BigCodeBench/778",
+        "BigCodeBench/781",
+        "BigCodeBench/788",
+        "BigCodeBench/817",
+        "BigCodeBench/865",
+        "BigCodeBench/890",
+        "BigCodeBench/929",
+        "BigCodeBench/946",
+        "BigCodeBench/958",
+        "BigCodeBench/995",
+        "BigCodeBench/1025",
+        "BigCodeBench/1034",
+        "BigCodeBench/1043",
+        "BigCodeBench/1083",
+        "BigCodeBench/1090",
+        "BigCodeBench/1093",
+        "BigCodeBench/1103",
+        "BigCodeBench/1116",
+        "BigCodeBench/1125"
+      ],
+      "selected_task_ids": [
+        "BigCodeBench/23",
+        "BigCodeBench/61",
+        "BigCodeBench/191",
+        "BigCodeBench/601"
+      ]
+    }
+  }
+}

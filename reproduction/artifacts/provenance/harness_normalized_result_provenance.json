@@ -1,0 +1,267 @@
+{
+  "method": "deepseek_harness_context_adapter",
+  "normalization_date": "2026-10-13",
+  "original_run": "runs/deepseek_harness_20261006",
+  "reevaluation_run": "runs/deepseek_harness_20261006_normalized",
+  "protocol": {
+    "dsh_version": "0.2.0-rc.2",
+    "output_tokens_per_call": 1024,
+    "max_model_calls": 10,
+    "max_public_tests": 10,
+    "context_tokens": 16384,
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "normalization": "Remove only top-level task self-imports and AST-exact public-test echoes; retain implementation AST. No model rerun. Unchanged candidate outcomes reused."
+  },
+  "input_sha256": {
+    "seed_results.json": "19b693eb3190dd2c9a2c66868597723baa1c0a7c4e7332b0ca85790a7d10181a",
+    "normalization_manifest.json": "9d13d8f5b43dde3d004d376e686ccc7d33bf27abe2fe58f198ba94c6ccea0a3e",
+    "audit.json": "eaa3f81b0e7ddf9d7c8c8f94e0acfb13d47c0e6f2833173915a0f884edc64204",
+    "environment_comparison.json": "2b3f63035ce9067f09e305e23d7c80680deb5cd374ff4742351509449ee2ee4b"
+  },
+  "rows": [
+    {
+      "model": "1.3b",
+      "method": "Harness-adapter",
+      "datasets": {
+        "HumanEval": {
+          "mean": 62.19512195121951,
+          "sd": 1.2195121951219505,
+          "values": [
+            62.19512195121951,
+            63.41463414634146,
+            60.97560975609756
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            102,
+            104,
+            100
+          ],
+          "tasks": 164,
+          "runs": [
+            "HumanEval-1.3b-seed42",
+            "HumanEval-1.3b-seed43",
+            "HumanEval-1.3b-seed44"
+          ]
+        },
+        "MBPP": {
+          "mean": 46.06666666666667,
+          "sd": 1.285820101465727,
+          "values": [
+            46.6,
+            47.0,
+            44.6
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            233,
+            235,
+            223
+          ],
+          "tasks": 500,
+          "runs": [
+            "MBPP-1.3b-seed42",
+            "MBPP-1.3b-seed43",
+            "MBPP-1.3b-seed44"
+          ]
+        },
+        "BigCodeBench-Full-Random150-PublicSplit": {
+          "mean": 30.0,
+          "sd": 4.163331998932263,
+          "values": [
+            25.333333333333336,
+            31.333333333333336,
+            33.33333333333333
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            38,
+            47,
+            50
+          ],
+          "tasks": 150,
+          "runs": [
+            "BigCodeBench-1.3b-seed42",
+            "BigCodeBench-1.3b-seed43",
+            "BigCodeBench-1.3b-seed44"
+          ]
+        }
+      }
+    },
+    {
+      "model": "6.7b",
+      "method": "Harness-adapter",
+      "datasets": {
+        "HumanEval": {
+          "mean": 79.0650406504065,
+          "sd": 1.2693085362598442,
+          "values": [
+            78.65853658536585,
+            80.48780487804879,
+            78.04878048780488
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            129,
+            132,
+            128
+          ],
+          "tasks": 164,
+          "runs": [
+            "HumanEval-6.7b-seed42",
+            "HumanEval-6.7b-seed43",
+            "HumanEval-6.7b-seed44"
+          ]
+        },
+        "MBPP": {
+          "mean": 67.2,
+          "sd": 0.6000000000000014,
+          "values": [
+            67.80000000000001,
+            67.2,
+            66.60000000000001
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            339,
+            336,
+            333
+          ],
+          "tasks": 500,
+          "runs": [
+            "MBPP-6.7b-seed42",
+            "MBPP-6.7b-seed43",
+            "MBPP-6.7b-seed44"
+          ]
+        },
+        "BigCodeBench-Full-Random150-PublicSplit": {
+          "mean": 48.0,
+          "sd": 1.1547005383792515,
+          "values": [
+            47.333333333333336,
+            49.333333333333336,
+            47.333333333333336
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            71,
+            74,
+            71
+          ],
+          "tasks": 150,
+          "runs": [
+            "BigCodeBench-6.7b-seed42",
+            "BigCodeBench-6.7b-seed43",
+            "BigCodeBench-6.7b-seed44"
+          ]
+        }
+      }
+    },
+    {
+      "model": "33b",
+      "method": "Harness-adapter",
+      "datasets": {
+        "HumanEval": {
+          "mean": 78.45528455284553,
+          "sd": 0.3520428470668448,
+          "values": [
+            78.65853658536585,
+            78.65853658536585,
+            78.04878048780488
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            129,
+            129,
+            128
+          ],
+          "tasks": 164,
+          "runs": [
+            "HumanEval-33b-seed42",
+            "HumanEval-33b-seed43",
+            "HumanEval-33b-seed44"
+          ]
+        },
+        "MBPP": {
+          "mean": 71.53333333333333,
+          "sd": 0.41633319989322676,
+          "values": [
+            71.2,
+            71.39999999999999,
+            72.0
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            356,
+            357,
+            360
+          ],
+          "tasks": 500,
+          "runs": [
+            "MBPP-33b-seed42",
+            "MBPP-33b-seed43",
+            "MBPP-33b-seed44"
+          ]
+        },
+        "BigCodeBench-Full-Random150-PublicSplit": {
+          "mean": 54.44444444444445,
+          "sd": 1.3877773329774248,
+          "values": [
+            56.00000000000001,
+            53.333333333333336,
+            54.0
+          ],
+          "seeds": [
+            42,
+            43,
+            44
+          ],
+          "passed": [
+            84,
+            80,
+            81
+          ],
+          "tasks": 150,
+          "runs": [
+            "BigCodeBench-33b-seed42",
+            "BigCodeBench-33b-seed43",
+            "BigCodeBench-33b-seed44"
+          ]
+        }
+      }
+    }
+  ]
+}

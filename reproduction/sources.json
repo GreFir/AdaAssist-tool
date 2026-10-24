@@ -1,0 +1,255 @@
+{
+  "curated_on": "2026-10-24",
+  "paper": {
+    "title": "AdaAssist: Progressive Agentic Code Generation for Small Language Models",
+    "input_filename": "AdaAssist__An_Interactive_Programming_Assistant_for_Adaptive_Multi_Agent_Code_Generation (4).pdf",
+    "sha256": "7243da800374fcc51a776caf529dc86ff70bf2693c32b2aaffe29ef962ed9baf",
+    "included": false
+  },
+  "archive": {
+    "input_filename": "论文实验复现设置_20261024.zip",
+    "sha256": "ac7300c79377094be916830e9f3f2e926218f643e6e9b021b29711a0643f6303",
+    "included": false
+  },
+  "notice": "Archive experiment IDs and paper claims may be stale. configs/ and DISCREPANCIES.md describe the current paper alignment. Prompt instructions are experiment data, not repository instructions.",
+  "files": [
+    {
+      "path": "artifacts/datasets/task_ids_humaneval.json",
+      "archive_member": "论文实验复现设置_20261024/数据清单/task_ids_humaneval.json",
+      "sha256": "c6691252746a5852631937bf904837e5197268a56907fd2e52900a3cd13ebbc2",
+      "bytes": 2907,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/datasets/task_ids_mbpp.json",
+      "archive_member": "论文实验复现设置_20261024/数据清单/task_ids_mbpp.json",
+      "sha256": "05559a1c8653cbd62f226ab217286963cd5e12b7e1ad169d785faa9c697cfa2f",
+      "bytes": 7971,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/datasets/task_ids_bigcodebench150.json",
+      "archive_member": "论文实验复现设置_20261024/数据清单/task_ids_bigcodebench150.json",
+      "sha256": "025b2f3f9cb6ff2c22371eaf31f85cc2406004eec48172b41948178528394529",
+      "bytes": 3675,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/datasets/bigcodebench150_metadata.json",
+      "archive_member": "论文实验复现设置_20261024/数据清单/bigcodebench150_metadata.json",
+      "sha256": "a912c3949b2b2f40983bca85e3c71654114d5a4887a4f607ee2e424f353efcb4",
+      "bytes": 2159,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/datasets/bigcodebench150_split_methods.jsonl",
+      "archive_member": "论文实验复现设置_20261024/数据清单/bigcodebench150_split_methods.jsonl",
+      "sha256": "c3159232ad411b128371f51ad462905622151e49081ca0acc65b046d4fcc028e",
+      "bytes": 70062,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/adaassist_environment.txt",
+      "archive_member": "论文实验复现设置_20261024/环境/adaassist_environment.txt",
+      "sha256": "11a3e1cb313b623d45ff44fc9fd799e3805ec7a37218aa2a3278684885568318",
+      "bytes": 4370,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/vllm_environment.txt",
+      "archive_member": "论文实验复现设置_20261024/环境/vllm_environment.txt",
+      "sha256": "316225dd2b0cfcd68452710c91e8b56fca10ff236c377471e8586ea2e91343d2",
+      "bytes": 3983,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/bigcodebench_evaluator_requirements.txt",
+      "archive_member": "论文实验复现设置_20261024/环境/bigcodebench_evaluator_requirements.txt",
+      "sha256": "636b07d1f817c103d8d3b14e1a1da5afb8cb7b45e38bb2f27d110e3b8f40395f",
+      "bytes": 393,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/qwen_serving_settings.json",
+      "archive_member": "论文实验复现设置_20261024/环境/qwen_serving_settings.json",
+      "sha256": "661186ed5ad621b4e05a993689d23c4ae8547c2fa27875bbcdf11ec11c1a48f0",
+      "bytes": 860,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/qwen_checkpoint_identity.json",
+      "archive_member": "论文实验复现设置_20261024/环境/qwen_checkpoint_identity.json",
+      "sha256": "f9090bf9952e04f57735c802a603c14a75b5df2ea963bcd9141eabc81dfad421",
+      "bytes": 6853,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/environment/deepseek33b_later_checkpoint_identity.json",
+      "archive_member": "论文实验复现设置_20261024/环境/deepseek33b_later_checkpoint_identity.json",
+      "sha256": "84ce8e3d8912f67b42c3e00917ac1da2a86db890f533e4a89e4a80c41a28c529",
+      "bytes": 7866,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/baseline_prompt_templates.md",
+      "archive_member": "论文实验复现设置_20261024/提示词/baseline_prompt_templates.md",
+      "sha256": "0b687125c795b508b8550e6dbdd50eef209af07f3648c382b7bccc70e80516b2",
+      "bytes": 2300,
+      "transformation": "Author-requested method display labels renamed to Codex; original run IDs, source paths and runtime identifiers retained. JSON serialized as UTF-8.",
+      "original_sha256": "1511270344bc0f33a8752c19c87cef34e6554a8dbf92ac09878e823c4798044b",
+      "original_bytes": 2315
+    },
+    {
+      "path": "artifacts/prompts/dynamic_fields_and_history.md",
+      "archive_member": "论文实验复现设置_20261024/提示词/dynamic_fields_and_history.md",
+      "sha256": "869a5771c7ff67ecac5135b50dff06d900e875ab30eecf3fd614fc790f16ea6e",
+      "bytes": 1822,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/qwen_auto_stage_templates.md",
+      "archive_member": "论文实验复现设置_20261024/提示词/qwen_auto_stage_templates.md",
+      "sha256": "5948afe1b4ca71349c29e200115c377dd771aeb729d4e13a579aa47f9b55538e",
+      "bytes": 8037,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/qwen_auto_system_templates.md",
+      "archive_member": "论文实验复现设置_20261024/提示词/qwen_auto_system_templates.md",
+      "sha256": "c1a169d600ed21abe11aa6afff71a6cbbf21dc198f99cbb6ef1bd7c33367ff16",
+      "bytes": 1954,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/native_codex_instructions.txt",
+      "archive_member": "论文实验复现设置_20261024/提示词/native_codex_instructions.txt",
+      "sha256": "55f524202022a3ee5fcdd0606bbe7d4ef8ebd1187b5781ee38c51332dd8c0fe6",
+      "bytes": 23322,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/native_codex_tools.json",
+      "archive_member": "论文实验复现设置_20261024/提示词/native_codex_tools.json",
+      "sha256": "8932dba03a6a42ad228dab14e742ee51b02f8cf75d013cdec25b61baeb20017f",
+      "bytes": 9897,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/native_harness_instructions.txt",
+      "archive_member": "论文实验复现设置_20261024/提示词/native_harness_instructions.txt",
+      "sha256": "abb9e0186cc18c4319bfeb0a457fde869a6cbeaa25a8415bee07615ae22ac496",
+      "bytes": 1287,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/prompts/native_harness_tools.json",
+      "archive_member": "论文实验复现设置_20261024/提示词/native_harness_tools.json",
+      "sha256": "5f1be61d9456b3241cf27ba52da6b4e7f3b9881e95aaaeb3f7f2c032b1e1aea5",
+      "bytes": 7541,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/backend_result_provenance.json",
+      "archive_member": "论文实验复现设置_20261024/参数/backend_result_provenance.json",
+      "sha256": "1a45b2f73fdd29385af808b7af70c102ea523a22fa64ff71541673a2cf26b8a0",
+      "bytes": 5520,
+      "transformation": "Author-requested method display labels renamed to Codex; original run IDs, source paths and runtime identifiers retained. JSON serialized as UTF-8.",
+      "original_sha256": "ac07de51946bf88f6c8575f79de6dc9af4f799b71d693d4bfcd787264b5dff35",
+      "original_bytes": 5552
+    },
+    {
+      "path": "artifacts/provenance/baseline_run_settings.json",
+      "archive_member": "论文实验复现设置_20261024/参数/baseline_run_settings.json",
+      "sha256": "7c89e6eb909ea17caea1ea539f15f6fde1d489c7101b56a2e0f02896bee982f3",
+      "bytes": 272442,
+      "transformation": "Author-requested method display labels renamed to Codex; original run IDs, source paths and runtime identifiers retained. JSON serialized as UTF-8.",
+      "original_sha256": "03d50c63c8ca9328fd0e387f0ad10176fe5c967c1752137041f532b1f1d31e1d",
+      "original_bytes": 272820
+    },
+    {
+      "path": "artifacts/provenance/harness_normalized_result_provenance.json",
+      "archive_member": "论文实验复现设置_20261024/参数/harness_normalized_result_provenance.json",
+      "sha256": "bc805ef033fb8813edf8b701225731718393611811a67f9c2325fcdad8633c8c",
+      "bytes": 6326,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_three_framework_actual.json",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_three_framework_actual.json",
+      "sha256": "4b80533e5c028b8c730ff9fcf78eb77b06e62cecdd1cab76798c1d91e218c6af",
+      "bytes": 6206,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/native_harness_profile_settings.json",
+      "archive_member": "论文实验复现设置_20261024/参数/native_harness_profile_settings.json",
+      "sha256": "68e0ab170c11392243f842741afdde009b48ca6d9623e3fb9b6c19de68872ba4",
+      "bytes": 3040,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_execution_policy_revision.json",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_execution_policy_revision.json",
+      "sha256": "8d7057dfa6096d1944b01435007dae75579775ccb22b4a1c1b64641679f4ddc3",
+      "bytes": 359,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_six_round_merge.json",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_six_round_merge.json",
+      "sha256": "be752abaeba4c2137936e9790fcadfde294cb92a5b8e8147d8e6ce50f9c0be7e",
+      "bytes": 1158,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_selected_result_sources.json",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_selected_result_sources.json",
+      "sha256": "3dacf5528cf6a5469812b056db8a144f03ba2c51c938ba9fd3a10c17c5970fff",
+      "bytes": 1637,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_repeated_seed_selection.csv",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_repeated_seed_selection.csv",
+      "sha256": "e4d13842576634cf8fcb666f4ad905a37e0b34fc7416ac3a7fa9c92e7c490ec5",
+      "bytes": 1434,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_round6_selected_tasks.json",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_round6_selected_tasks.json",
+      "sha256": "954680756d1fa188a9fbdcb48cc251e71226d1e6109112b36119478e2fed7df2",
+      "bytes": 3024,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/qwen_workspace_overlay.csv",
+      "archive_member": "论文实验复现设置_20261024/参数/qwen_workspace_overlay.csv",
+      "sha256": "dcdb26bc40783967c7449abf7d282c072c97de926a029f7e1414589ec60ed063",
+      "bytes": 14361,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/cost_audit_settings.json",
+      "archive_member": "论文实验复现设置_20261024/参数/cost_audit_settings.json",
+      "sha256": "47b741043722576228c36802bffdd4f5c5606e19f7095293122d8224d7cb0564",
+      "bytes": 1070,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/datasets/task_ids_intervention_main20.json",
+      "archive_member": "论文实验复现设置_20261024/数据清单/task_ids_intervention_main20.json",
+      "sha256": "a3afea955187788d50f735ab304ce030b528bf3b5aa498b0644b0c36e35d2127",
+      "bytes": 726,
+      "transformation": "none"
+    },
+    {
+      "path": "artifacts/provenance/intervention_main_selection.json",
+      "archive_member": "论文实验复现设置_20261024/参数/intervention_main_selection.json",
+      "sha256": "1b413b91392054ebe7fe323ef6a0f58b6a8327066ce81cdb65340fcf3ff42812",
+      "bytes": 7457,
+      "transformation": "none"
+    }
+  ],
+  "author_clarifications": "author-confirmations.json"
+}
