@@ -27,8 +27,8 @@
     },
     {
       "name": "MapCoder",
-      "version": "not recorded",
-      "commit": "not recorded",
+      "commit": "c87e6d914d196e12fa2b144882122459a4b98007",
+      "commit_date": "2025-02-12",
       "repository": "https://github.com/Md-Ashraful-Pramanik/MapCoder",
       "max_output_tokens": 512,
       "execution": "MapCoder official default configuration",

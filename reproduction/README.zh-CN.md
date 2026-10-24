@@ -27,9 +27,9 @@
 | seeds | 42 / 43 / 44 | 42 / 43 / 44 |
 | 重试设置 | **各工具默认设置** | **各工具默认设置** |
 
-| 工具 | 版本 |
+| 工具 | 版本 / 提交 |
 | --- | --- |
-| [MapCoder](https://github.com/Md-Ashraful-Pramanik/MapCoder) | `not recorded` |
+| MapCoder | [c87e6d9](https://github.com/Md-Ashraful-Pramanik/MapCoder/commit/c87e6d914d196e12fa2b144882122459a4b98007)（2025-02-12） |
 | Codex | `0.144.1` |
 | DSH | `0.2.0-rc.2` |
 | AdaAssist | `v1.0` |
