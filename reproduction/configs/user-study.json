@@ -1,0 +1,111 @@
+{
+  "paper_section": "III-D",
+  "paper_table": "IV",
+  "model": "Qwen3-Coder-30B-A3B-Instruct",
+  "tools": [
+    "AdaAssist",
+    "DeepSeek Harness",
+    "Codex"
+  ],
+  "participants": 15,
+  "composition": {
+    "professional_developers": {
+      "count": 6,
+      "industry_experience_years": [
+        3,
+        7
+      ]
+    },
+    "third_year_SE_masters_students": {
+      "count": 9,
+      "minimum_programming_years": 5,
+      "internship_months": [
+        3,
+        5
+      ]
+    }
+  },
+  "overlap_with_controlled_intervention_study": false,
+  "groups": 3,
+  "group_composition": {
+    "developers": 2,
+    "students": 3
+  },
+  "assignment": "random",
+  "tasks": {
+    "manifest": "artifacts/datasets/task_ids_user_study8.json",
+    "labels": [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8"
+    ],
+    "basic": 4,
+    "advanced": 4
+  },
+  "AdaAssist_mode": "participants freely choose Auto or Interactive",
+  "rating_dimensions": [
+    "usefulness",
+    "understandability",
+    "perceived efficiency"
+  ],
+  "reported_ratings": [
+    {
+      "tool": "DeepSeek Harness",
+      "usefulness": 1.4,
+      "understandability": 1.2,
+      "perceived_efficiency": 0.2,
+      "average": 0.93
+    },
+    {
+      "tool": "Codex",
+      "usefulness": 0.8,
+      "understandability": 1.2,
+      "perceived_efficiency": -0.2,
+      "average": 0.6
+    },
+    {
+      "tool": "AdaAssist",
+      "usefulness": 1.6,
+      "understandability": 1.6,
+      "perceived_efficiency": 1.8,
+      "average": 1.67
+    }
+  ],
+  "design": "between_groups; each participant uses only the tool assigned to their group",
+  "tool_groups": [
+    {
+      "tool": "AdaAssist",
+      "participants": 5,
+      "developers": 2,
+      "students": 3
+    },
+    {
+      "tool": "DeepSeek Harness",
+      "participants": 5,
+      "developers": 2,
+      "students": 3
+    },
+    {
+      "tool": "Codex",
+      "participants": 5,
+      "developers": 2,
+      "students": 3
+    }
+  ],
+  "tool_rotation": false,
+  "tasks_per_participant": 8,
+  "rating_timing": "After completing all eight tasks, rate the assigned tool overall",
+  "rating_unit": "one overall post-study tool rating per participant per dimension",
+  "ratings_per_tool_per_dimension": 5,
+  "aggregation": "Mean of the five participant ratings per tool and dimension; overall tool mean is the equally weighted mean of the three dimensions",
+  "rating_scale": {
+    "minimum": -2,
+    "maximum": 2,
+    "points": 5
+  }
+}

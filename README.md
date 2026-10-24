@@ -8,6 +8,7 @@
   <a href="#-quick-install-vsix">Install VSIX</a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="#-features">Features</a> ·
+  <a href="#paper-experiment-settings">Paper experiments</a> ·
   <a href="docs/README.zh-CN.md">简体中文</a> ·
   <a href="https://github.com/GreFir/AdaAssist-tool/releases">Releases</a>
 </p>
@@ -15,6 +16,10 @@
 AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. It makes the generation → public testing → feedback → repair workflow visible and lets users review intermediate results instead of working with an opaque agent loop. It supports **Interactive** and **Auto** execution, editable tests and plans, multiple task sessions, historical workflow inspection, and Python inline completion.
 
 > **Research status:** This is a research prototype, not a guarantee of program correctness. Passing the provided public tests does not prove that hidden or untested edge cases pass. The paper link and related publication information will be added after public release.
+
+## Paper experiment settings
+
+Experimental configurations and reproduction instructions for Tables I–IV are available in the [reproduction guide](reproduction/README.md) ([Chinese version](reproduction/README.zh-CN.md)). The materials cover model and tool settings, benchmark datasets and test splits, evaluation procedures, and human study protocols.
 
 ## 🚀 Quick install (VSIX)
 
@@ -155,7 +160,7 @@ The command compiles the extension and creates `adaassist-<version>.vsix` in the
 
 ## 🔬 Research and reproducibility
 
-AdaAssist is intended for **code generation under explicit public tests and user intervention**. Historical workflow events and model timing/token metadata can be recorded, including in prepared user-study workspaces. To understand experiment data, setup, and limitations, see [Research and artifacts](docs/RESEARCH.md).
+AdaAssist is intended for **code generation under explicit public tests and user intervention**. For paper settings, fixed benchmark identities, prompt/environment records and reproduction steps, start at [Paper experiment settings](#paper-experiment-settings) and the [`reproduction/` guide](reproduction/README.md). For session recording and recovery, see [Research and artifacts](docs/RESEARCH.md).
 
 The software and configuration can evolve; for experimental comparisons, **record the exact commit/VSIX version, model identifier, endpoint, output-token settings, and test suite**. A paper link and BibTeX will be added once the manuscript is public.
 
@@ -173,6 +178,7 @@ The [importable examples](examples/README.md) include seven English-language Pyt
 - [Installation, model setup, troubleshooting](docs/INSTALLATION.md)
 - [Development, testing, VSIX packaging](docs/DEVELOPMENT.md)
 - [Research artifacts, session logs, recovery](docs/RESEARCH.md)
+- [Paper experiment configurations and reproduction instructions](reproduction/README.md)
 
 ## ⚠️ Important notes
 

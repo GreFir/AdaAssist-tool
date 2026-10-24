@@ -4,6 +4,21 @@
 
 **AdaAssist** 是面向 Python 代码生成研究的 VS Code 插件。它把“需求 → 测试 → 生成 → 验证 → 修复”过程展示出来，同时提供 **Interactive（交互）** 和 **Auto（自动）** 两种运行模式。
 
+## 论文实验配置与复现
+
+**配置目录：[`reproduction/configs/`](../reproduction/configs/)**；最终设计、参数和复现步骤见[中文实验说明](../reproduction/README.zh-CN.md)。
+
+| 论文实验 | 最终配置 |
+| --- | --- |
+| III-A / 表 I | [DeepSeek 三规模、五方法对比](../reproduction/configs/deepseek.json) |
+| III-B / 表 II | [Qwen 三工具对比与最终结果](../reproduction/configs/qwen.json) |
+| III-C / 表 III | [9 人、20 题受控干预](../reproduction/configs/intervention.json)，每题重新开始、无任务总时限 |
+| III-D / 表 IV | [15 人三工具用户研究](../reproduction/configs/user-study.json)，[固定 8 题](../reproduction/artifacts/datasets/task_ids_user_study8.json)为 4 题 HumanEval 简单题与 4 题 BCB 困难题，每组一个工具，全部结束后整体评分 |
+
+后端所有方法统一 **T=0.2、top-p=0.9、最大输出 512 tokens、seeds 42/43/44**；重试使用**工具默认设置**。数据为 HumanEval 164、MBPP 500、BCB Random150。任务名单和测试划分见[数据目录](../reproduction/artifacts/datasets/)，研究操作流程见[STUDY_PROTOCOLS.md](../reproduction/STUDY_PROTOCOLS.md)。
+
+**方法配置：**MapCoder 采用官方默认配置；AdaAssist 采用后端 Auto 默认工作流，公开测试通过或达到配置的修复轮数上限时结束，用户中断时暂停。
+
 ## 1. 最便捷的安装方式：VSIX
 
 **普通用户不需要下载源代码，也不用安装 Node.js/npm。**

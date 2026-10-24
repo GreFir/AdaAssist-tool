@@ -1,0 +1,80 @@
+{
+  "paper_section": "III-C",
+  "paper_table": "III",
+  "model": "Qwen3-Coder-30B-A3B-Instruct",
+  "participants": 9,
+  "participant_background": "senior software engineering graduate students; at least 5 years programming experience",
+  "assignment": "random assignment to 3 groups, one intervention per group",
+  "participants_per_group": 3,
+  "tasks": 20,
+  "tasks_per_participant": 20,
+  "task_ids": "artifacts/datasets/task_ids_intervention_main20.json",
+  "sampling": {
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 512
+  },
+  "repair_limit": 6,
+  "accepted_edit_definition": "Count each participant edit actually submitted and incorporated into the assigned intervention artifact or guidance as one edit operation. Auxiliary interactions such as rerunning tests do not count.",
+  "group_restrictions": "Each participant adheres to the assigned intervention channel; cross-channel edits are not performed.",
+  "auxiliary_interactions": {
+    "allowed": true,
+    "example": "rerun tests",
+    "count_as_edits": false
+  },
+  "time_limit_seconds": null,
+  "groups": [
+    {
+      "id": "C1",
+      "control": "Test Card",
+      "allowed_intervention": "add tests",
+      "reported_passed_by_participant": [
+        9,
+        5,
+        7
+      ],
+      "reported_average_pass_percent": 35.0,
+      "reported_average_accepted_edits": 1.23,
+      "reported_task_union": 10
+    },
+    {
+      "id": "C2",
+      "control": "Plan Card",
+      "allowed_intervention": "directly edit plan",
+      "reported_passed_by_participant": [
+        10,
+        9,
+        9
+      ],
+      "reported_average_pass_percent": 46.7,
+      "reported_average_accepted_edits": 0.67,
+      "reported_task_union": 11
+    },
+    {
+      "id": "C3",
+      "control": "Test Feedback Card",
+      "allowed_intervention": "clarify plan via natural-language guidance",
+      "reported_passed_by_participant": [
+        10,
+        9,
+        11
+      ],
+      "reported_average_pass_percent": 50.0,
+      "reported_average_accepted_edits": 0.82,
+      "reported_task_union": 12
+    }
+  ],
+  "reported_union_across_all_interventions": 14,
+  "backend_configuration": "configs/qwen.json",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "initial_generation_counts_as_repair": false,
+  "context_enabled": false,
+  "prompt_language": "English",
+  "starting_state": "Start a fresh complete generation, testing and repair workflow for each participant-task session",
+  "time_limit_policy": "No overall task time limit",
+  "final_evaluation": "Frozen original public and hidden benchmark tests"
+}

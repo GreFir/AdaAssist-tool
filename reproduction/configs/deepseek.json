@@ -1,0 +1,213 @@
+{
+  "paper_section": "III-A",
+  "paper_table": "I",
+  "models": [
+    "deepseek-ai/deepseek-coder-1.3b-instruct",
+    "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "deepseek-ai/deepseek-coder-33b-instruct"
+  ],
+  "datasets": "configs/datasets.json",
+  "sampling": {
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 512
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "retry_policy": "Use each tool's default retry settings",
+  "methods": [
+    {
+      "name": "Direct",
+      "version": "not recorded",
+      "max_output_tokens": 512,
+      "execution": "single generation"
+    },
+    {
+      "name": "MapCoder",
+      "commit": "c87e6d914d196e12fa2b144882122459a4b98007",
+      "commit_date": "2025-02-12",
+      "repository": "https://github.com/Md-Ashraful-Pramanik/MapCoder",
+      "max_output_tokens": 512,
+      "execution": "MapCoder official default configuration",
+      "stopping_policy": "MapCoder official default stopping and retry rules"
+    },
+    {
+      "name": "Codex",
+      "version": "0.144.1",
+      "max_output_tokens": 512,
+      "execution": "tool default settings"
+    },
+    {
+      "name": "DSH",
+      "version": "0.2.0-rc.2",
+      "max_output_tokens": 512,
+      "execution": "tool default settings"
+    },
+    {
+      "name": "AdaAssist",
+      "version": "v1.0",
+      "max_output_tokens": 512,
+      "execution": "backend Auto default configuration",
+      "mode": "Auto",
+      "workflow": [
+        "generate code",
+        "run public tests",
+        "apply rule-based repair on failure",
+        "generate a repair plan for persistent failures",
+        "regenerate and evaluate"
+      ],
+      "stopping_rules": {
+        "success": "all public tests pass after generation, local repair or regeneration",
+        "repair_limit": "the backend Auto configured repair-round limit is reached",
+        "interrupt": "the user interrupts or pauses the workflow"
+      }
+    }
+  ],
+  "reported_results": [
+    {
+      "model_scale": "1.3b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 33.54,
+        "MBPP": 24.27,
+        "BCB": 14.22
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 44.11,
+        "MBPP": 25.2,
+        "BCB": 35.33
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 44.51,
+        "MBPP": 11.53,
+        "BCB": 39.11
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 76.83,
+        "MBPP": 71.8,
+        "BCB": 36.67
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 85.98,
+        "MBPP": 78.0,
+        "BCB": 53.33
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 90.85,
+        "MBPP": 81.4,
+        "BCB": 56.67
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 60.37,
+        "MBPP": 37.4,
+        "BCB": 25.33
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 67.68,
+        "MBPP": 44.6,
+        "BCB": 48.67
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 67.68,
+        "MBPP": 60.4,
+        "BCB": 53.33
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 36.79,
+        "MBPP": 38.73,
+        "BCB": 17.33
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 60.37,
+        "MBPP": 58.33,
+        "BCB": 39.56
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 61.79,
+        "MBPP": 64.87,
+        "BCB": 45.33
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 62.2,
+        "MBPP": 46.07,
+        "BCB": 30.0
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 79.07,
+        "MBPP": 67.2,
+        "BCB": 48.0
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 78.46,
+        "MBPP": 71.53,
+        "BCB": 54.44
+      }
+    }
+  ],
+  "reported_average_pass_percent": {
+    "Direct": 30.2,
+    "MapCoder": 51.72,
+    "Codex": 47.01,
+    "DSH": 59.66,
+    "AdaAssist": 70.17
+  }
+}

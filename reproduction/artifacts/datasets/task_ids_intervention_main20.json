@@ -1,0 +1,25 @@
+{
+  "count": 20,
+  "task_ids": [
+    "BigCodeBench/23",
+    "BigCodeBench/61",
+    "BigCodeBench/88",
+    "BigCodeBench/130",
+    "BigCodeBench/191",
+    "BigCodeBench/217",
+    "BigCodeBench/224",
+    "BigCodeBench/292",
+    "BigCodeBench/313",
+    "BigCodeBench/327",
+    "BigCodeBench/338",
+    "BigCodeBench/457",
+    "BigCodeBench/493",
+    "BigCodeBench/548",
+    "BigCodeBench/601",
+    "BigCodeBench/664",
+    "BigCodeBench/758",
+    "BigCodeBench/821",
+    "BigCodeBench/973",
+    "BigCodeBench/1059"
+  ]
+}

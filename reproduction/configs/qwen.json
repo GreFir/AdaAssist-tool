@@ -1,0 +1,103 @@
+{
+  "paper_section": "III-B",
+  "paper_table": "II",
+  "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "revision": "b2cff646eb4bb1d68355c01b18ae02e7cf42d120",
+  "datasets": "configs/datasets.json",
+  "sampling": {
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 512
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "context_tokens": 16384,
+  "concurrency": 16,
+  "serving_settings": "artifacts/environment/qwen_serving_settings.json",
+  "retry_policy": "Use each tool's default retry settings",
+  "AdaAssist": {
+    "version": "v1.0",
+    "mode": "Auto",
+    "language": "English",
+    "context_enabled": false,
+    "tests": "provided public tests",
+    "max_repairs": 6,
+    "initial_generation_counts_as_repair": false,
+    "execution": "backend Auto default workflow",
+    "stopping_rules": {
+      "success": "all public tests pass after generation, local repair or regeneration",
+      "repair_limit": "the configured six repair rounds are exhausted",
+      "interrupt": "the user interrupts or pauses the workflow"
+    }
+  },
+  "Codex": {
+    "version": "0.144.1",
+    "execution": "tool default settings",
+    "auto_compact_tokens": 12000
+  },
+  "DSH": {
+    "version": "0.2.0-rc.2",
+    "execution": "tool default settings",
+    "native_compaction": true
+  },
+  "comparison_settings": {
+    "full": "Use the tool's default execution settings",
+    "limited": {
+      "label": "<=6 repairs",
+      "initial_candidate_edit_responses": 1,
+      "subsequent_candidate_edit_responses": 6,
+      "multiple_edits_in_one_response_count_as_one": true,
+      "failed_edit_attempts_count": true
+    }
+  },
+  "reported_results": [
+    {
+      "method": "Codex (<=6 repairs)",
+      "HE": 71.75,
+      "MBPP": 77.87,
+      "BCB": 39.33,
+      "average_pass_percent": 62.98,
+      "average_seconds": 83.07,
+      "average_calls": 18.24
+    },
+    {
+      "method": "DSH (<=6 repairs)",
+      "HE": 91.26,
+      "MBPP": 83.6,
+      "BCB": 56.67,
+      "average_pass_percent": 77.18,
+      "average_seconds": 67.63,
+      "average_calls": 12.11
+    },
+    {
+      "method": "Codex",
+      "HE": 80.69,
+      "MBPP": 80.2,
+      "BCB": 48.44,
+      "average_pass_percent": 69.78,
+      "average_seconds": 97.53,
+      "average_calls": 21.45
+    },
+    {
+      "method": "DSH",
+      "HE": 91.67,
+      "MBPP": 84.13,
+      "BCB": 59.33,
+      "average_pass_percent": 78.38,
+      "average_seconds": 76.1,
+      "average_calls": 14.4
+    },
+    {
+      "method": "AdaAssist",
+      "HE": 94.11,
+      "MBPP": 84.87,
+      "BCB": 57.11,
+      "average_pass_percent": 78.7,
+      "average_seconds": 13.76,
+      "average_calls": 2.43
+    }
+  ]
+}

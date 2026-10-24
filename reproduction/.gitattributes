@@ -1,0 +1,4 @@
+# Preserve checksum-covered bytes and recognize Windows line endings.
+* -text whitespace=cr-at-eol
+# Preserve prompt and dataset whitespace in checksum-covered material.
+artifacts/** -whitespace
