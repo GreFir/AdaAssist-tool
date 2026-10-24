@@ -30,6 +30,8 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 
 **Backend generation:** all methods use **T=0.2, top-p=0.9, maximum output 512 tokens**, with **seeds 42/43/44**. Retry handling uses **each tool's default settings**.
 
+**Method configuration:** MapCoder uses its official defaults. AdaAssist uses the backend Auto default workflow, stopping when public tests pass or the configured repair-round limit is reached; user interruption pauses the workflow.
+
 **Datasets:** HumanEval **164**, MBPP **500** (original task IDs 11-510), BigCodeBench **Random150**. MBPP uses one randomly selected public test per task with seed 42; the remaining tests are hidden. Fixed task lists and BCB test-method splits are in [reproduction/artifacts/datasets/](reproduction/artifacts/datasets/). See [dataset settings](reproduction/configs/datasets.json) and [study procedures](reproduction/STUDY_PROTOCOLS.md).
 
 Table II reports AdaAssist's final BCB pass rate as **57.11%** and average pass rate as **78.70%**. All final tables are recorded in the experiment manifests.

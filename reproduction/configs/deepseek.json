@@ -27,7 +27,8 @@
     {
       "name": "MapCoder",
       "max_output_tokens": 512,
-      "execution": "tool default settings"
+      "execution": "MapCoder official default configuration",
+      "stopping_policy": "MapCoder official default stopping and retry rules"
     },
     {
       "name": "Codex",
@@ -42,7 +43,20 @@
     {
       "name": "AdaAssist",
       "max_output_tokens": 512,
-      "execution": "tool default settings"
+      "execution": "backend Auto default configuration",
+      "mode": "Auto",
+      "workflow": [
+        "generate code",
+        "run public tests",
+        "apply rule-based repair on failure",
+        "generate a repair plan for persistent failures",
+        "regenerate and evaluate"
+      ],
+      "stopping_rules": {
+        "success": "all public tests pass after generation, local repair or regeneration",
+        "repair_limit": "the backend Auto configured repair-round limit is reached",
+        "interrupt": "the user interrupts or pauses the workflow"
+      }
     }
   ],
   "reported_results": [

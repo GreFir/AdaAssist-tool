@@ -17,6 +17,8 @@
 
 后端所有方法统一 **T=0.2、top-p=0.9、最大输出 512 tokens、seeds 42/43/44**；重试使用**工具默认设置**。数据为 HumanEval 164、MBPP 500、BCB Random150。任务名单和测试划分见[数据目录](../reproduction/artifacts/datasets/)，研究操作流程见[STUDY_PROTOCOLS.md](../reproduction/STUDY_PROTOCOLS.md)。
 
+**方法配置：**MapCoder 采用官方默认配置；AdaAssist 采用后端 Auto 默认工作流，公开测试通过或达到配置的修复轮数上限时结束，用户中断时暂停。
+
 ## 1. 最便捷的安装方式：VSIX
 
 **普通用户不需要下载源代码，也不用安装 Node.js/npm。**

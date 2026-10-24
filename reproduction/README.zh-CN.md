@@ -27,6 +27,8 @@
 | seeds | 42 / 43 / 44 | 42 / 43 / 44 |
 | 重试设置 | **各工具默认设置** | **各工具默认设置** |
 
+**MapCoder 采用官方默认配置**，停止与重试遵循其默认规则。**AdaAssist 采用后端 Auto 默认工作流**：生成代码 → 公开测试 → 规则修复 → 持续失败时生成计划并重新生成。公开测试通过或达到配置的修复轮数上限时结束，用户中断时暂停。方法配置见 [deepseek.json](configs/deepseek.json)。
+
 DeepSeek 模型名称为：
 
 - [deepseek-ai/deepseek-coder-1.3b-instruct](https://huggingface.co/deepseek-ai/deepseek-coder-1.3b-instruct)

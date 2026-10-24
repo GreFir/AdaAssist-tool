@@ -24,7 +24,13 @@
     "context_enabled": false,
     "tests": "provided public tests",
     "max_repairs": 6,
-    "initial_generation_counts_as_repair": false
+    "initial_generation_counts_as_repair": false,
+    "execution": "backend Auto default workflow",
+    "stopping_rules": {
+      "success": "all public tests pass after generation, local repair or regeneration",
+      "repair_limit": "the configured six repair rounds are exhausted",
+      "interrupt": "the user interrupts or pauses the workflow"
+    }
   },
   "Codex": {
     "version": "0.144.1",
