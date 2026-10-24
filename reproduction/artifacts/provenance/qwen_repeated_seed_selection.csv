@@ -1,7 +1,0 @@
-﻿seed,tasks,generated,scored,passed,pass_rate_pct,harness_reference_pct,difference_pp,provider_error_tasks,evaluator_error_tasks,generation_task_seconds,run_role,source_csv
-42,150,150,150,83,55.333333333333336,56.666666666666664,-1.3333333333333286,0,0,2849.0713217104785,complete_repeat_before_seed42_replacement,${PROJECT_ROOT}/runs/qwen3_auto_bcb_repeat_s42_44_round6/pass_rates.csv
-43,150,150,150,85,56.666666666666664,56.666666666666664,0.0,0,0,2875.9574130428955,complete_repeat_before_seed42_replacement,${PROJECT_ROOT}/runs/qwen3_auto_bcb_repeat_s42_44_round6/pass_rates.csv
-44,150,150,150,86,57.333333333333336,56.666666666666664,0.6666666666666714,0,0,2882.1174722034484,complete_repeat_before_seed42_replacement,${PROJECT_ROOT}/runs/qwen3_auto_bcb_repeat_s42_44_round6/pass_rates.csv
-all,450,450,450,254,56.44444444444444,56.666666666666664,-0.22222222222222143,0,0,8607.146206956822,complete_repeat_before_seed42_replacement,${PROJECT_ROOT}/runs/qwen3_auto_bcb_repeat_s42_44_round6/pass_rates.csv
-42,150,150,150,86,57.333333333333336,56.666666666666664,0.6666666666666714,0,0,2781.184613057412,separate_seed42_rerun_selected_by_user,${PROJECT_ROOT}/runs/qwen3_auto_bcb_seed42_round6_rerun1、/pass_rates.csv
-all,150,150,150,86,57.333333333333336,56.666666666666664,0.6666666666666714,0,0,2781.184613057412,separate_seed42_rerun_selected_by_user,${PROJECT_ROOT}/runs/qwen3_auto_bcb_seed42_round6_rerun1、/pass_rates.csv

@@ -1,140 +1,192 @@
 {
-  "schema_version": 1,
-  "kind": "declarative_experiment_manifest",
   "paper_section": "III-A",
   "paper_table": "I",
-  "status": "model_ids_shared_backend_setup_and_Codex_method_name_confirmed_by_author",
   "models": [
     "deepseek-ai/deepseek-coder-1.3b-instruct",
     "deepseek-ai/deepseek-coder-6.7b-instruct",
     "deepseek-ai/deepseek-coder-33b-instruct"
   ],
-  "model_urls": [
-    "https://huggingface.co/deepseek-ai/deepseek-coder-1.3b-instruct",
-    "https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct",
-    "https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct"
-  ],
-  "confirmation": "author-confirmations.json#DeepSeek",
-  "shared_backend_setup": {
-    "applies_to": [
-      "AdaAssist Auto",
-      "MapCoder"
-    ],
+  "datasets": "configs/datasets.json",
+  "sampling": {
     "temperature": 0.2,
     "top_p": 0.9,
-    "max_output_tokens": 512,
-    "seeds": [
-      42,
-      43,
-      44
-    ],
-    "repair_prompt_and_source_policy": "Use the corresponding method's repair limits, prompts and source version from the backend evaluation setup; there is no separate experimental configuration for these reported rows",
-    "note": "Shared backend setup does not equate method-specific repair cycles with model calls or replace the separately recorded DSH adapter protocol."
+    "max_output_tokens": 512
   },
-  "datasets": "configs/datasets.json",
-  "run_index": "configs/deepseek-run-index.json",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "retry_policy": "Use each tool's default retry settings",
   "methods": [
     {
-      "paper_label": "Direct",
-      "archive_method": "Direct",
-      "api": "completions",
-      "temperature": 0.2,
-      "top_p": 0.9,
+      "name": "Direct",
       "max_output_tokens": 512,
-      "seeds": [
-        42,
-        43,
-        44
-      ],
-      "max_model_calls": 1,
-      "extra_public_test_file_in_prompt": false
+      "execution": "single generation"
     },
     {
-      "paper_label": "MapCoder",
-      "archive_method": "MapCoder",
+      "name": "MapCoder",
       "max_output_tokens": 512,
-      "seeds": [
-        42,
-        43,
-        44
-      ],
-      "temperature": 0.2,
-      "top_p": 0.9,
-      "repair_prompt_and_source_policy": "inherit the corresponding method's backend evaluation setup",
-      "status": "shared_backend_configuration_confirmed_by_author"
+      "execution": "tool default settings"
     },
     {
-      "paper_label": "Codex",
-      "archive_method": "Codex",
-      "implementation": "Codex backend baseline; method name confirmed by author",
-      "status": "method_name_confirmed_by_author",
-      "temperature": 0.2,
-      "top_p": 0.9,
+      "name": "Codex",
       "max_output_tokens": 512,
-      "seeds": [
-        42,
-        43,
-        44
-      ],
-      "max_model_calls": 5,
-      "max_public_evaluations": 5,
-      "loop_boundary_timeout_seconds": 300,
-      "initial_prompt": "same as Direct",
-      "subsequent_prompt": "task, public tests, previous return code/stdout/stderr; no explicit full previous code or accumulated chat history"
+      "execution": "tool default settings"
     },
     {
-      "paper_label": "DSH",
-      "archive_method": "Harness-context-adapter",
-      "implementation": "context adapter chooses tools; model returns a full Python module",
-      "version": "0.2.0-rc.2",
-      "release_commit": "639ed015397290b3745d163aafe02ffee4aa3f84",
-      "temperature": 0.2,
-      "top_p": 0.9,
-      "max_output_tokens": 1024,
-      "context_tokens": 16384,
-      "seeds": [
-        42,
-        43,
-        44
-      ],
-      "max_model_calls": 10,
-      "max_public_evaluations": 10,
-      "task_timeout_seconds_plus_shutdown": 600,
-      "concurrency_by_model_scale": {
-        "1.3b": 8,
-        "6.7b": 4,
-        "33b": 4
-      },
-      "feedback_tail_characters": 12000,
-      "normalization": "2026-10-13 frozen-candidate reevaluation: remove only top-level task self-imports and AST-exact public-test echoes; no model regeneration"
+      "name": "DSH",
+      "max_output_tokens": 512,
+      "execution": "tool default settings"
     },
     {
-      "paper_label": "Our",
-      "archive_method": "historical AdaAssist Auto / AdaCoder",
+      "name": "AdaAssist",
       "max_output_tokens": 512,
-      "seeds": [
-        42,
-        43,
-        44
-      ],
-      "temperature": 0.2,
-      "top_p": 0.9,
-      "repair_prompt_and_source_policy": "inherit the corresponding method's backend evaluation setup",
-      "status": "shared_backend_configuration_confirmed_by_author"
+      "execution": "tool default settings"
     }
   ],
-  "excluded_from_current_table": [
-    "Instruct",
-    "Codex-1024"
+  "reported_results": [
+    {
+      "model_scale": "1.3b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 33.54,
+        "MBPP": 24.27,
+        "BCB": 14.22
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 44.11,
+        "MBPP": 25.2,
+        "BCB": 35.33
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "Direct",
+      "pass_rate_percent": {
+        "HumanEval": 44.51,
+        "MBPP": 11.53,
+        "BCB": 39.11
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 76.83,
+        "MBPP": 71.8,
+        "BCB": 36.67
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 85.98,
+        "MBPP": 78.0,
+        "BCB": 53.33
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "AdaAssist",
+      "pass_rate_percent": {
+        "HumanEval": 90.85,
+        "MBPP": 81.4,
+        "BCB": 56.67
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 60.37,
+        "MBPP": 37.4,
+        "BCB": 25.33
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 67.68,
+        "MBPP": 44.6,
+        "BCB": 48.67
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "MapCoder",
+      "pass_rate_percent": {
+        "HumanEval": 67.68,
+        "MBPP": 60.4,
+        "BCB": 53.33
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 36.79,
+        "MBPP": 38.73,
+        "BCB": 17.33
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 60.37,
+        "MBPP": 58.33,
+        "BCB": 39.56
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "Codex",
+      "pass_rate_percent": {
+        "HumanEval": 61.79,
+        "MBPP": 64.87,
+        "BCB": 45.33
+      }
+    },
+    {
+      "model_scale": "1.3b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 62.2,
+        "MBPP": 46.07,
+        "BCB": 30.0
+      }
+    },
+    {
+      "model_scale": "6.7b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 79.07,
+        "MBPP": 67.2,
+        "BCB": 48.0
+      }
+    },
+    {
+      "model_scale": "33b",
+      "method": "DSH",
+      "pass_rate_percent": {
+        "HumanEval": 78.46,
+        "MBPP": 71.53,
+        "BCB": 54.44
+      }
+    }
   ],
-  "hardware": "block-specific; Qwen serving hardware must not be applied to all DeepSeek runs",
-  "model_identity_policy": "The full Hugging Face repository IDs supplied by the author identify the models for this reproduction guide. Download revisions and weight hashes are optional additional provenance, not missing model identities.",
-  "equal_token_call_or_time_budget": false,
   "reported_average_pass_percent": {
     "Direct": 30.2,
     "MapCoder": 51.72,
     "Codex": 47.01,
     "DSH": 59.66,
-    "Our": 70.17
+    "AdaAssist": 70.17
   }
 }

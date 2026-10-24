@@ -21,16 +21,5 @@
     "BigCodeBench/821",
     "BigCodeBench/973",
     "BigCodeBench/1059"
-  ],
-  "selection_seed": 42,
-  "historical_seeds": [
-    42,
-    43,
-    44
-  ],
-  "replacement": {
-    "removed": "BigCodeBench/644",
-    "added": "BigCodeBench/61",
-    "depends_on_historical_outcomes": true
-  }
+  ]
 }

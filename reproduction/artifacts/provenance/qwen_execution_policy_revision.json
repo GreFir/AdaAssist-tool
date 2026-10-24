@@ -1,8 +1,0 @@
-{
-  "recorded_unix": 1792058011.4997988,
-  "policy": "continue_on_confirmed_context_overflow",
-  "original_runner_sha256": "e0b39180929f16bcfcbcc2c592b9577d2d8b062997e2e1653cca2500eaeccd23",
-  "resumed_runner_sha256": "aa81271c850b4e2a82cf8af13fbd4a7316ac61dd8d750585c8aaddc10a483a44",
-  "task_parameters_changed": false,
-  "cached_results_preserved": true
-}

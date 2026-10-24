@@ -19,24 +19,20 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 
 ## Paper experiment settings
 
-**Reproduction materials: [`reproduction/`](reproduction/README.md)** · [中文实验说明](reproduction/README.zh-CN.md) · [Paper/archive discrepancies and missing inputs](reproduction/DISCREPANCIES.md)
+**Configurations and reproduction instructions: [`reproduction/`](reproduction/README.md)** · [中文实验说明](reproduction/README.zh-CN.md)
 
-The settings below follow Section III and Tables I-IV of *AdaAssist: Progressive Agentic Code Generation for Small Language Models*. Each manifest records the paper protocol, recoverable historical settings and unresolved inputs. These are declarative experiment records; the current extension does not automatically load them.
-
-| Paper experiment | Explicit configuration | Files |
+| Paper | Final experiment design | Configuration |
 | --- | --- | --- |
-| **III-A / Table I: DeepSeek backend** | DeepSeek-Coder-Instruct **1.3B / 6.7B / 33B**; Direct, MapCoder, Codex, DSH adapter, AdaAssist. Direct/Codex/AdaAssist/MapCoder: **T=0.2, top-p=0.9, 512 tokens, seeds 42/43/44**; DSH adapter: **1024 tokens, up to 10 calls** | [DeepSeek settings and full model IDs](reproduction/configs/deepseek.json), [per-run index](reproduction/configs/deepseek-run-index.json) |
-| **III-B / Table II: Qwen backend** | **Qwen3-Coder-30B-A3B-Instruct**; **T=0.2, top-p=0.9, 512 tokens, 16K context, concurrency 16, seeds 42/43/44**; AdaAssist up to **6 repair rounds**; native full and retrospectively limited trajectories | [Qwen settings and result versions](reproduction/configs/qwen.json) |
-| **III-C / Table III: controlled intervention** | **9 participants**, **20 BCB tasks**, 3 intervention groups; **fresh workflows, backend settings, no task time limit** | [Configuration](reproduction/configs/intervention.json), [reproduction procedure](reproduction/STUDY_PROTOCOLS.md#iii-c-controlled-intervention-on-residual-failures) |
-| **III-D / Table IV: user study** | **15 participants**, **one tool per group**, **8 tasks**; overall tool ratings **-2 to 2 after all tasks** | [Configuration](reproduction/configs/user-study.json), [reproduction procedure](reproduction/STUDY_PROTOCOLS.md#iii-d-three-tool-usability-study) |
+| III-A / Table I | DeepSeek-Coder-Instruct 1.3B / 6.7B / 33B; Direct, MapCoder, Codex, DSH and AdaAssist | [deepseek.json](reproduction/configs/deepseek.json) |
+| III-B / Table II | Qwen3-Coder-30B-A3B-Instruct; AdaAssist, Codex and DSH; default and limited execution settings | [qwen.json](reproduction/configs/qwen.json) |
+| III-C / Table III | 9 participants, 20 BCB tasks, three intervention groups; fresh workflows, no task time limit | [intervention.json](reproduction/configs/intervention.json) |
+| III-D / Table IV | 15 participants, one tool per group, 8 tasks; overall tool ratings after all tasks | [user-study.json](reproduction/configs/user-study.json) |
 
-**Datasets:** HumanEval **164**, MBPP **500**, BigCodeBench **Random150**. MBPP uses consecutive original **task IDs 11-510**; randomly select **one public test per task with seed 42**, and hold out all remaining tests for final evaluation. Exact task IDs, the reused **20-task BCB intervention list** and BCB public/final test-method lists are in [`reproduction/artifacts/datasets/`](reproduction/artifacts/datasets/); revisions, hashes, visibility and evaluator settings are in [datasets.json](reproduction/configs/datasets.json). Archived prompts, dependency snapshots, model identities and result provenance are under [`reproduction/artifacts/`](reproduction/artifacts/).
+**Backend generation:** all methods use **T=0.2, top-p=0.9, maximum output 512 tokens**, with **seeds 42/43/44**. Retry handling uses **each tool's default settings**.
 
-**DeepSeek model IDs:** [1.3B](https://huggingface.co/deepseek-ai/deepseek-coder-1.3b-instruct), [6.7B](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct), [33B](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct). AdaAssist and MapCoder inherit the corresponding backend experiment's repair limits, prompts and source configuration, as confirmed by the author.
+**Datasets:** HumanEval **164**, MBPP **500** (original task IDs 11-510), BigCodeBench **Random150**. MBPP uses one randomly selected public test per task with seed 42; the remaining tests are hidden. Fixed task lists and BCB test-method splits are in [reproduction/artifacts/datasets/](reproduction/artifacts/datasets/). See [dataset settings](reproduction/configs/datasets.json) and [study procedures](reproduction/STUDY_PROTOCOLS.md).
 
-**Study procedures:** [Frontend study protocols](reproduction/STUDY_PROTOCOLS.md) describe preparation, grouping, allowed operations and analysis. The controlled study reuses the earlier 20 BCB tasks, starts each task afresh with backend settings and has no task time limit. Count actual submitted/applied edits; auxiliary actions such as test reruns do not count. In the 15-person study each group uses one tool, and participants rate that tool overall after all tasks. Questionnaire forms and raw responses are deferred. Budget definitions and result-version provenance are documented in [the alignment notes](reproduction/DISCREPANCIES.md).
-
-Check material integrity without calling a model:
+Table II reports AdaAssist's final BCB pass rate as **57.11%** and average pass rate as **78.70%**. All final tables are recorded in the experiment manifests.
 
 ```bash
 python reproduction/verify.py

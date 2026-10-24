@@ -1,71 +1,96 @@
 {
-  "schema_version": 1,
-  "kind": "declarative_experiment_manifest",
   "paper_section": "III-B",
   "paper_table": "II",
-  "archive_experiment_id": "S1 plus S2; now main-paper material",
   "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
   "revision": "b2cff646eb4bb1d68355c01b18ae02e7cf42d120",
-  "checkpoint_identity": "artifacts/environment/qwen_checkpoint_identity.json",
-  "serving_settings": "artifacts/environment/qwen_serving_settings.json",
   "datasets": "configs/datasets.json",
-  "seeds": [42, 43, 44],
-  "base_matrix": {"frameworks": 3, "datasets": 3, "seeds": 3, "blocks": 27, "task_runs": 7326},
-  "sampling_all_upstream_calls": {"temperature": 0.2, "top_p": 0.9, "max_output_tokens": 512},
+  "sampling": {
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 512
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
   "context_tokens": 16384,
   "concurrency": 16,
-  "evaluation_concurrency_for_overlay_and_continuation": 16,
-  "task_timeout_seconds_per_segment": 300,
-  "fresh_run_total_deadline_matches_historical_merged_timing": false,
+  "serving_settings": "artifacts/environment/qwen_serving_settings.json",
+  "retry_policy": "Use each tool's default retry settings",
   "AdaAssist": {
     "mode": "Auto",
     "language": "English",
-    "tests": "manually loaded frozen public tests",
     "context_enabled": false,
+    "tests": "provided public tests",
     "max_repairs": 6,
-    "initial_generation_counts_as_repair": false,
-    "max_internal_format_or_syntax_attempts_per_stage": 4,
-    "source_head": "2666e92582c546b7f670d336f71d1a33c68657b1",
-    "source_file_hashes": "artifacts/provenance/qwen_three_framework_actual.json",
-    "current_demo_backend_equivalence_verified": false
+    "initial_generation_counts_as_repair": false
   },
-  "native_frameworks": {
-    "Codex": {"version": "0.144.1", "api": "Responses with custom/freeform bridge", "auto_compact_tokens": 12000},
-    "DSH": {"version": "0.2.0-rc.2", "native_compaction": true, "profile": "artifacts/provenance/native_harness_profile_settings.json"},
-    "max_model_requests": null,
-    "max_public_test_runs": null,
-    "tool_repair": false,
-    "require_tool_call": false,
-    "require_first_tool_call": false,
-    "candidate": "last candidate actually saved by native framework, including failure, timeout or missing-candidate outcomes",
-    "workspace": "fixtures/output writable; task instructions and frozen public suites read-only"
+  "Codex": {
+    "version": "0.144.1",
+    "execution": "tool default settings",
+    "auto_compact_tokens": 12000
   },
-  "six_repairs_rows": {
-    "paper_label": "Codex / DSH (<=6 repairs)",
-    "archived_design": "retrospective trajectory-prefix analysis",
-    "max_candidate_edit_responses": 7,
-    "interpretation": "first edit attempt plus six subsequent attempts; a response may contain multiple edits; failed edits count",
-    "cutoff": "latest observable candidate before the request containing the eighth edit response starts",
-    "cost": "exclude boundary request and all later inference/tools; retain earlier planning, reads, tests, errors and compaction",
-    "audit": "artifacts/provenance/cost_audit_settings.json",
-    "same_unit_as_AdaAssist_repair_cycle": false,
-    "prospective_uniform_six_cycle_run": false
+  "DSH": {
+    "version": "0.2.0-rc.2",
+    "execution": "tool default settings",
+    "native_compaction": true
   },
-  "historical_merge": {
-    "workspace_correction_replacements": 108,
-    "auto_continuation": "initial five-repair runs extended to six; each appended segment has its own 300-second allowance",
-    "original_Auto_passed_over_three_seeds": {"HumanEval": [463, 492], "MBPP": [1273, 1500], "BigCodeBench": [251, 450]},
-    "paper_selected_Auto_BigCodeBench": {"passed_by_seed": [86, 85, 86], "total_passed": 257, "total_tasks": 450, "post_hoc_seed42_rerun_selection": true},
-    "sources": "artifacts/provenance/qwen_selected_result_sources.json",
-    "original_merge": "artifacts/provenance/qwen_six_round_merge.json",
-    "note": "The paper's 57.11% BCB and 78.70% average match the selected result version, not the original 251/450 BCB merge. A fresh run is a separate result."
+  "comparison_settings": {
+    "full": "Use the tool's default execution settings",
+    "limited": {
+      "label": "<=6 repairs",
+      "initial_candidate_edit_responses": 1,
+      "subsequent_candidate_edit_responses": 6,
+      "multiple_edits_in_one_response_count_as_one": true,
+      "failed_edit_attempts_count": true
+    }
   },
-  "reported_rows": [
-    {"method": "Codex (<=6 repairs)", "HE": 71.75, "MBPP": 77.87, "BCB": 39.33, "average_pass_percent": 62.98, "average_seconds": 83.07, "average_calls": 18.24},
-    {"method": "DSH (<=6 repairs)", "HE": 91.26, "MBPP": 83.60, "BCB": 56.67, "average_pass_percent": 77.18, "average_seconds": 67.63, "average_calls": 12.11},
-    {"method": "Codex", "HE": 80.69, "MBPP": 80.20, "BCB": 48.44, "average_pass_percent": 69.78, "average_seconds": 97.53, "average_calls": 21.45},
-    {"method": "DSH", "HE": 91.67, "MBPP": 84.13, "BCB": 59.33, "average_pass_percent": 78.38, "average_seconds": 76.10, "average_calls": 14.40},
-    {"method": "Our", "HE": 94.11, "MBPP": 84.87, "BCB": 57.11, "average_pass_percent": 78.70, "average_seconds": 13.76, "average_calls": 2.43}
-  ],
-  "raw_trajectory_and_cost_values_available_here": false
+  "reported_results": [
+    {
+      "method": "Codex (<=6 repairs)",
+      "HE": 71.75,
+      "MBPP": 77.87,
+      "BCB": 39.33,
+      "average_pass_percent": 62.98,
+      "average_seconds": 83.07,
+      "average_calls": 18.24
+    },
+    {
+      "method": "DSH (<=6 repairs)",
+      "HE": 91.26,
+      "MBPP": 83.6,
+      "BCB": 56.67,
+      "average_pass_percent": 77.18,
+      "average_seconds": 67.63,
+      "average_calls": 12.11
+    },
+    {
+      "method": "Codex",
+      "HE": 80.69,
+      "MBPP": 80.2,
+      "BCB": 48.44,
+      "average_pass_percent": 69.78,
+      "average_seconds": 97.53,
+      "average_calls": 21.45
+    },
+    {
+      "method": "DSH",
+      "HE": 91.67,
+      "MBPP": 84.13,
+      "BCB": 59.33,
+      "average_pass_percent": 78.38,
+      "average_seconds": 76.1,
+      "average_calls": 14.4
+    },
+    {
+      "method": "AdaAssist",
+      "HE": 94.11,
+      "MBPP": 84.87,
+      "BCB": 57.11,
+      "average_pass_percent": 78.7,
+      "average_seconds": 13.76,
+      "average_calls": 2.43
+    }
+  ]
 }

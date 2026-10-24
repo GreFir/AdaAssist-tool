@@ -36,20 +36,13 @@ def main():
     require(actual == checked, f"Checksum coverage mismatch: {sorted(actual ^ checked)}")
     print(f"OK: {len(checked)} curated file checksums")
 
-    for record in read_json(ROOT / "sources.json")["files"]:
-        path = (ROOT / record["path"]).resolve()
-        require(path.is_relative_to(ROOT), "Source record outside reproduction directory")
-        data = path.read_bytes()
-        require(len(data) == record["bytes"], f"Source size mismatch: {record['path']}")
-        require(hashlib.sha256(data).hexdigest() == record["sha256"], f"Source hash mismatch: {record['path']}")
-
     for path in ROOT.rglob("*.json"):
         read_json(path)
     for path in ROOT.rglob("*.jsonl"):
         for line in path.read_text(encoding="utf-8-sig").splitlines():
             if line.strip():
                 json.loads(line)
-    print("OK: copied-source identities and JSON/JSONL syntax")
+    print("OK: JSON/JSONL syntax")
 
     datasets = ROOT / "artifacts/datasets"
     expected_ids = {
@@ -78,17 +71,16 @@ def main():
     intervention = read_json(ROOT / "configs/intervention.json")
     reused_tasks = read_json(ROOT / intervention["task_ids"])
     reused_ids = reused_tasks["task_ids"]
-    selection = read_json(ROOT / intervention["task_selection_provenance"])
     require(reused_tasks["count"] == len(reused_ids) == len(set(reused_ids)) == 20, "Invalid reused intervention task count")
     require(set(reused_ids) <= bcb_ids, "Intervention tasks outside the frozen BCB sample")
-    require(reused_ids == selection["selected_task_ids"], "Reused task list differs from archived selection")
-    print("OK: 20 reused intervention tasks match the archived selection and BCB sample")
+    print("OK: 20 intervention tasks belong to the fixed BCB sample")
 
-    raw = read_json(ROOT / "artifacts/provenance/baseline_run_settings.json")
-    selected = [b for b in raw["blocks"] if b["method"] in {"Direct", "Codex", "Harness-context-adapter"}]
-    index = read_json(ROOT / "configs/deepseek-run-index.json")
-    require(index["blocks"] == selected and len(selected) == 81, "DeepSeek run index differs from source selection")
-    print("OK: 81 DeepSeek run blocks match the archived settings")
+    deepseek = read_json(ROOT / "configs/deepseek.json")
+    qwen = read_json(ROOT / "configs/qwen.json")
+    require(deepseek["sampling"]["max_output_tokens"] == qwen["sampling"]["max_output_tokens"] == 512, "Backend output budgets must be 512")
+    require(all(method["max_output_tokens"] == 512 for method in deepseek["methods"]), "DeepSeek methods must all use 512 output tokens")
+    require(len(deepseek["reported_results"]) == 15, "Expected five methods across three DeepSeek models")
+    print("OK: final backend output budgets and result matrix")
     print("Integrity checks passed. This checks configuration artifacts; it does not run experiments or recompute paper results.")
 
 

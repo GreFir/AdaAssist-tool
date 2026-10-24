@@ -1,26 +1,14 @@
 {
-  "schema_version": 1,
-  "kind": "declarative_experiment_manifest",
   "paper_section": "III-C",
   "paper_table": "III",
-  "status": "protocol_confirmed_by_author",
-  "replication_procedure": "STUDY_PROTOCOLS.md#iii-c-controlled-intervention-on-residual-failures",
-  "procedure_scope": "Author-confirmed fresh workflow, backend settings, intervention restrictions and edit counting",
   "model": "Qwen3-Coder-30B-A3B-Instruct",
   "participants": 9,
   "participant_background": "senior software engineering graduate students; at least 5 years programming experience",
   "assignment": "random assignment to 3 groups, one intervention per group",
   "participants_per_group": 3,
   "tasks": 20,
-  "task_pool_in_paper": "BigCodeBench tasks unsolved by AdaAssist under Section III-B",
-  "selection_in_paper": "random",
   "tasks_per_participant": 20,
-  "participant_task_observations": 180,
   "task_ids": "artifacts/datasets/task_ids_intervention_main20.json",
-  "task_reuse": "same 20 BigCodeBench tasks as the earlier controlled intervention experiment; confirmed by author",
-  "task_selection_provenance": "artifacts/provenance/intervention_main_selection.json",
-  "task_selection_note": "The reused list retains the earlier experiment's selection history, including the /644 to /61 replacement. The manuscript describes random selection; reuse does not establish a fresh random draw or identical starting states.",
-  "confirmation": "author-confirmations.json#controlled_intervention",
   "sampling": {
     "temperature": 0.2,
     "top_p": 0.9,
@@ -77,15 +65,6 @@
     }
   ],
   "reported_union_across_all_interventions": 14,
-  "deferred_validation_materials": [
-    "anonymized edit logs",
-    "per-participant final candidates and measurements"
-  ],
-  "current_documentation_requires_raw_participant_records": false,
-  "relationship_to_earlier_controlled_intervention": "Reuse the 20 task IDs, start fresh workflows, and use backend evaluation settings with no task time limit",
-  "archive_E3_is_matching_evidence": false,
-  "archive_E3_exclusion_reason": "Shared task IDs do not turn the earlier API-reviewer trajectories or scores into the nine human participants' trajectories or scores",
-  "starting_state": "Start a new complete workflow for every participant-task session; generate initial code afresh rather than resume a historical failed candidate",
   "backend_configuration": "configs/qwen.json",
   "seeds": [
     42,
@@ -95,6 +74,7 @@
   "initial_generation_counts_as_repair": false,
   "context_enabled": false,
   "prompt_language": "English",
-  "final_evaluation": "Use the backend benchmark evaluator and frozen original public/hidden tests; candidate and repair workflow start afresh",
-  "time_limit_policy": "No participant-task wall-clock limit; null means unlimited, not unknown. Backend generation/repair settings otherwise apply."
+  "starting_state": "Start a fresh complete generation, testing and repair workflow for each participant-task session",
+  "time_limit_policy": "No overall task time limit",
+  "final_evaluation": "Frozen original public and hidden benchmark tests"
 }

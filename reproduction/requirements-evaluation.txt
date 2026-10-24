@@ -1,6 +1,4 @@
-# Portable subset of recorded Python 3.11 evaluator packages.
-# Full environment provenance: artifacts/environment/adaassist_environment.txt.
-# Not the current demo backend environment, and not a complete lockfile.
+# Benchmark evaluation dependencies for Python 3.11.
 -r artifacts/environment/bigcodebench_evaluator_requirements.txt
 numpy==2.2.6
 pandas==3.0.5

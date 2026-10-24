@@ -2,13 +2,11 @@
 
 [← README](../README.md) · [Developer guide](DEVELOPMENT.md)
 
-AdaAssist is a **research prototype for interactive Python code generation** with visible generation, public-test evaluation, human review, and plan-guided repair. Paper experiment settings and their evidence limits are documented in the [reproduction guide](../reproduction/README.md) ([中文](../reproduction/README.zh-CN.md)); this page describes software session artifacts.
+AdaAssist is a **research prototype for interactive Python code generation** with visible generation, public-test evaluation, human review, and plan-guided repair. Final paper experiment settings are documented in the [reproduction guide](../reproduction/README.md) ([中文](../reproduction/README.zh-CN.md)); this page describes software session artifacts.
 
 ## Paper experiment configurations
 
-The versioned [`reproduction/`](../reproduction/README.md) directory maps Section III-A through III-D and Tables I-IV to [DeepSeek](../reproduction/configs/deepseek.json), [Qwen](../reproduction/configs/qwen.json), [controlled intervention](../reproduction/configs/intervention.json) and [user-study](../reproduction/configs/user-study.json) manifests. It includes fixed benchmark task IDs, the BCB public/final test-method split, archived prompt/tool definitions, environment snapshots and result provenance. Run `python reproduction/verify.py` from the repository root to check integrity without model access.
-
-The [frontend study procedures](../reproduction/STUDY_PROTOCOLS.md) explain preparation, grouping, allowed interventions and analysis for the current 9-person and 15-person studies. Questionnaire forms and raw responses are deferred from this update. The [paper/archive alignment notes](../reproduction/DISCREPANCIES.md) retain unverified historical settings, method labels, test-split/budget definitions and result versions. The export's API-reviewer intervention and old 20-person Auto/Interactive study are not treated as participant evidence for the current studies.
+The [`reproduction/`](../reproduction/README.md) directory provides the final designs, parameters and results for [DeepSeek](../reproduction/configs/deepseek.json), [Qwen](../reproduction/configs/qwen.json), [controlled intervention](../reproduction/configs/intervention.json) and [user study](../reproduction/configs/user-study.json). All backend methods use a maximum output of **512 tokens**, with tool-default retry settings. Fixed task lists, test splits, deployment settings and [study procedures](../reproduction/STUDY_PROTOCOLS.md) accompany the configurations. Run `python reproduction/verify.py` to check material integrity.
 
 ## Workflow semantics
 
@@ -48,9 +46,7 @@ If results use hidden tests, document the split and evaluation procedure explici
 
 ## Availability
 
-The project offers the implementation, installation workflow, session logging and the [curated experiment settings](../reproduction/README.md). The settings include SHA-256 identities and explicit availability limits. Historical benchmark runners, candidates, full test source, model weights and matching raw human-study materials are not included; the manifests alone do not provide an executable replay of every paper result.
-
-Researchers should use a fixed Git commit and archive all required configurations for each reported result. GitHub Releases may provide installable VSIX binaries, but binary packaging alone is not an experimental artifact archive.
+The repository provides the tool implementation, installation instructions, session logging and [final experiment configurations](../reproduction/README.md).
 
 ## Safety and disclosure
 

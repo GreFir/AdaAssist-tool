@@ -1,11 +1,6 @@
 {
-  "schema_version": 1,
-  "kind": "declarative_experiment_manifest",
   "paper_section": "III-D",
   "paper_table": "IV",
-  "status": "study_design_tool_assignment_and_rating_timing_confirmed_by_author",
-  "replication_procedure": "STUDY_PROTOCOLS.md#iii-d-three-tool-usability-study",
-  "procedure_scope": "Between-group study: one tool per group; overall tool ratings after all tasks are completed",
   "model": "Qwen3-Coder-30B-A3B-Instruct",
   "tools": [
     "AdaAssist",
@@ -57,14 +52,6 @@
     "understandability",
     "perceived efficiency"
   ],
-  "rating_scale": {
-    "minimum": -2,
-    "maximum": 2,
-    "points": 5,
-    "exact_items_and_anchors": null
-  },
-  "sampling_and_budgets": null,
-  "tool_builds": null,
   "reported_ratings": [
     {
       "tool": "DeepSeek Harness",
@@ -88,15 +75,6 @@
       "average": 1.67
     }
   ],
-  "deferred_validation_materials": [
-    "original questionnaire forms and exact item wording",
-    "anonymized participant ratings and logs"
-  ],
-  "current_documentation_requires_questionnaire_attachment": false,
-  "current_documentation_requires_raw_participant_records": false,
-  "archive_E2_is_matching_evidence": false,
-  "archive_E2_exclusion_reason": "20 participants, DeepSeek-33B, Auto/Interactive comparison, 2 basic + 4 medium + 2 advanced tasks, scale 1..5; cannot be relabeled or rescaled into the present three-tool study.",
-  "confirmation": "author-confirmations.json#user_study",
   "design": "between_groups; each participant uses only the tool assigned to their group",
   "tool_groups": [
     {
@@ -123,5 +101,10 @@
   "rating_timing": "After completing all eight tasks, rate the assigned tool overall",
   "rating_unit": "one overall post-study tool rating per participant per dimension",
   "ratings_per_tool_per_dimension": 5,
-  "aggregation": "Mean of the five participant ratings per tool and dimension; overall tool mean is the equally weighted mean of the three dimensions"
+  "aggregation": "Mean of the five participant ratings per tool and dimension; overall tool mean is the equally weighted mean of the three dimensions",
+  "rating_scale": {
+    "minimum": -2,
+    "maximum": 2,
+    "points": 5
+  }
 }

@@ -1,11 +1,8 @@
-# 原始提示词文本模板
+# AdaAssist English stage prompt templates
 
-来源标识：runs/qwen3_full_512_c16_compact_20261015_103727/source_snapshot/AdaAssist-main/backend/src/executor/AdacoderExe.py
-来源SHA-256：66e0aa3defa6fba2b5778269bb743be591de607cccc6ab8f376430b9722de775
+Dynamic fields are inserted from the current task, public tests, code, feedback and plan.
 
-双花括号表示动态字段，不是模板中的额外文字。只导出英语运行分支的文字常量／f-string内容，不包含函数实现。相同变量在不同分支出现时分别保留；必要的中文运行模板不作为本英语实验配置。
-
-## execute_coder / tests_block / 原行198
+## execute_coder / tests_block
 
 ~~~~text
 ## Public Tests
@@ -18,7 +15,7 @@ Use these tests as concrete examples of the required behavior. Satisfy all of th
 
 ~~~~
 
-## execute_coder / user_prompt / 原行226
+## execute_coder / user_prompt
 
 ~~~~text
 {{context_block}}{{instruction_block}}{{tests_block}}Implement the following Python task exactly as specified.
@@ -40,7 +37,7 @@ Use these tests as concrete examples of the required behavior. Satisfy all of th
 
 ~~~~
 
-## execute_coder / user_prompt / 原行277
+## execute_coder / user_prompt
 
 ~~~~text
 {{context_block}}{{instruction_block}}{{tests_block}}Revise the current failed Python implementation according to the approved repair plan.
@@ -74,7 +71,7 @@ Use these tests as concrete examples of the required behavior. Satisfy all of th
 
 ~~~~
 
-## execute_coder / retry_prompt / 原行329
+## execute_coder / retry_prompt
 
 ~~~~text
 
@@ -88,7 +85,7 @@ Previous response:
 
 ~~~~
 
-## generate_test_code / user_prompt / 原行446
+## generate_test_code / user_prompt
 
 ~~~~text
 {{context_block}}{{instruction_block}}{{test_description_block}}Write runnable Python test code for the task below.
@@ -115,7 +112,7 @@ Previous response:
 
 ~~~~
 
-## generate_test_code / retry_prompt / 原行494
+## generate_test_code / retry_prompt
 
 ~~~~text
 
@@ -129,14 +126,14 @@ Previous response:
 
 ~~~~
 
-## execute_planner / feedback_block / 原行727
+## execute_planner / feedback_block
 
 ~~~~text
 {{feedback_title}}
 {{self._build_failure_block(relat_err_dict)}}
 ~~~~
 
-## execute_planner / feedback_block / 原行730
+## execute_planner / feedback_block
 
 ~~~~text
 ## Latest Failure
@@ -144,7 +141,7 @@ Runtime and test feedback was intentionally disabled for this planning request.
 Build the plan from the original task and current implementation state.
 ~~~~
 
-## execute_planner / user_prompt / 原行772
+## execute_planner / user_prompt
 
 ~~~~text
 {{context_block}}{{instruction_block}}Produce a concise repair plan for the current failed implementation.
