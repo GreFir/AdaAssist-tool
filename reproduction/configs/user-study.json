@@ -33,6 +33,7 @@
   },
   "assignment": "random",
   "tasks": {
+    "manifest": "artifacts/datasets/task_ids_user_study8.json",
     "labels": [
       "T1",
       "T2",

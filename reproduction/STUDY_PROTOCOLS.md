@@ -25,7 +25,7 @@ Final results are in [intervention.json](configs/intervention.json).
 Recruit 15 participants: six professional developers with 3-7 years of industry experience and nine third-year software engineering master's students with at least five years of programming experience and 3-5 months of internships. Participants do not overlap with III-C.
 
 1. Randomly form three groups, each containing two developers and three students. Assign one tool to each group: AdaAssist, DSH or Codex. Each participant uses only that tool throughout the study.
-2. Configure all tools with Qwen3-Coder as the common model. Use eight tasks, T1-T8, with four basic and four advanced tasks, and provide the same task requirements and public tests to all groups.
+2. Configure all tools with Qwen3-Coder as the common model. Use the fixed [eight-task manifest](artifacts/datasets/task_ids_user_study8.json): T1-T4 are HumanEval `Python/11`, `Python/62`, `Python/43`, `Python/76`; T5-T8 are BigCodeBench `BigCodeBench/61`, `BigCodeBench/327`, `BigCodeBench/493`, `BigCodeBench/821`. Provide the same task requirements and public tests to all groups.
 3. Introduce the assigned tool, then have participants complete all eight tasks. AdaAssist participants may freely choose Auto or Interactive mode.
 4. After all tasks are completed, collect an overall rating of the assigned tool for usefulness, understandability and perceived efficiency on a five-point -2..2 scale.
 5. Compute each tool/dimension's mean from its five participant ratings. The overall tool rating is the equally weighted mean of the three dimensions.

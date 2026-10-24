@@ -63,6 +63,13 @@ The controlled intervention study uses nine graduate students, three per conditi
 
 The usability study uses 15 participants: six developers and nine master's students. Each of three groups contains two developers and three students and uses one tool throughout: AdaAssist, DSH or Codex. Participants complete eight tasks, then rate the assigned tool overall for usefulness, understandability and perceived efficiency on a five-point -2..2 scale. See [STUDY_PROTOCOLS.md](STUDY_PROTOCOLS.md) for the procedures; final results are in the study manifests.
 
+The fixed [eight-task manifest](artifacts/datasets/task_ids_user_study8.json) contains:
+
+| Tasks | Difficulty | Dataset | Task IDs |
+| --- | --- | --- | --- |
+| T1–T4 | Basic | HumanEval | `Python/11`, `Python/62`, `Python/43`, `Python/76` |
+| T5–T8 | Advanced | BigCodeBench | `BigCodeBench/61`, `BigCodeBench/327`, `BigCodeBench/493`, `BigCodeBench/821` |
+
 ## Setup and verification
 
 Use the repository installation instructions for the tool backend. The benchmark evaluation environment uses Python 3.11:

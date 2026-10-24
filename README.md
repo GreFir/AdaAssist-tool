@@ -26,7 +26,7 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 | III-A / Table I | DeepSeek-Coder-Instruct 1.3B / 6.7B / 33B; Direct, MapCoder, Codex, DSH and AdaAssist | [deepseek.json](reproduction/configs/deepseek.json) |
 | III-B / Table II | Qwen3-Coder-30B-A3B-Instruct; AdaAssist, Codex and DSH; default and limited execution settings | [qwen.json](reproduction/configs/qwen.json) |
 | III-C / Table III | 9 participants, 20 BCB tasks, three intervention groups; fresh workflows, no task time limit | [intervention.json](reproduction/configs/intervention.json) |
-| III-D / Table IV | 15 participants, one tool per group, 8 tasks; overall tool ratings after all tasks | [user-study.json](reproduction/configs/user-study.json) |
+| III-D / Table IV | 15 participants, one tool per group, [8 fixed tasks](reproduction/artifacts/datasets/task_ids_user_study8.json) (4 HumanEval + 4 BigCodeBench); overall tool ratings after all tasks | [user-study.json](reproduction/configs/user-study.json) |
 
 **Backend generation:** all methods use **T=0.2, top-p=0.9, maximum output 512 tokens**, with **seeds 42/43/44**. Retry handling uses **each tool's default settings**.
 

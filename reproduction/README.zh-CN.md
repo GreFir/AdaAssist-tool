@@ -61,6 +61,11 @@ Qwen 上下文为 16,384、并发 16；AdaAssist 使用 Auto、英文提示词�
 
 **15 人用户研究：**6 名开发者、9 名硕士生，随机分为三组，每组 2 名开发者加 3 名学生，固定使用 AdaAssist、DSH 或 Codex 中的一种工具。完成 8 题后，对所用工具的有用性、可理解性、感知效率进行 -2 至 2 的整体评分。详细步骤见 [STUDY_PROTOCOLS.md](STUDY_PROTOCOLS.md)，最终结果见对应配置文件。
 
+固定 [8 题名单](artifacts/datasets/task_ids_user_study8.json)：
+
+- **简单题 T1–T4（HumanEval）**：`Python/11`、`Python/62`、`Python/43`、`Python/76`。
+- **困难题 T5–T8（BigCodeBench）**：`BigCodeBench/61`、`BigCodeBench/327`、`BigCodeBench/493`、`BigCodeBench/821`。
+
 ## 复现步骤
 
 1. 按配置文件获取指定模型、数据和固定任务名单，构建公开/隐藏测试。

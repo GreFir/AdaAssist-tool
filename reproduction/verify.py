@@ -75,6 +75,17 @@ def main():
     require(set(reused_ids) <= bcb_ids, "Intervention tasks outside the frozen BCB sample")
     print("OK: 20 intervention tasks belong to the fixed BCB sample")
 
+    study = read_json(ROOT / "configs/user-study.json")
+    study_tasks = read_json(ROOT / study["tasks"]["manifest"])
+    rows = study_tasks["tasks"]
+    require(study_tasks["count"] == len(rows) == len({row["task_id"] for row in rows}) == 8, "Invalid usability study task count")
+    require([row["label"] for row in rows] == study["tasks"]["labels"], "Usability study task labels mismatch")
+    for difficulty, dataset_name, valid_ids in (("basic", "HumanEval", expected_ids["humaneval"]), ("advanced", "BigCodeBench", bcb_ids)):
+        selected = [row for row in rows if row["difficulty"] == difficulty]
+        require(len(selected) == study["tasks"][difficulty] == 4, f"Invalid usability study difficulty count: {difficulty}")
+        require(all(row["dataset"] == dataset_name and row["task_id"] in valid_ids for row in selected), f"Unexpected usability study task IDs: {difficulty}")
+    print("OK: 8 usability study tasks, 4 HumanEval and 4 BigCodeBench")
+
     deepseek = read_json(ROOT / "configs/deepseek.json")
     qwen = read_json(ROOT / "configs/qwen.json")
     require(deepseek["sampling"]["max_output_tokens"] == qwen["sampling"]["max_output_tokens"] == 512, "Backend output budgets must be 512")

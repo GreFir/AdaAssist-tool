@@ -13,7 +13,7 @@
 | III-A / 表 I | [DeepSeek 三规模、五方法对比](../reproduction/configs/deepseek.json) |
 | III-B / 表 II | [Qwen 三工具对比与最终结果](../reproduction/configs/qwen.json) |
 | III-C / 表 III | [9 人、20 题受控干预](../reproduction/configs/intervention.json)，每题重新开始、无任务总时限 |
-| III-D / 表 IV | [15 人三工具用户研究](../reproduction/configs/user-study.json)，每组一个工具，全部结束后整体评分 |
+| III-D / 表 IV | [15 人三工具用户研究](../reproduction/configs/user-study.json)，[固定 8 题](../reproduction/artifacts/datasets/task_ids_user_study8.json)为 4 题 HumanEval 简单题与 4 题 BCB 困难题，每组一个工具，全部结束后整体评分 |
 
 后端所有方法统一 **T=0.2、top-p=0.9、最大输出 512 tokens、seeds 42/43/44**；重试使用**工具默认设置**。数据为 HumanEval 164、MBPP 500、BCB Random150。任务名单和测试划分见[数据目录](../reproduction/artifacts/datasets/)，研究操作流程见[STUDY_PROTOCOLS.md](../reproduction/STUDY_PROTOCOLS.md)。
 
