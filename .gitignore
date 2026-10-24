@@ -44,3 +44,4 @@ scripts/user_study_simulation.py
 backend/tests/test_user_study_simulation.py
 docs/user-study-simulation.md
 docs/BASELINE.md
+localresources
