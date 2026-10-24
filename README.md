@@ -19,26 +19,7 @@ AdaAssist is a **research-oriented VS Code extension for Python coding tasks**. 
 
 ## Paper experiment settings
 
-**Configurations and reproduction instructions: [`reproduction/`](reproduction/README.md)** · [中文实验说明](reproduction/README.zh-CN.md)
-
-| Paper | Final experiment design | Configuration |
-| --- | --- | --- |
-| III-A / Table I | DeepSeek-Coder-Instruct 1.3B / 6.7B / 33B; Direct, MapCoder, Codex, DSH and AdaAssist | [deepseek.json](reproduction/configs/deepseek.json) |
-| III-B / Table II | Qwen3-Coder-30B-A3B-Instruct; AdaAssist, Codex and DSH; default and limited execution settings | [qwen.json](reproduction/configs/qwen.json) |
-| III-C / Table III | 9 participants, 20 BCB tasks, three intervention groups; fresh workflows, no task time limit | [intervention.json](reproduction/configs/intervention.json) |
-| III-D / Table IV | 15 participants, one tool per group, [8 fixed tasks](reproduction/artifacts/datasets/task_ids_user_study8.json) (4 HumanEval + 4 BigCodeBench); overall tool ratings after all tasks | [user-study.json](reproduction/configs/user-study.json) |
-
-**Backend generation:** all methods use **T=0.2, top-p=0.9, maximum output 512 tokens**, with **seeds 42/43/44**. Retry handling uses **each tool's default settings**.
-
-**Method configuration:** MapCoder uses its official defaults. AdaAssist uses the backend Auto default workflow, stopping when public tests pass or the configured repair-round limit is reached; user interruption pauses the workflow.
-
-**Datasets:** HumanEval **164**, MBPP **500** (original task IDs 11-510), BigCodeBench **Random150**. MBPP uses one randomly selected public test per task with seed 42; the remaining tests are hidden. Fixed task lists and BCB test-method splits are in [reproduction/artifacts/datasets/](reproduction/artifacts/datasets/). See [dataset settings](reproduction/configs/datasets.json) and [study procedures](reproduction/STUDY_PROTOCOLS.md).
-
-Table II reports AdaAssist's final BCB pass rate as **57.11%** and average pass rate as **78.70%**. All final tables are recorded in the experiment manifests.
-
-```bash
-python reproduction/verify.py
-```
+Experimental configurations and reproduction instructions for Tables I–IV are available in the [reproduction guide](reproduction/README.md) ([中文说明](reproduction/README.zh-CN.md)). The materials cover model and tool settings, benchmark datasets and test splits, evaluation procedures, and human study protocols.
 
 ## 🚀 Quick install (VSIX)
 
